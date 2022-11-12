@@ -34,7 +34,7 @@ public class AuthenticationController {
             return "Email already taken";
         }
         playerService.addNewPlayer(player);
-        return "Authenticated";
+        return "Registered";
     }
 
 }
