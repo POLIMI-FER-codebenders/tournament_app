@@ -1,13 +1,16 @@
 package dsd.codebenders.tournament_app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "team")
+@JsonIgnoreProperties({ "creator" })
 public class Team {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     private String name;
@@ -33,5 +36,9 @@ public class Team {
 
     public Player getCreator() {
         return creator;
+    }
+
+    public void setCreator(Player creator) {
+        this.creator = creator;
     }
 }
