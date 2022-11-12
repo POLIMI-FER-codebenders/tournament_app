@@ -18,9 +18,9 @@ import java.util.List;
 @Service
 public class InvitationService {
 
-    private PlayerRepository playerRepository;
-    private TeamRepository teamRepository;
-    private InvitationRepository invitationRepository;
+    private final PlayerRepository playerRepository;
+    private final TeamRepository teamRepository;
+    private final InvitationRepository invitationRepository;
 
     @Autowired
     public InvitationService(PlayerRepository playerRepository, TeamRepository teamRepository, InvitationRepository invitationRepository) {

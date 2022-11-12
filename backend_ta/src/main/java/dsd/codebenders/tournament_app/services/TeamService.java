@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TeamService {
 
-    private TeamRepository teamRepository;
+    private final TeamRepository teamRepository;
 
     @Autowired
     public TeamService(TeamRepository teamRepository) {

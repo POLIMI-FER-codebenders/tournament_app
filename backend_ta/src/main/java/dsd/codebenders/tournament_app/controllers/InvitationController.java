@@ -5,7 +5,6 @@ import dsd.codebenders.tournament_app.errors.RequestNotAuthorizedException;
 import dsd.codebenders.tournament_app.errors.ResourceNotFoundException;
 import dsd.codebenders.tournament_app.requests.CreateInvitationRequest;
 import dsd.codebenders.tournament_app.services.InvitationService;
-import dsd.codebenders.tournament_app.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +16,14 @@ import java.util.List;
 @RequestMapping(path = "api/invitation")
 public class InvitationController {
 
-    private PlayerService playerService;
-    private InvitationService invitationService;
+    private final InvitationService invitationService;
 
     @Autowired
-    public InvitationController(PlayerService playerService, InvitationService invitationService) {
-        this.playerService = playerService;
+    public InvitationController(InvitationService invitationService) {
         this.invitationService = invitationService;
     }
 
-    @GetMapping(value = "pending")
+    @GetMapping(value = "/pending")
     public List<Invitation> getPendingInvitations(){
         // Retrieve currently authenticated user from session and pass it as the creator
         return invitationService.getPending("andrea");
@@ -46,9 +43,9 @@ public class InvitationController {
 
     }
 
-    @PostMapping(value = "accept")
+    @PostMapping(value = "/accept")
     public void acceptInvitation(){
-
+        // To be done in user story "Join Team"
     }
 
 }
