@@ -31,5 +31,9 @@ public class TeamController {
         return teamService.createTeam(team, creator);
     }
 
+    @PostMapping(value = "kick_member")
+    public void kickMember(){
+
+    }
 
 }

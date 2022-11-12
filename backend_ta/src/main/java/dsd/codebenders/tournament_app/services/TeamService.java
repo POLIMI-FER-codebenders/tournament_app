@@ -16,6 +16,10 @@ public class TeamService {
         this.teamRepository = teamRepository;
     }
 
+    public Team findById(Long ID){
+        return teamRepository.findById(ID).orElse(null);
+    }
+
     public Team createTeam(Team team, Player creator) {
         team.setCreator(creator);
         return teamRepository.save(team);
