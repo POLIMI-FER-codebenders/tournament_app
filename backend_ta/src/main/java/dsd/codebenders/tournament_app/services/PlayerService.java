@@ -27,4 +27,12 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
+    public boolean checkAuthentication(Player authenticatingPlayer) {
+        Player DBPlayer = playerRepository.findByUsername(authenticatingPlayer.getUsername());
+        if(DBPlayer == null) {
+            return false;
+        }
+        return DBPlayer.getPassword().equals(authenticatingPlayer.getPassword());
+    }
+
 }
