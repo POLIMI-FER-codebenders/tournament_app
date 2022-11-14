@@ -1,96 +1,40 @@
 import logo from './logo.svg';
-import './App.css';
+import './styles/App.css';
+import './styles/forms.css';
 import { Component } from "react";
-import { Grid } from "@mui/material";
-import { useState } from "react";
+import SignIn from './components/SignIn';
+import { CreateTeam } from './components/TeamManagement';
+import { DisplayTournament } from './components/DisplayTournament'; 
+import ManageTeams from './components/TeamManagement';
 
 function Header() {
   return (
-    <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        <p>Welcome to tournament application of Code Defenders web game!</p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href=""
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          <img src={logo} className="App-logo" alt="logo" />
         </a>
       </header>
-    </div>
-  );
-}
-
-function Button(props) {
-  return (
-    <Grid item>
-      <button onClick={props.onClick}>{props.value}</button>
-    </Grid>
-  );
-}
-
-function DisplayTournamentPanel() {
-  return <h2>list of tournaments</h2>;
-}
-
-function CreateTeam() {
-  const [name, setName] = useState("");
-  const [type, setType] = useState("open");
-
-  const handleChange = (event) => {
-    setType(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    alert(`The name you entered was: ${name}, ${type} to new members`);
-  };
-
-  return (
-    <Grid
-      container
-      direction="column"
-      justifyContent="space-between"
-      alignItems="center"
-    >
-      <h2>Team creation</h2>
-      <form onSubmit={handleSubmit}>
-        <Grid item>
-          <label>
-            Enter new team name:
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-        </Grid>
-        <Grid item>
-          <select value={type} onChange={handleChange}>
-            <option value="Open">Open</option>
-            <option value="Closed">Closed</option>
-          </select>
-        </Grid>
-        <input type="submit" />
-      </form>
-    </Grid>
   );
 }
 
 function MainPanel(props) {
   switch (props.view) {
     case 0:
-      return <DisplayTournamentPanel />;
+      return <DisplayTournament />;
     case 1:
-      return <CreateTeam />;
+      return <SignIn />
     case 2:
-      return;
+      return <CreateTeam />;
+    case 3:
+      return <ManageTeams />;
     default:
-      return;
+      return <DisplayTournament />;
   }
 }
 
@@ -100,42 +44,33 @@ class App extends Component {
     this.state = {
       view: 0
     };
-    this.view = 0;
   }
   render() {
     return (
       <div>
         <Header />
-        <Grid
-          container
-          paddingTop={1}
-          direction="row"
-          columns={2}
-          justifyContent="space-around"
-          alignItems="stretch"
-        >
-          <Grid
-            item
-            xs={2}
-            container
-            spacing={1}
-            direction="column"
-            alignItems="center"
-            justifyContent="flex-start"
-          >
-            <Button 
-              value="Home" 
-              onClick={() => this.setState({ view: 0 })} 
-            />
-            <Button
-              value="Create Team"
-              onClick={() => this.setState({ view: 1 })}
-            />
-          </Grid>
-          <Grid item xs={10} container direction="column" alignItems="center">
-            <MainPanel view={this.state.view} />
-          </Grid>
-        </Grid>
+        <div class="main-container">
+          <div class="button-container">
+            <button class="item" 
+              onClick={() => this.setState({ view: 0 })}>
+              Home
+            </button>
+            <button class="item" 
+              onClick={() => this.setState({ view: 1 })}>
+              Sign In
+            </button>
+            <button class="item" 
+              onClick={() => this.setState({ view: 2 })}>
+              Create Team
+            </button>
+            <button class="item" 
+              onClick={() => this.setState({ view: 3 })}>
+              Manage Teams
+            </button>
+          </div>
+          <MainPanel view={this.state.view} />
+          <div class="item"></div>
+        </div>
       </div>
     );
   }

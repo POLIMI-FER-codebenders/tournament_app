@@ -1,7 +1,10 @@
 import React from 'react';
-import SignIn from './signIn';
-import postData from './utils';
-class SignUp extends React.Component {
+import postData from '../utils';
+import SignUp from './signUp';
+import "../styles/SignInUp.css";
+import '../styles/App.css';
+
+class SignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -9,9 +12,7 @@ class SignUp extends React.Component {
           isSubmitted:false,
           username :'',
           password :'',
-          confirmpassword :'',
-          email:'',
-          view :"SignUp"
+          view :"SignIn"
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,14 +28,11 @@ class SignUp extends React.Component {
  handleChange(event) {
   if(event.target.name=="username")this.setState({username: event.target.value});
   else if (event.target.name=="password") this.setState({password: event.target.value});
-  else if (event.target.name=="email") this.setState({email: event.target.value});
-  else if (event.target.name=="confirmpassword") this.setState({confirmpassword: event.target.value});
-
  }
 
   handleSubmit(event) {
     event.preventDefault();
-    let data={username: this.state.username,password:this.state.password,email:this.state.email,confirmpassword:this.state.confirmpassword};
+    let data={username: this.state.username,password:this.state.password};
     console.log(data);
     let url=""
     /*
@@ -47,11 +45,13 @@ class SignUp extends React.Component {
 
     
    render() {
-    if (this.state.view=="SignIn") return (<SignIn/>);
-    else if(this.state.view=="SignUp") return (
-<div className="app">
-    <div className="login-form">
-          <div className="title">Sign Up</div>
+    let nextcomponent;
+    console.log( "la view è"  + this.state.view);
+    if (this.state.view=="SignUp") nextcomponent= (<SignUp/>);
+    if(this.state.view=="SignIn") nextcomponent= (
+      <div className="app" class="main-panel">
+        <div className="login-form">
+          <div className="title">Sign In</div>
     <div className="form">
       <form onSubmit={this.handleSubmit}>
         <div className="input-container">
@@ -59,27 +59,25 @@ class SignUp extends React.Component {
           <input type="text" name="username" value={this.state.username} onChange={this.handleChange} required />
         </div>
         <div className="input-container">
-          <label>Email </label>
-          <input type="text" name="email" value={this.state.email} onChange={this.handleChange} required />
-        </div>
-        <div className="input-container">
           <label>Password </label>
           <input type="password" name="password" value={this.state.password} onChange={this.handleChange} required />
         </div>
-         <div className="input-container">
-          <label>Confirm Password </label>
-          <input type="password" name="confirmpassword" value={this.state.confirmpassword} onChange={this.handleChange} required />
-         </div>
         <div className="button-container">
-          <input type="submit" value="Sign up"/>
+          <input type="submit" value="Sign in"/>
         </div>
       </form>
       {this.renderErrorMessage()}
-      <button className="formbutton" onClick={()=>this.setState({view:"SignIn"})}> Sign in if you already have an account </button>
+      <button className="formbutton" onClick={()=>this.setState({view:"SignUp"})}> Create Account </button>
+      
     </div>
   </div>
 </div>
+
+    
  );
+     return nextcomponent;
     }
+    
   }
-export default SignUp;
+  
+export default SignIn;
