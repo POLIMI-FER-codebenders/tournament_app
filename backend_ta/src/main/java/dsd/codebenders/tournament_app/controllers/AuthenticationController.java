@@ -42,7 +42,7 @@ public class AuthenticationController {
         return jsonMap;
     }
 
-    @GetMapping(value = "login")
+    @PostMapping(value = "login")
     @ResponseBody
     public Map<String, Boolean> login(@RequestBody Player player) throws AuthenticationException {
         String username = player.getUsername();
