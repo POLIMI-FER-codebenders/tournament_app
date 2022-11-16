@@ -21,8 +21,9 @@ public class PlayerService {
         return playerRepository.findById(ID).orElse(null);
     }
 
-    public Player findByUsername(String username){
+    public Player findByUsername(String username) {
         return playerRepository.findByUsername(username);
+    }
 
     public boolean checkUsernameAlreadyTaken(String username) {
         return playerRepository.findByUsername(username) != null;
@@ -44,5 +45,4 @@ public class PlayerService {
         return DBPlayer.getPassword().equals(authenticatingPlayer.getPassword());
 
     }
-
 }
