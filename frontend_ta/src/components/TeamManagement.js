@@ -1,4 +1,5 @@
 import { Component, useState } from "react";
+import ListComponent from "./ListComponent";
 
 export function CreateTeam() {
     const [name, setName] = useState("");
@@ -49,37 +50,18 @@ function ManageTeam(props){
   );
 }
 
-function TeamEntry(props){
-  let flag = false;
-  return (
-    <div class="entry">
-      <button class="item" 
-        onClick={()=>{flag = true}}>
-        {props.obj.name}
-      </button>
-    </div>
-  );
-}
-
-export function ListTeams() {
-  const data =[{"name":"team1"},{"name":"team2"}];
-  const rows = [];
-  for(let i = 0; i < data.size; i++) {
-    rows.push(TeamEntry(data[i].name));
-  }
-  return (
-      <div class="main-panel">
-        <h2>Team management</h2>
-        <p>Select the team to manage</p>
-        {data.map((object, i) => <TeamEntry obj={object} key={i} />)}
-      </div>
-  );
-}
 
 class ManageTeams extends Component{
   render (){
+    const data =[
+      {"name":"Steaming hot coffee enjoyers", "date":"16.10.2022", "score":"0"},
+      {"name":"Guys from the basement", "date":"14.10.2022", "score":"32"}
+    ];  
     return(
-      <ListTeams />
+      <div class="main-panel">
+        <h2>Team Management</h2>
+        <ListComponent teams={data}/>
+      </div>
   );}
 }
 
