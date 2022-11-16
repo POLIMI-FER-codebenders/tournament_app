@@ -19,9 +19,9 @@ class SignIn extends React.Component {
       }
    
  renderErrorMessage(){
-    if(this.state.errorMessage!=null)return;
+    if(this.state.errorMessage==null)return;
   return(
-    <div className="error">{this.state.errorMessage}</div>
+    <p>{this.state.errorMessage}</p>
   );
  }
 
@@ -34,13 +34,19 @@ class SignIn extends React.Component {
     event.preventDefault();
     let data={username: this.state.username,password:this.state.password};
     console.log(data);
-    let url=""
-    /*
+    let url="http://localhost:8080/authentication/login"
+    
   postData(url, data)
   .then((response) => {
-    console.log(response); //  
+    if(response.result){
+      
+      this.setState({errorMessage: "logged in"})
+    }
+    else{
+      this.setState({errorMessage:"invalid credentials"})
+    }
   });
-  */
+  
   }
 
     

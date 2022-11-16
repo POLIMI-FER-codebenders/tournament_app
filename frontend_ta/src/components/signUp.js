@@ -18,9 +18,9 @@ class SignUp extends React.Component {
       }
    
  renderErrorMessage(){
-    if(this.state.errorMessage!=null)return;
+    if(this.state.errorMessage==null)return;
   return(
-    <div className="error">{this.state.errorMessage}</div>
+    <p >{this.state.errorMessage}</p>
   );
  }
 
@@ -34,15 +34,24 @@ class SignUp extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    if(this.state.password!=this.state.confirmpassword){
+      this.setState({errorMessage: "confirm password is different from password!"})
+      return;
+    }
     let data={username: this.state.username,password:this.state.password,email:this.state.email,confirmpassword:this.state.confirmpassword};
-    console.log(data);
-    let url=""
-    /*
+    let url="http://localhost:8080/authentication/register"
+    
   postData(url, data)
   .then((response) => {
-    console.log(response); //  
+    if(response.result!="Username already taken"){
+      
+      this.setState({errorMessage: "registered correctly"})
+    }
+    else{
+      this.setState({errorMessage:"invalid credentials"})
+    } 
   });
-  */
+  
   }
 
     

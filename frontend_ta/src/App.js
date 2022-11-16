@@ -11,14 +11,6 @@ function Header() {
   return (
       <header className="App-header">
         <p>Welcome to tournament application of Code Defenders web game!</p>
-        <a
-          className="App-link"
-          href=""
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src={logo} className="App-logo" alt="logo" />
-        </a>
       </header>
   );
 }
