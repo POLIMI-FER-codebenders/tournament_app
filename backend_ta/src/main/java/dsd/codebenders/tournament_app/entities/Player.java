@@ -9,8 +9,11 @@ import java.util.List;
 @Table(name = "player")
 public class Player {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     private String username;
+    private String email;
+    private String password;
 
     // The teams whose this player is the creator
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
@@ -31,6 +34,14 @@ public class Player {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public List<Team> getTeamsCreated() {

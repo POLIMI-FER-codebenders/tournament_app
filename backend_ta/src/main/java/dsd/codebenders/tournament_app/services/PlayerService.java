@@ -23,6 +23,26 @@ public class PlayerService {
 
     public Player findByUsername(String username){
         return playerRepository.findByUsername(username);
+
+    public boolean checkUsernameAlreadyTaken(String username) {
+        return playerRepository.findByUsername(username) != null;
+    }
+
+    public boolean checkEmailAlreadyTaken(String email) {
+        return playerRepository.findByEmail(email) != null;
+    }
+
+    public void addNewPlayer(Player player) {
+        playerRepository.save(player);
+    }
+
+    public boolean checkAuthentication(Player authenticatingPlayer) {
+        Player DBPlayer = playerRepository.findByUsername(authenticatingPlayer.getUsername());
+        if(DBPlayer == null) {
+            return false;
+        }
+        return DBPlayer.getPassword().equals(authenticatingPlayer.getPassword());
+
     }
 
 }
