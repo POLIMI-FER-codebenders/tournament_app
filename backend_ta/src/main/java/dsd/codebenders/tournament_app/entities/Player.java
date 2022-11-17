@@ -1,6 +1,6 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,12 +17,12 @@ public class Player {
 
     // The teams whose this player is the creator
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private List<Team> teamsCreated;
 
     // The list of invitations received by this player
     @OneToMany(mappedBy = "invitedPlayer", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private List<Invitation> invitations;
 
     public Player() {

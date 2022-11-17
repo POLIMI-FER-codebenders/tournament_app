@@ -1,6 +1,5 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dsd.codebenders.tournament_app.entities.utils.InvitationStatus;
 
 import javax.persistence.*;
@@ -14,12 +13,10 @@ public class Invitation {
 
     @ManyToOne
     @JoinColumn(name = "ID_invited_player")
-    @JsonManagedReference
     private Player invitedPlayer;
 
     @ManyToOne
     @JoinColumn(name = "ID_team")
-    @JsonManagedReference
     private Team team;
 
     @Column(name = "status")
