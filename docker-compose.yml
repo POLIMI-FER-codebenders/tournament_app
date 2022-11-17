@@ -5,11 +5,10 @@ services:
     image: "mysql:8.0"
     container_name: tournament_app_database
     environment:
-      MYSQL_ROOT_PASSWORD: Poli.SQL.99
-      # - MYSQL_RANDOM_ROOT_PASSWORD=YES
-      # - MYSQL_USER=${DB_USERNAME:-defender}
-      # - MYSQL_PASSWORD=${DB_PASSWORD:-defender}
-      MYSQL_DATABASE: ${DB_NAME:-tournamentdb}
+      MYSQL_RANDOM_ROOT_PASSWORD: YES
+      MYSQL_USER: ${DB_USERNAME:-user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-user}
+      MYSQL_DATABASE: tournamentdb
     volumes:
       - dbvolume:/var/lib/mysql
       - ./docker/mysql_dump:/docker-entrypoint-initdb.d
@@ -21,10 +20,8 @@ services:
     container_name: tournament_app_backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/tournamentdb
-      # These three are the only required variables as they are also passed to the database container
-      # - CODEDEFENDERS_DB_USERNAME=${CODEDEFENDERS_DB_USERNAME:-defender}
-      # - CODEDEFENDERS_DB_PASSWORD=${CODEDEFENDERS_DB_PASSWORD:-defender}
-      # - CODEDEFENDERS_DB_NAME=${CODEDEFENDERS_DB_NAME:-defender}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-user}
     ports:
       - "8080:8080"
     links:
@@ -36,7 +33,9 @@ services:
     image: tournament_app_frontend_image:1.0
     container_name: tournament_app_frontend
     ports:
-      - "80:80"
+      - "${TA_FRONTEND_PORT:-80}:80"
+    depends_on:
+      - backend
 
 volumes:
   dbvolume:
