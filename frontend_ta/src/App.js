@@ -20,7 +20,7 @@ function MainPanel(props) {
     case 0:
       return <DisplayTournament />;
     case 1:
-      return <SignIn />
+      return <SignIn backHome={props.backHome} />
     case 2:
       return <CreateTeam />;
     case 3:
@@ -36,7 +36,13 @@ class App extends Component {
     this.state = {
       view: 0
     };
+    this.backHome= this.backHome.bind(this);    
   }
+   backHome(){
+   this.setState({view:0});
+ }
+ 
+  
   render() {
     return (
       <div>
@@ -60,7 +66,7 @@ class App extends Component {
               Manage Teams
             </button>
           </div>
-          <MainPanel view={this.state.view} />
+          <MainPanel view={this.state.view} backHome={this.backHome} />
           <div class="item"></div>
         </div>
       </div>
