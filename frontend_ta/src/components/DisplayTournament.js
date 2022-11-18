@@ -5,12 +5,13 @@ import ListTournamentComponent from './ListTournamentComponent';
 export class DisplayTournament extends React.Component {
   constructor(props) {
     super(props);
-    
+
   }
   render() {
     const data = [
-      { "name": "Steaming hot coffee enjoyers", "date": "16.10.2022", "status": "started" },
-      { "name": "Guys from the basement", "date": "14.10.2022", "status": "not started" }
+      { "name": "the code league", "date": "16.10.2022", "status": "started" },
+      { "name": "cr tour", "date": "14.10.2022", "status": "not started" },
+      { "name": "Chunin tour ", "date": "14.10.2022", "status": "started" }
     ];
     return (
 
