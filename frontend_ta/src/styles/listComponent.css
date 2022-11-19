@@ -12,6 +12,17 @@
     min-width: fit-content;
 }
 
+table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    
+}  
+
 .list-headers {
     font-weight: bold;
 }
@@ -47,23 +58,47 @@
     text-align: center;
 }
 
-
-.col4 .btn {
+.btn[name="edit"] {
     background: #d2b301;
     border: 1px solid #d2b301;
     color: #fff;
 }
-
-.col4 .btn:hover {
-    background: #dfcc64;    
+.btn[name="edit"]:hover {
+    background: #ddc01b;    
 }
-
-.col5 .btn {
+.btn[name="leave"], .btn[name="cancel"], .btn[name="kick"] {
     background: #d20801;
     border: 1px solid #d20801;
     color: #fff;
 }
-
-.col5 .btn:hover {
+.btn[name="leave"]:hover, .btn[name="cancel"]:hover, .btn[name="kick"]:hover {
     background: #cf4540;    
 }
+
+.btn[name="confirm"] {
+    background: #01d205;
+    border: 1px solid #01d205;
+    color: #fff;
+}
+.btn[name="confirm"]:hover {
+    background: #1ce21f;    
+}
+
+
+.btn[name="promote"] {
+    background: #1201d2;
+    border: 1px solid #1201d2;
+    color: #fff;
+}
+.btn[name="promote"]:hover {
+    background: #3d2de9;    
+}
+
+/* .btn[name="kick"] {
+    background: #01d205;
+    border: 1px solid #01d205;
+    color: #fff;
+}
+.btn[name="kick"]:hover {
+    background: #70fb72;    
+} */
