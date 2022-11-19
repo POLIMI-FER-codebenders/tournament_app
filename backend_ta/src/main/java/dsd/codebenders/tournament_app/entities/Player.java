@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "player")
@@ -24,6 +25,9 @@ public class Player {
     @OneToMany(mappedBy = "invitedPlayer", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Invitation> invitations;
+
+    @ManyToMany(mappedBy = "teamMembers")
+    Set<Team> teams;
 
     public Player() {
     }

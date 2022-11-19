@@ -1,8 +1,7 @@
 package dsd.codebenders.tournament_app.controllers;
 
 import dsd.codebenders.tournament_app.entities.Invitation;
-import dsd.codebenders.tournament_app.errors.RequestNotAuthorizedException;
-import dsd.codebenders.tournament_app.errors.ResourceNotFoundException;
+import dsd.codebenders.tournament_app.requests.AcceptRejectInvitationRequest;
 import dsd.codebenders.tournament_app.requests.CreateInvitationRequest;
 import dsd.codebenders.tournament_app.services.InvitationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +31,20 @@ public class InvitationController {
     @PostMapping(value = "/create")
     public ResponseEntity<Invitation> createInvitation(@RequestBody CreateInvitationRequest createInvitationRequest){
         // Retrieve currently authenticated user from session and pass it as the creator
-        try {
-            Invitation invitation = invitationService.createInvitation("ciccio", createInvitationRequest.getIdInvitedPlayer(), createInvitationRequest.getIdTeam());
-            return new ResponseEntity<>(invitation, HttpStatus.OK);
-        } catch (RequestNotAuthorizedException e) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
+        Invitation invitation = invitationService.createInvitation("ciccio", createInvitationRequest.getIdInvitedPlayer(), createInvitationRequest.getIdTeam());
+        return new ResponseEntity<>(invitation, HttpStatus.OK);
     }
 
     @PostMapping(value = "/accept")
-    public void acceptInvitation(){
-        // To be done in user story "Join Team"
+    public void acceptInvitation(@RequestBody AcceptRejectInvitationRequest request){
+        // Retrieve currently authenticated user from session
+        invitationService.acceptInvitation("andrea", request.getIdInvitation());
+    }
+
+    @PostMapping(value = "/reject")
+    public void rejectInvitation(@RequestBody AcceptRejectInvitationRequest request){
+        // Retrieve currently authenticated user from session
+        invitationService.rejectInvitation("giuseppe", request.getIdInvitation());
     }
 
 }
