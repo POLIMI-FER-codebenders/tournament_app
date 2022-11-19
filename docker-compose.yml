@@ -11,7 +11,12 @@ services:
       MYSQL_DATABASE: tournamentdb
     volumes:
       - dbvolume:/var/lib/mysql
-      - ./docker/mysql_dump:/docker-entrypoint-initdb.d
+      - ./docker/mysql_dump/tournamentdb_dump_v4.sql:/docker-entrypoint-initdb.d/dump.sql
+    healthcheck:
+      test: mysql tournamentdb --user=${DB_USERNAME:-user} --password=${DB_PASSWORD:-user} --execute "SELECT 1;"
+      interval: 10s
+      timeout: 5s
+      retries: 10
   backend:
     build:
       context: ./
@@ -24,6 +29,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-user}
     ports:
       - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
     links:
       - database
   frontend:
