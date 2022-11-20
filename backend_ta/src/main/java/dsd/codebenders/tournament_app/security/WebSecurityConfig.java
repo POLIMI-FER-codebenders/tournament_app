@@ -13,23 +13,25 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService playerDetailsService;
+    private final JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public WebSecurityConfig(UserDetailsService userDetailsService, JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler) {
+        this.playerDetailsService = userDetailsService;
+        this.jsonAuthenticationFailureHandler = jsonAuthenticationFailureHandler;
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
+        provider.setUserDetailsService(playerDetailsService);
         return provider;
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return userDetailsService;
+        return playerDetailsService;
     }
 
     @Bean
@@ -37,18 +39,19 @@ public class WebSecurityConfig {
         http
                 .cors().and()
                 .csrf().disable()
-                /*.authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests((requests) -> requests
                         .antMatchers("/authentication/register").permitAll()
+                        .antMatchers("/authentication/failure").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginProcessingUrl("/authentication/login")
                         .permitAll()
                         .defaultSuccessUrl("/authentication/success")
-                        .failureUrl("/authentication/failure")
+                        .failureHandler(jsonAuthenticationFailureHandler)
                         .permitAll()
                 )
-                .logout(logout -> logout.invalidateHttpSession(true).permitAll())*/;
+                .logout(logout -> logout.invalidateHttpSession(true).permitAll());
 
         return http.build();
     }

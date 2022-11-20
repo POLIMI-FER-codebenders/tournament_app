@@ -42,34 +42,20 @@ public class AuthenticationController {
         return jsonMap;
     }
 
-    @PostMapping(value = "login")
+    @GetMapping(value = "success")
     @ResponseBody
-    public Map<String, Boolean> login(@RequestBody Player player) throws AuthenticationException {
-        String username = player.getUsername();
-        String password = player.getPassword();
-        Map<String, Boolean> jsonMap = new HashMap<>();
-        if(username == null || password == null ||
-                username.isBlank() || password.isBlank() ) {
-            throw new AuthenticationException("Some authentication parameters are invalid");
-        }
-        jsonMap.put("result", playerService.checkAuthentication(player));
-        return jsonMap;
-    }
-
-    /*@GetMapping(value = "success")
-    @ResponseBody
-    public Map<String, Boolean> success() throws AuthenticationException {
+    public Map<String, Boolean> success() {
         Map<String, Boolean> map = new HashMap<>();
-        map.put("logged", true);
+        map.put("result", true);
         return map;
     }
 
     @GetMapping(value = "failure")
     @ResponseBody
-    public Map<String, Boolean> failure() throws AuthenticationException {
+    public Map<String, Boolean> failure() {
         Map<String, Boolean> map = new HashMap<>();
-        map.put("logged", false);
+        map.put("result", false);
         return map;
-    }*/
+    }
 
 }
