@@ -21,7 +21,7 @@ services:
     build:
       context: ./
       dockerfile: ./docker/backend/Dockerfile
-    image: tournament_app_backend_image:1.0
+    image: polimifercodebenders/tournament_app_backend_image:1.0.0
     container_name: tournament_app_backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/tournamentdb
@@ -38,7 +38,7 @@ services:
     build:
       context: ./
       dockerfile: ./docker/frontend/Dockerfile
-    image: tournament_app_frontend_image:1.0
+    image: polimifercodebenders/tournament_app_frontend_image:1.0.0
     container_name: tournament_app_frontend
     ports:
       - "${TA_FRONTEND_PORT:-80}:80"
