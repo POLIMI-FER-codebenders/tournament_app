@@ -29,8 +29,11 @@ public class AuthenticationController {
         String email = player.getEmail();
         String password = player.getPassword();
         Map<String, String> jsonMap = new HashMap<>();
+        int MAX_USERNAME_LENGTH = 40;
+        int MAX_EMAIL_LENGTH = 40;
         if(username == null || email == null || password == null ||
-                username.isBlank() || email.isBlank() || password.isBlank() ) {
+                username.isBlank() || email.isBlank() || password.isBlank() ||
+                username.length() > MAX_USERNAME_LENGTH || email.length() > MAX_EMAIL_LENGTH) {
             throw new BadAuthenticationRequestException("Some registration parameters are invalid");
         }
         if(playerService.checkUsernameAlreadyTaken(username)) {
