@@ -23,7 +23,6 @@ class ListComponent extends Component {
       newEdit[event.target.id] = !prevState.edit[event.target.id]
       return { edit: newEdit };
     });
-    console.log(this.state.edit)
   }
 
   render() {
@@ -46,14 +45,11 @@ class ListComponent extends Component {
 }
 
 function Entry(props) {
-  console.log(props.edit)
   if (!props.edit[props.i]) {
-    console.log("team")
     return (
       <TeamEntry obj={props.obj} i={props.i} handleChangeMode={event => props.handleChangeMode(event)} />
     )
   } else {
-    console.log("details")
     return (
       <TeamDetailsEntry obj={props.obj} i={props.i} handleChangeMode={event => props.handleChangeMode(event)} />
     )
@@ -70,7 +66,7 @@ function TeamEntry(props) {
         <div class="btn" id={props.i} name="edit" onClick={props.handleChangeMode}>Edit</div>
       </div>
       <div class="col5 flex-items">
-        <div class="btn" id={props.i} name="leave" onClick={console.log("leaving the team")}>Leave</div>
+        <div class="btn" id={props.i} name="leave">Leave</div>
       </div>
     </div>
   );
@@ -90,7 +86,7 @@ function TeamDetailsEntry(props) {
           <div class="btn" id={props.i} name="cancel" value="false" onClick={props.handleChangeMode}>Cancel</div>
         </div>
       </div>
-      <TeamPlayersTable />
+      <TeamPlayersTable players={props.obj.players} i_team={props.i}/>
     </div>
   );
 }
@@ -99,31 +95,30 @@ function TeamPlayersTable(props) {
   return (
 
     <table>
+      <thead>
       <tr>
         <th>Player</th>
         <th>Role</th>
         <th></th>
         <th></th>
       </tr>
-      <tr>
-        <td>Sans</td>
-        <td>Leader</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Hrvoje</td>
-        <td>Member</td>
-        <td>
-          <div class="btn" name="promote" id={props.i}>Promote to leader</div>
+      </thead>
+      <tbody>
+        {props.players.map((player, i) => 
+          <tr>
+            <td>{player.name}</td>
+            <td>{player.role}</td>
+            <td>
+              <div class="btn" name="promote" id={i}>Promote to leader</div>
+            </td>
+            <td>
+              <div class="btn" name="kick" id={i} >Kick from the team</div>
 
-        </td>
-        <td>
-          <div class="btn" name="kick" id={props.i}>Kick from the team</div>
+            </td>
 
-        </td>
-      </tr>
-
+          </tr>
+        )}
+      </tbody>
     </table>
   );
 }

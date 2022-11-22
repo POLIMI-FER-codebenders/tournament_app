@@ -93,12 +93,3 @@ th, td {
 .btn[name="promote"]:hover {
     background: #3d2de9;    
 }
-
-/* .btn[name="kick"] {
-    background: #01d205;
-    border: 1px solid #01d205;
-    color: #fff;
-}
-.btn[name="kick"]:hover {
-    background: #70fb72;    
-} */
