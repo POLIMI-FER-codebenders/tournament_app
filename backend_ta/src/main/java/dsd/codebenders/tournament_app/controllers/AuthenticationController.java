@@ -5,7 +5,6 @@ import dsd.codebenders.tournament_app.errors.BadAuthenticationRequestException;
 import dsd.codebenders.tournament_app.errors.UnauthorizedAuthenticationException;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -68,10 +67,10 @@ public class AuthenticationController {
         return map;
     }
 
-    @GetMapping(value = "test")
+    /*@GetMapping(value = "test")
     @ResponseBody
     public String test() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
+    }*/
 
 }
