@@ -1,5 +1,5 @@
 import { Component, useState } from "react";
-import ListComponent from "./ListComponent";
+import ListComponent from "./ListTeamComponent";
 
 export function CreateTeam() {
     const [name, setName] = useState("");
@@ -54,8 +54,22 @@ function ManageTeam(props){
 class ManageTeams extends Component{
   render (){
     const data =[
-      {"name":"Steaming hot coffee enjoyers", "date":"16.10.2022", "score":"0"},
-      {"name":"Guys from the basement", "date":"14.10.2022", "score":"32"}
+      {"name":"Steaming hot coffee enjoyers", "date":"16.10.2022", "score":"0",
+        "players": [
+          {"name":"Fanny", "role": "Leader"},
+          {"name":"ric", "role": "Member"},
+          {"name":"Vrganj", "role": "Member"},
+          {"name":"Simon99", "role": "Member"}
+        ]
+      },
+      {"name":"Guys from the basement", "date":"14.10.2022", "score":"32", 
+        "players": [
+          {"name":"Sans", "role": "Leader"},
+          {"name":"Hrvoje", "role": "Member"},
+          {"name":"Bob", "role": "Member"},
+          {"name":"SanAndreas", "role": "Member"}
+        ]
+      }
     ];  
     return(
       <div class="main-panel">
