@@ -1,5 +1,5 @@
 import React from 'react';
-import postData from '../utils';
+import { postForm } from '../utils';
 import SignUp from './signUp';
 import "../styles/SignInUp.css";
 import '../styles/App.css';
@@ -32,10 +32,12 @@ class SignIn extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    let data = { username: this.state.username, password: this.state.password };
-    let url = "http://localhost:8080/authentication/login";
+    let data= new FormData();
+    data.append("username", this.state.username);
+    data.append("password", this.state.password);
+    let url = "/authentication/login";
     let username= this.state.username;
-    postData(url, data)
+    postForm(url, data)
       .then((response) => {
         if (response.status == 200) {
           if (response.result) {
@@ -49,6 +51,7 @@ class SignIn extends React.Component {
         }
         else {
           this.setState({ errorMessage: "the server encountered an error" })
+          
         }
       });
   }

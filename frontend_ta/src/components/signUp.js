@@ -39,7 +39,7 @@ class SignUp extends React.Component {
       return;
     }
     let data = { username: this.state.username, password: this.state.password, email: this.state.email };
-    let url = "http://localhost:8080/authentication/register"
+    let url = "/authentication/register"
     let username = this.state.username;
     postData(url, data).then((response) => {
       if (response.status == 200) {
