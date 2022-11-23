@@ -6,6 +6,8 @@ import dsd.codebenders.tournament_app.entities.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TeamService {
 
@@ -23,5 +25,9 @@ public class TeamService {
     public Team createTeam(Team team, Player creator) {
         team.setCreator(creator);
         return teamRepository.save(team);
+    }
+
+    public List<Team> findAll() {
+        return teamRepository.findAll();
     }
 }
