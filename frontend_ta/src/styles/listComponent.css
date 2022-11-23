@@ -1,4 +1,4 @@
-.list {
+.list .team_details{
     width: 80%;
     max-width: 850px;
 }
@@ -13,14 +13,13 @@
 }
 
 table {
-    width: 100%;
     table-layout: fixed;
 }
 
 th, td {
-    padding: 10px;
+    padding: 5px 10px;
     text-align: left;
-    
+    min-width: 150px;    
 }  
 
 .list-headers {
@@ -37,18 +36,14 @@ th, td {
 }
 
 .col1 {
-    min-width: 350px;
+    min-width: 300px;
 
 }
 .col2 {
-    min-width: 120px;
-}
-
-.col3 {
     min-width: 70px;
 }
 
-.col4, .col5 {
+.col3 {
     min-width: 100px;
 }
 
@@ -58,38 +53,38 @@ th, td {
     text-align: center;
 }
 
-.btn[name="edit"] {
+.btn-yellow {
     background: #d2b301;
     border: 1px solid #d2b301;
     color: #fff;
 }
-.btn[name="edit"]:hover {
+.btn-yellow:hover {
     background: #ddc01b;    
 }
-.btn[name="leave"], .btn[name="cancel"], .btn[name="kick"] {
+.btn-red {
     background: #d20801;
     border: 1px solid #d20801;
     color: #fff;
 }
-.btn[name="leave"]:hover, .btn[name="cancel"]:hover, .btn[name="kick"]:hover {
+.btn-red:hover {
     background: #cf4540;    
 }
 
-.btn[name="confirm"] {
+.btn-green {
     background: #01d205;
     border: 1px solid #01d205;
     color: #fff;
 }
-.btn[name="confirm"]:hover {
+.btn-green:hover {
     background: #1ce21f;    
 }
 
 
-.btn[name="promote"] {
+.btn-blue {
     background: #1201d2;
     border: 1px solid #1201d2;
     color: #fff;
 }
-.btn[name="promote"]:hover {
+.btn-blue:hover {
     background: #3d2de9;    
 }

@@ -6,6 +6,7 @@ import SignIn from './components/SignIn';
 import { CreateTeam } from './components/TeamManagement';
 import { DisplayTournament } from './components/DisplayTournament'; 
 import ManageTeams from './components/TeamManagement';
+import TeamCreation from './components/TeamCreation'
 
 function Header() {
   return (
@@ -22,7 +23,8 @@ function MainPanel(props) {
     case 1:
       return <SignIn />
     case 2:
-      return <CreateTeam />;
+      // return <CreateTeam />;
+      return <TeamCreation />
     case 3:
       return <ManageTeams />;
     default:
