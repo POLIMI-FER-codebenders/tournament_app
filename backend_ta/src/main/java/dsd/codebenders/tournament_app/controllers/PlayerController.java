@@ -1,12 +1,15 @@
 package dsd.codebenders.tournament_app.controllers;
 
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/player")
@@ -22,6 +25,11 @@ public class PlayerController {
     @GetMapping(value = "get")
     public Player getLoggedPlayer(){
         return playerService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @GetMapping(value = "get-all")
+    public List<TeamMemberResponse> getAllPlayers(){
+        return playerService.getAllPlayers();
     }
 
 }

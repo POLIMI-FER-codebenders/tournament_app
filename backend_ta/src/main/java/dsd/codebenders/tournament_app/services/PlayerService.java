@@ -2,10 +2,13 @@ package dsd.codebenders.tournament_app.services;
 
 import dsd.codebenders.tournament_app.dao.PlayerRepository;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
@@ -44,5 +47,11 @@ public class PlayerService {
         }
         return DBPlayer.getPassword().equals(authenticatingPlayer.getPassword());
 
+    }
+
+    public List<TeamMemberResponse> getAllPlayers() {
+        return playerRepository.findAll().stream()
+                .map((x) -> new TeamMemberResponse(x.getID(), x.getUsername(), x.getRole(), 0))
+                .collect(Collectors.toList());
     }
 }
