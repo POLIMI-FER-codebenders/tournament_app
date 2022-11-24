@@ -9,9 +9,9 @@ export class DisplayTournament extends React.Component {
   }
   render() {
     const data = [
-      { "name": "the code league", "date": "16.10.2022", "status": "started" },
-      { "name": "cr tour", "date": "14.10.2022", "status": "not started" },
-      { "name": "Chunin tour ", "date": "14.10.2022", "status": "started" }
+      { "name": "the code league", "date": "16.10.2022", "status": "started","type":"league","teamsize":8 },
+      { "name": "cr tour", "date": "14.10.2022", "status": "not started","type":"knockout","teamsize":12},
+      { "name": "Chunin tour ", "date": "14.10.2022", "status": "started","type":"knockout","teamsize":4 }
     ];
     return (
 

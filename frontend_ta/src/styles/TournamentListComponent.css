@@ -3,6 +3,7 @@
     max-width: 850px;
 }
 
+
 .flex-container {
     display: flex;
     justify-content: space-between;
@@ -11,6 +12,17 @@
     margin-bottom: 5px;
     min-width: fit-content;
 }
+.flex-container-details {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    min-width: fit-content;
+}
+.flex-container-details:hover {
+    background: #cac8c8;    
+}
 
 .list-headers {
     font-weight: bold;
@@ -18,8 +30,14 @@
 
 .list-entry {
     border-radius: 10px;
-    border: 2px solid lightgray;
+    border: 2px solid rgb(225, 230, 227);
 }
+
+.list-entry-details {
+    border-radius: 10px; 
+    border: 1px solid rgb(237, 240, 238);
+}
+
 
 .flex-items {
     margin: auto 2px;
@@ -34,10 +52,16 @@
 }
 
 .col3 {
-    min-width: 100px;
+    min-width: 120px;
+}
+.col4 {
+    min-width: 120px;
 }
 
-.col4, .col5 {
+.col5 {
+    min-width: 120px;
+}
+.col6{
     min-width: 100px;
 }
 
@@ -53,30 +77,24 @@
 }
 
 
-.col4 .btn {
-    background: #d2b301;
-    border: 1px solid #d2b301;
-    color: #fff;
-}
-.col3 .joinable {
+
+.col6 .joinable {
     border: 1px solid #07be44;
     background: #07be44;
     color: #fff;
 }
-.col3 .joinable:hover {
+.col6 .joinable:hover {
     background: #04772a;
 }
 
-.col4 .btn:hover {
-    background: #dfcc64;    
-}
 
-.col3 .btn {
+
+.col6 .btn {
     background: #d20801;
     border: 1px solid #d20801;
     color: #fff;
 }
 
-.col3 .btn:hover {
+.col6 .btn:hover {
     background: #cf4540;    
 }
