@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "team")
-@JsonIgnoreProperties({ "creator" })
 public class Team {
 
     @Id
@@ -24,13 +23,8 @@ public class Team {
     @JoinColumn(name = "ID_creator")
     private Player creator;
 
-    @ManyToMany
-    @JoinTable(
-            name = "player_team_link",
-            joinColumns = @JoinColumn(name = "ID_team"),
-            inverseJoinColumns = @JoinColumn(name = "ID_player")
-    )
-    Set<Player> teamMembers;
+    @OneToMany(mappedBy = "team")
+    private Set<Player> teamMembers;
 
     @Column(name = "policy")
     @Enumerated(EnumType.STRING)

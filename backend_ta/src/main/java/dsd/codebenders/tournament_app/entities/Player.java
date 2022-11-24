@@ -14,6 +14,7 @@ public class Player {
     private Long ID;
     private String username;
     private String email;
+    @JsonIgnore
     private String password;
 
     // The teams whose this player is the creator
@@ -26,8 +27,9 @@ public class Player {
     @JsonIgnore
     private List<Invitation> invitations;
 
-    @ManyToMany(mappedBy = "teamMembers")
-    Set<Team> teams;
+    @ManyToOne
+    @JoinColumn(name = "ID_team")
+    private Team team;
 
     public Player() {
     }
@@ -48,8 +50,8 @@ public class Player {
         return password;
     }
 
-    public List<Team> getTeamsCreated() {
-        return teamsCreated;
+    public Team getTeam() {
+        return team;
     }
 
     public List<Invitation> getInvitations() {
