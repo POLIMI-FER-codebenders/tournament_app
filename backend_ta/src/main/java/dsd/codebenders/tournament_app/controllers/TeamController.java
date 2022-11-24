@@ -5,6 +5,7 @@ import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.requests.GetTeamRequest;
 import dsd.codebenders.tournament_app.requests.JoinTeamRequest;
+import dsd.codebenders.tournament_app.requests.KickMemberFromTeamRequest;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
@@ -71,8 +72,14 @@ public class TeamController {
     }
 
     @PostMapping(value = "/kick_member")
-    public void kickMember(){
-
+    public void kickMember(@RequestBody KickMemberFromTeamRequest kickMemberFromTeamRequest){
+        if(kickMemberFromTeamRequest == null || kickMemberFromTeamRequest.getIdKickedPlayer() == null){
+            throw new BadRequestException("Invalid arguments");
+        }
+        // retrieve currently authenticated user from session
+        String loggedPlayerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long playerToKickId = kickMemberFromTeamRequest.getIdKickedPlayer();
+        teamService.kickMember(loggedPlayerUsername, playerToKickId);
     }
 
 }

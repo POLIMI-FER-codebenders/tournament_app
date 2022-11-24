@@ -91,4 +91,25 @@ public class TeamService {
         team.getTeamMembers().remove(player);
         teamRepository.save(team);
     }
+
+    public void kickMember(String loggedPlayerUsername, Long playerToKickId) {
+        Player loggedPlayer = playerRepository.findByUsername(loggedPlayerUsername);
+        Player playerToKick = playerRepository.findById(playerToKickId).orElseThrow(() -> new BadRequestException("Player doesn't exist."));
+        Team team = loggedPlayer.getTeam();
+
+        if(loggedPlayer.getRole() != TeamRole.LEADER){
+            throw new BadRequestException("Only the team leader can kick members.");
+        }
+        if(!team.getTeamMembers().contains(playerToKick)){
+            throw new BadRequestException("The player is not member of the team.");
+        }
+        if(team.isInTournament()){
+            throw new BadRequestException("You can't kick out players while the team is involved in a tournament.");
+        }
+        playerToKick.setTeam(null);
+        playerToKick.setRole(null);
+        playerRepository.save(playerToKick);
+        team.getTeamMembers().remove(playerToKick);
+        teamRepository.save(team);
+    }
 }
