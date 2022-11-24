@@ -1,13 +1,16 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
 @Table(name = "team")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Team {
 
     @Id
@@ -23,7 +26,7 @@ public class Team {
     @JoinColumn(name = "ID_creator")
     private Player creator;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private Set<Player> teamMembers;
 
     @Column(name = "policy")
@@ -32,6 +35,9 @@ public class Team {
 
     @Column(name = "in_tournament")
     private boolean isInTournament;
+
+    @Column(name = "date_of_creation")
+    private LocalDate dateOfCreation;
 
     public Long getID() {
         return ID;
@@ -75,6 +81,10 @@ public class Team {
 
     public void setTeamMembers(Set<Player> teamMembers) {
         this.teamMembers = teamMembers;
+    }
+
+    public void setDateOfCreation(LocalDate dateOfCreation) {
+        this.dateOfCreation = dateOfCreation;
     }
 
     public boolean isFull() {
