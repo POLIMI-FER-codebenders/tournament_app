@@ -10,10 +10,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
+import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
 
 @Entity
 @Table(name = "tournament_score")
-@JsonIgnoreProperties({"tournament","team"})
+@JsonIgnoreProperties({"id"})
 public class TournamentScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,17 +24,13 @@ public class TournamentScore {
 
     @ManyToOne
     @JoinColumn(name = "ID_team")
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team team;
-
-    @Column(name = "ID_team", insertable = false, updatable = false)
-    private Long teamID;
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
+    @JsonSerialize(using = TournamentIDSerializer.class)
     private Tournament tournament;
-
-    @Column(name = "tournament_id", insertable = false, updatable = false)
-    private Long tournamentID;
 
     private Integer score = 0;
 
@@ -64,9 +63,5 @@ public class TournamentScore {
 
     public Integer getLeaguePoints() {
         return leaguePoints;
-    }
-
-    public Long getTeamID() {
-        return teamID;
     }
 }

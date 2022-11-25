@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import dsd.codebenders.tournament_app.entities.utils.MatchType;
@@ -30,6 +31,7 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 @Entity
 @Table(name = "tournament")
 @DiscriminatorColumn(name = "type")
+@JsonIgnoreProperties(value = {"id", "tournamentScores", "creator", "currentRound", "status"}, allowGetters = true)
 public abstract class Tournament {
 
     @Id
@@ -40,6 +42,9 @@ public abstract class Tournament {
 
     @Column(name = "number_of_teams")
     private Integer numberOfTeams;
+
+    @Column(name = "team_size")
+    private Integer teamSize;
 
     @ManyToOne
     @JoinColumn(name = "ID_creator")
@@ -74,6 +79,10 @@ public abstract class Tournament {
         return numberOfTeams;
     }
 
+    public Integer getTeamSize() {
+        return teamSize;
+    }
+
     public Player getCreator() {
         return creator;
     }
@@ -92,6 +101,10 @@ public abstract class Tournament {
 
     public TournamentStatus getStatus() {
         return status;
+    }
+
+    public void setStatus(TournamentStatus status) {
+        this.status = status;
     }
 
     public List<TournamentScore> getTournamentScores() {
