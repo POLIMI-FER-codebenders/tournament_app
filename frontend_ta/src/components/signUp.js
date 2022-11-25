@@ -1,6 +1,7 @@
 import React from 'react';
 import SignIn from './SignIn';
 import postData from '../utils';
+import { GoToErrorPage } from '../utils';
 class SignUp extends React.Component {
   constructor(props) {
     super(props);
@@ -11,7 +12,8 @@ class SignUp extends React.Component {
       password: '',
       confirmpassword: '',
       email: '',
-      view: "SignUp"
+      view: "SignUp",
+      badResponse: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -46,7 +48,7 @@ class SignUp extends React.Component {
         if (response.result == "Registered") {
           this.setState({ errorMessage: null })
           sessionStorage.setItem("username", username)
-          this.props.backHome();
+          this.props.backHome(this.props.index);
         }
         else if (response.result == "Email already taken") {
           this.setState({ errorMessage: "email already taken" })
@@ -57,6 +59,7 @@ class SignUp extends React.Component {
       }
       else {
         this.setState({ errorMessage: "the server encountered an error" })
+        this.setState({ badResponse: response.message });
       }
     }
     );
@@ -68,9 +71,10 @@ class SignUp extends React.Component {
 
 
   render() {
+    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     if (this.state.view == "SignIn") return (<SignIn />);
     else if (this.state.view == "SignUp") return (
-      <div className="app">
+      <div className="app" class="main-panel">
         <div className="login-form">
           <h2>Sign Up</h2>
           <div className="form">

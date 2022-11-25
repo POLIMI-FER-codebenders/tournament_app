@@ -3,6 +3,8 @@ import { postForm } from '../utils';
 import SignUp from './signUp';
 import "../styles/SignInUp.css";
 import '../styles/App.css';
+import { GoToErrorPage } from '../utils';
+
 
 class SignIn extends React.Component {
   constructor(props) {
@@ -12,7 +14,8 @@ class SignIn extends React.Component {
       isSubmitted: false,
       username: '',
       password: '',
-      view: "SignIn"
+      view: "SignIn",
+      badResponse: null
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -32,18 +35,19 @@ class SignIn extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    let data= new FormData();
+    let data = new FormData();
     data.append("username", this.state.username);
     data.append("password", this.state.password);
     let url = "/authentication/login";
-    let username= this.state.username;
+    let username = this.state.username;
+
     postForm(url, data)
       .then((response) => {
         if (response.status == 200) {
           if (response.result) {
             this.setState({ errorMessage: null })
-            sessionStorage.setItem("username",username);
-            this.props.backHome()
+            sessionStorage.setItem("username", username);
+            this.props.backHome(this.props.index);
           }
           else {
             this.setState({ errorMessage: "invalid credentials" })
@@ -51,7 +55,7 @@ class SignIn extends React.Component {
         }
         else {
           this.setState({ errorMessage: "the server encountered an error" })
-          
+          this.setState({ badResponse: response.message })
         }
       });
   }
@@ -59,7 +63,8 @@ class SignIn extends React.Component {
 
   render() {
     let nextcomponent;
-    if (this.state.view == "SignUp") nextcomponent = (<SignUp backHome={this.props.backHome} />);
+    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.view == "SignUp") nextcomponent = (<SignUp backHome={this.props.backHome} index={this.props.index} />);
     if (this.state.view == "SignIn") nextcomponent = (
       <div className="app" class="main-panel">
         <div className="login-form">
@@ -80,15 +85,13 @@ class SignIn extends React.Component {
             </form>
             {this.renderErrorMessage()}
             <button className="formbutton" onClick={() => this.setState({ view: "SignUp" })}> Create Account </button>
-         </div>
+          </div>
         </div>
       </div>
-
-
     );
     return nextcomponent;
   }
-
 }
+
 
 export default SignIn;

@@ -19,7 +19,7 @@ import {
 function Header() {
   return (
     <header className="App-header">
-      <p>Welcome to tournament application of Code Defenders web game!</p>
+      <p>Welcome  {sessionStorage.getItem("username")} to tournament application of Code Defenders web game!</p>
     </header>
   );
 }
@@ -29,47 +29,58 @@ function MainPanel(props) {
     case 0:
       return <DisplayTournament />;
     case 1:
-      return <SignIn backHome={props.backHome} />
+      return <SignIn backHome={props.backHome} index={0} />
     case 2:
-      return <CreateTeam />;
+      if (sessionStorage.getItem("username") != null) return <CreateTeam />;
+      else return <SignIn backHome={props.backHome} index={2} />
     case 3:
-      return <ManageTeams />;
+      if (sessionStorage.getItem("username") != null) return <ManageTeams />;
+      else return <SignIn backHome={props.backHome} index={3} />
     default:
       return <DisplayTournament />;
   }
 }
-function Home(props) {
-  const [view, setView] = useState(0);
-  function backHome() {
-    setView(0);
+class Home extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      view: 0
+    };
+    this.backHome = this.backHome.bind(this);
   }
-  return (
-    <div>
-      <Header />
-      <div class="main-container">
-        <div class="button-container">
-          <button class="item"
-            onClick={() => setView(0)}>
-            Home
-          </button>
-          <button class="item"
-            onClick={() => setView(1)}>
-            Sign In
-          </button>
-          <button class="item"
-            onClick={() => setView(2)}>
-            Create Team
-          </button>
-          <button class="item"
-            onClick={() => setView(3)}>
-            Manage Teams
-          </button>
+  backHome(index) {
+    this.setState({ view: index });
+  }
+  render() {
+    return (
+      <div>
+        <Header />
+        <div class="main-container">
+          <div class="button-container">
+            <button class="item"
+              onClick={() => this.setState({ view: 0 })}>
+              Home
+            </button>
+            <button class="item"
+              onClick={() => this.setState({ view: 1 })}>
+              Sign In
+            </button>
+            <button class="item"
+              onClick={() => this.setState({ view: 2 })}>
+              Create Team
+            </button>
+            <button class="item"
+              onClick={() => this.setState({ view: 3 })}>
+              Manage Teams
+            </button>
+          </div>
+          <MainPanel view={this.state.view} backHome={this.backHome} />
+          <div class="item"></div>
         </div>
-        <MainPanel view={view} backHome={backHome} />
-        <div class="item"></div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 class App extends Component {
@@ -80,15 +91,20 @@ class App extends Component {
   router = createBrowserRouter([
     {
       path: "/",
-      element: < Home backHome={this.backHome} />,
+      element: < Home />,
       errorElement: <ErrorPage />,
     },
-  ]);
+    {
+      path: "/error",
+      element: <ErrorPage />
+    }
+
+  ]
+
+  );
   render() {
     return (
-      <React.StrictMode>
-        <RouterProvider router={this.router} />
-      </React.StrictMode>
+      <RouterProvider router={this.router} />
     );
   }
 }

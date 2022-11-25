@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react'
 async function postData(url = '', data = {}) {
   // Default options are marked with *
   const response = await fetch(url, {
@@ -13,9 +15,17 @@ async function postData(url = '', data = {}) {
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(data) // body data type must match "Content-Type" header
   });
-  let result = await response.json();
-  result.status = response.status;
-  return result
+  let result;
+  if (response.status == 200){
+     result = await response.json();
+    result.status = response.status;
+    return result;
+  } 
+  else {
+    let errortext= await response.text();
+    result = {status:response.status,message:errortext};
+    return result;
+    }
 }
 export default postData;
 export async function postForm(url = '', formData) {
@@ -28,5 +38,23 @@ export async function postForm(url = '', formData) {
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: formData
   });
-  return response.json(); // parses JSON response into native JavaScript objects
+  let result;
+  if (response.status == 200){
+     result = await response.json();
+    result.status = response.status;
+    return result;
+  } 
+  else {
+    let errortext= await response.text();
+    result = {status:response.status,message:errortext};
+    return result;
+    }
+  }
+
+export function GoToErrorPage(props) {
+  let navigate = useNavigate();
+  useEffect(() => {
+    navigate(props.path, { state: { message: props.message } });
+  }
+  );
 }
