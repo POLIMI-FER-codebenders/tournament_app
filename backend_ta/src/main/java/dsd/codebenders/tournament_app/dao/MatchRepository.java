@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface MatchRepository extends JpaRepository<Match, Long> {
 
     @Modifying
-    @Query("UPDATE Match m SET m.status = 'started', m.server = ?2 WHERE m.ID = ?1")
-    void setServerById(Long ID, String server);
+    @Query("UPDATE Match m SET m.status = 'started', m.server = ?2, m.gameId = ?3 WHERE m.ID = ?1")
+    void setCreatedMatchById(Long ID, String server, int cdID);
 
 }

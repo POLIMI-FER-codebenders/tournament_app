@@ -9,6 +9,7 @@ public class Match {
     private Long ID;
     private String status;
     private String server;
+    private int gameId;
 
     @ManyToOne
     @JoinColumn(name = "ID_attackers_team")
@@ -28,6 +29,10 @@ public class Match {
 
     public String getServer() {
         return server;
+    }
+
+    public int getGameId() {
+        return gameId;
     }
 
     public Team getAttackersTeam() {
