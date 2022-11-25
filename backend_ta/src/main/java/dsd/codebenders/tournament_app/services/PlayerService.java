@@ -4,6 +4,7 @@ import dsd.codebenders.tournament_app.dao.PlayerRepository;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,5 +54,9 @@ public class PlayerService {
         return playerRepository.findAll().stream()
                 .map((x) -> new TeamMemberResponse(x.getID(), x.getUsername(), x.getRole(), 0))
                 .collect(Collectors.toList());
+    }
+
+    public Player getSelf() {
+        return findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 }
