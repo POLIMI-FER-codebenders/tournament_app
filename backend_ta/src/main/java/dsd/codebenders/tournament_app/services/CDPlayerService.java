@@ -20,4 +20,8 @@ public class CDPlayerService {
         return cdPlayerRepository.findByRealPlayerAndServer(player, server);
     }
 
+    public void addNewCDPlayer(CDPlayer cdPlayer) {
+        cdPlayerRepository.save(cdPlayer);
+    }
+
 }

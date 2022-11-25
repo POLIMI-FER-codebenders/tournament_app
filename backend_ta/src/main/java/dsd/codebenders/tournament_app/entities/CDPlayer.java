@@ -7,8 +7,8 @@ import javax.persistence.*;
 public class CDPlayer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
+    private Long userId;
+    private String username;
     private String server;
     private String token;
 
@@ -16,8 +16,12 @@ public class CDPlayer {
     @JoinColumn(name = "ID_player")
     private Player realPlayer;
 
-    public Long getID() {
-        return ID;
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getServer() {
@@ -32,4 +36,11 @@ public class CDPlayer {
         return realPlayer;
     }
 
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public void setRealPlayer(Player realPlayer) {
+        this.realPlayer = realPlayer;
+    }
 }

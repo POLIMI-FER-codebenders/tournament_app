@@ -5,8 +5,12 @@ import dsd.codebenders.tournament_app.entities.CDPlayer;
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
+import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class MatchService {
@@ -35,10 +39,15 @@ public class MatchService {
     }
 
     private void createCDPlayers(Team team, String server) {
+        Map<String, String> queryParameters = new HashMap<>();
         for(Player p: team.getMembers()) {
             CDPlayer cdPlayer = cdPlayerservice.getCDPlayerByServer(p, server);
             if(cdPlayer == null) {
-                // TODO: crete temporary user
+                queryParameters.put("username", p.getUsername());
+                cdPlayer = HTTPRequestsSender.sendGetRequest(server + "/admin/api/auth/newUser", queryParameters, CDPlayer.class);
+                cdPlayer.setServer(server);
+                cdPlayer.setRealPlayer(p);
+                cdPlayerservice.addNewCDPlayer(cdPlayer);
             }
         }
     }
