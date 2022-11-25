@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "team")
@@ -27,6 +28,9 @@ public class Team {
     @Enumerated(EnumType.STRING)
     private TeamPolicy policy;
 
+    @OneToMany(mappedBy = "team")
+    private List<Player> members;
+
     public Long getID() {
         return ID;
     }
@@ -47,6 +51,10 @@ public class Team {
         return creator;
     }
 
+    public List<Player> getMembers() {
+        return members;
+    }
+
     public void setCreator(Player creator) {
         this.creator = creator;
     }
@@ -54,4 +62,5 @@ public class Team {
     public void setPolicy(TeamPolicy policy) {
         this.policy = policy;
     }
+
 }

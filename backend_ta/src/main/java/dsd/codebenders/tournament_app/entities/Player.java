@@ -25,6 +25,13 @@ public class Player {
     @JsonIgnore
     private List<Invitation> invitations;
 
+    @ManyToOne
+    @JoinColumn(name = "ID_team")
+    private Team team;
+
+    @OneToMany(mappedBy = "realPlayer", fetch = FetchType.LAZY)
+    private List<CDPlayer> codeDefendersPlayers;
+
     public Player() {
     }
 
@@ -46,6 +53,14 @@ public class Player {
 
     public List<Team> getTeamsCreated() {
         return teamsCreated;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public List<CDPlayer> getCodeDefendersPlayers() {
+        return codeDefendersPlayers;
     }
 
     public List<Invitation> getInvitations() {
