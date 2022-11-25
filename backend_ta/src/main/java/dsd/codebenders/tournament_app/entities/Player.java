@@ -1,9 +1,10 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "player")
@@ -13,17 +14,23 @@ public class Player {
     private Long ID;
     private String username;
     private String email;
+    @JsonIgnore
     private String password;
 
     // The teams whose this player is the creator
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private List<Team> teamsCreated;
 
     // The list of invitations received by this player
     @OneToMany(mappedBy = "invitedPlayer", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private List<Invitation> invitations;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_team")
+    @JsonIgnore
+    private Team team;
 
     public Player() {
     }
@@ -44,8 +51,8 @@ public class Player {
         return password;
     }
 
-    public List<Team> getTeamsCreated() {
-        return teamsCreated;
+    public Team getTeam() {
+        return team;
     }
 
     public List<Invitation> getInvitations() {

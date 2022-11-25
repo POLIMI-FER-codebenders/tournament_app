@@ -48,6 +48,10 @@ public class TournamentService {
         return tournamentRepository.findAll();
     }
 
+    public List<Tournament> getJoinedTournaments(Player player) {
+        return tournamentRepository.findByTournamentScores_Team_ID(player.getTeam().getID());
+    }
+
     public List<Tournament> getTournamentsOfType(TournamentType type) {
         return tournamentRepository.findAllByType(type);
     }

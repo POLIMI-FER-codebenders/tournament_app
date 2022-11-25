@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface TournamentRepository extends JpaRepository<Tournament, Long> {
     List<Tournament> findAllByType(TournamentType type);
+
+    List<Tournament> findByTournamentScores_Team_ID(Long ID);
 }
