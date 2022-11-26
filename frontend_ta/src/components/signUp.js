@@ -48,7 +48,7 @@ class SignUp extends React.Component {
         if (response.result == "Registered") {
           this.setState({ errorMessage: null })
           sessionStorage.setItem("username", username)
-          this.props.backHome(this.props.index);
+          this.props.backHome(this.props.index,true);
         }
         else if (response.result == "Email already taken") {
           this.setState({ errorMessage: "email already taken" })

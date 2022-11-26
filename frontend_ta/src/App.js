@@ -45,12 +45,15 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      view: 0
+      view: 0,
+      buttontext:"SignIn"
     };
     this.backHome = this.backHome.bind(this);
   }
-  backHome(index) {
-    this.setState({ view: index });
+  backHome(index,loggedin) {
+    if(loggedin)this.setState({ view: index,buttontext:"Logout" });
+    else this.setState({ view: index });
+    
   }
   render() {
     return (
@@ -63,8 +66,17 @@ class Home extends React.Component {
               Home
             </button>
             <button class="item"
-              onClick={() => this.setState({ view: 1 })}>
-              Sign In
+              onClick={() => 
+                {
+              if(sessionStorage.getItem("username")!=null) {
+                 sessionStorage.removeItem("username");
+                //fetch("/logout");
+                this.setState({ view: 1,buttontext:"SignIn" });
+              }
+               else this.setState({ view: 1 })}
+                }
+              >
+              {this.state.buttontext}
             </button>
             <button class="item"
               onClick={() => this.setState({ view: 2 })}>

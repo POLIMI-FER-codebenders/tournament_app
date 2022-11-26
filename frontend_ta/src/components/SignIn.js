@@ -47,7 +47,7 @@ class SignIn extends React.Component {
           if (response.result) {
             this.setState({ errorMessage: null })
             sessionStorage.setItem("username", username);
-            this.props.backHome(this.props.index);
+            this.props.backHome(this.props.index,true);
           }
           else {
             this.setState({ errorMessage: "invalid credentials" })
