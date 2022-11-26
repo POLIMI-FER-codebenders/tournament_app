@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import javax.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -61,7 +63,11 @@ public class WebSecurityConfig {
                         .failureHandler(jsonAuthenticationFailureHandler)
                         .permitAll()
                 )
-                .logout(logout -> logout.invalidateHttpSession(true).permitAll());
+                .logout(logout -> logout
+                        .logoutUrl("/authentication/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
+                        .invalidateHttpSession(true).permitAll()
+                );
 
         return http.build();
     }
