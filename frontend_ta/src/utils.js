@@ -16,3 +16,23 @@ async function postData(url = '', data = {}) {
     return response.json(); // parses JSON response into native JavaScript objects
   }
   export default postData;
+
+
+  export async function getData(url =''){
+    const response = await fetch(url);
+    let result;
+    result = await response.json();
+    console.log(result);
+  if (response.status == 200){
+     
+    result.status = response.status;
+    return result;
+  } 
+  else {
+    let errortext= await response.text();
+    result = {status:response.status,message:errortext};
+    return result;
+    }
+  }
+
+  
