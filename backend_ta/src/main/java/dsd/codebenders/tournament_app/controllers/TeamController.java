@@ -31,7 +31,7 @@ public class TeamController {
 
     @GetMapping(value = "/get-mine")
     public Team getMyTeam(){
-        return playerService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).getTeam();
+        return playerService.getSelf().getTeam();
     }
 
     @GetMapping(value = "/get")
@@ -65,7 +65,7 @@ public class TeamController {
     @PostMapping(value = "/join")
     public void joinTeam(@RequestBody JoinTeamRequest request){
         // retrieve currently authenticated user from session
-        Player player = playerService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        Player player = playerService.getSelf();
         Team team = teamService.findById(request.getIdTeam());
         teamService.joinTeam(player, team);
     }
@@ -83,7 +83,7 @@ public class TeamController {
             throw new BadRequestException("Invalid arguments");
         }
         // retrieve currently authenticated user from session
-        String loggedPlayerUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String loggedPlayerUsername = playerService.getSelf().getUsername();
         Long playerToKickId = kickMemberFromTeamRequest.getIdKickedPlayer();
         teamService.kickMember(loggedPlayerUsername, playerToKickId);
     }

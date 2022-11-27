@@ -7,6 +7,7 @@ import dsd.codebenders.tournament_app.responses.TeamResponse;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,7 @@ public class Team {
         return policy;
     }
 
-    public boolean isInTournament() {
+    public boolean isInTournament() { //TODO this could check if a TournamentScore exists for this team and an active tournament, unless we're doing this to cache the information then it's fine
         return isInTournament;
     }
 
@@ -108,5 +109,22 @@ public class Team {
 
     public void addMember(Player player) {
         this.teamMembers.add(player);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Team team = (Team) o;
+        return ID.equals(team.ID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ID);
     }
 }

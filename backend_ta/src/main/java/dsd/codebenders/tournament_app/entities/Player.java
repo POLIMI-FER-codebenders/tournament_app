@@ -1,5 +1,6 @@
 package dsd.codebenders.tournament_app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -19,6 +20,7 @@ public class Player {
     private Long ID;
     private String username;
     private String email;
+    @JsonIgnore
     private String password;
 
     // The teams whose this player is the creator
@@ -33,6 +35,7 @@ public class Player {
 
     @ManyToOne
     @JoinColumn(name = "ID_team")
+    @JsonIgnore
     private Team team;
 
     @Column(name = "role")
