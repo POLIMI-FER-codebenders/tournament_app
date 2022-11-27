@@ -28,11 +28,9 @@ public class AuthenticationController {
         String email = player.getEmail();
         String password = player.getPassword();
         Map<String, String> jsonMap = new HashMap<>();
-        int MAX_USERNAME_LENGTH = 40;
         int MAX_EMAIL_LENGTH = 40;
-        if(username == null || email == null || password == null ||
-                username.isBlank() || email.isBlank() || password.isBlank() ||
-                username.length() > MAX_USERNAME_LENGTH || email.length() > MAX_EMAIL_LENGTH) {
+        if(!isUsernameValid(username) || email == null || password == null
+                || email.isBlank() || password.isBlank() || email.length() > MAX_EMAIL_LENGTH) {
             throw new BadAuthenticationRequestException("Some registration parameters are invalid");
         }
         if(playerService.checkUsernameAlreadyTaken(username)) {
@@ -67,10 +65,9 @@ public class AuthenticationController {
         return map;
     }
 
-    /*@GetMapping(value = "test")
-    @ResponseBody
-    public String test() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }*/
+    private boolean isUsernameValid(String username) {
+        String pattern = "^[a-zA-Z][a-zA-Z0-9]{2,19}$";
+        return username != null && username.matches(pattern);
+    }
 
 }
