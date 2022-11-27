@@ -3,11 +3,14 @@ package dsd.codebenders.tournament_app.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
+import dsd.codebenders.tournament_app.responses.TeamResponse;
 
 import javax.persistence.*;
+import java.util.List;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "team")
@@ -40,6 +43,25 @@ public class Team {
 
     @Column(name = "date_of_creation", nullable = false)
     private LocalDate dateOfCreation;
+
+    public TeamResponse serialize(){
+        return new TeamResponse(
+                this.ID,
+                this.name,
+                this.maxNumberOfPlayers,
+                this.teamMembers.stream().map(Player::serialize).collect(Collectors.toSet()),
+                this.policy,
+                this.isInTournament,
+                this.dateOfCreation,
+                this.isFull()
+                );
+    }
+
+    @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
+    private List<Match> gamesAsAttackers;
+
+    @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
+    private List<Match> gamesAsDefenders;
 
     public LocalDate getDateOfCreation() {
         return dateOfCreation;
@@ -75,6 +97,14 @@ public class Team {
 
     public Player getCreator() {
         return creator;
+    }
+
+    public List<Match> getGamesAsAttackers() {
+        return gamesAsAttackers;
+    }
+
+    public List<Match> getGamesAsDefenders() {
+        return gamesAsDefenders;
     }
 
     public void setCreator(Player creator) {

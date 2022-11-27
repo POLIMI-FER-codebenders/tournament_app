@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamRole;
+import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 
 import javax.persistence.*;
 import java.util.List;
@@ -44,7 +45,20 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private TeamRole role;
 
+    @OneToMany(mappedBy = "realPlayer", fetch = FetchType.LAZY)
+    private List<CDPlayer> codeDefendersPlayers;
+
     public Player() {
+    }
+
+
+    // TODO create meaningful score (or delete if not necessary)
+    public TeamMemberResponse serialize(){
+        return new TeamMemberResponse(
+                this.ID,
+                this.username,
+                this.role,
+                0);
     }
 
     public Long getID() {
@@ -69,6 +83,18 @@ public class Player {
 
     public TeamRole getRole() {
         return role;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Team> getTeamsCreated() {
+        return teamsCreated;
+    }
+
+    public List<CDPlayer> getCodeDefendersPlayers() {
+        return codeDefendersPlayers;
     }
 
     public void setRole(TeamRole role) {

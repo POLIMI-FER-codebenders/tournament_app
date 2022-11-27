@@ -5,20 +5,22 @@ import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepository) {
+    public PlayerService(PlayerRepository playerRepository, PasswordEncoder passwordEncoder) {
         this.playerRepository = playerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Player findById(Long ID){
@@ -38,16 +40,8 @@ public class PlayerService {
     }
 
     public void addNewPlayer(Player player) {
+        player.setPassword(passwordEncoder.encode(player.getPassword()));
         playerRepository.save(player);
-    }
-
-    public boolean checkAuthentication(Player authenticatingPlayer) {
-        Player DBPlayer = playerRepository.findByUsername(authenticatingPlayer.getUsername());
-        if(DBPlayer == null) {
-            return false;
-        }
-        return DBPlayer.getPassword().equals(authenticatingPlayer.getPassword());
-
     }
 
     public List<TeamMemberResponse> getAllPlayers() {

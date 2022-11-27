@@ -21,7 +21,7 @@ public class PlayerDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "{noop}" + player.getPassword();
+        return player.getPassword();
     }
 
     @Override
