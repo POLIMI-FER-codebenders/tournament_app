@@ -30,8 +30,7 @@ public class AuthenticationController {
         String email = player.getEmail();
         String password = player.getPassword();
         Map<String, String> jsonMap = new HashMap<>();
-        if(!isUsernameValid(username) || !isEmailValid(email)
-                || password == null || password.isBlank()) {
+        if(!isUsernameValid(username) || !isEmailValid(email) || !isPasswordValid(password)) {
             throw new BadAuthenticationRequestException("Some registration parameters are invalid");
         }
         if(playerService.checkUsernameAlreadyTaken(username)) {
@@ -83,6 +82,11 @@ public class AuthenticationController {
             result = false;
         }
         return result;
+    }
+
+    private boolean isPasswordValid(String password) {
+        String pattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";
+        return password != null && password.matches(pattern);
     }
 
 }
