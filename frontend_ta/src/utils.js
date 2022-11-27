@@ -58,3 +58,19 @@ export function GoToErrorPage(props) {
   }
   );
 }
+export function checkPassword(password){
+   return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length>=8 && password.length<=20 &&  !/[^A-Za-z0-9]/.test()
+}
+export function checkUsername(username){
+  
+  return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9].*/)
+}
+export function checkEmail(mail) 
+{
+ if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    
+    return (false)
+}

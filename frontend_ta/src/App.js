@@ -19,7 +19,7 @@ import {
 function Header() {
   return (
     <header className="App-header">
-      <p>Welcome  {sessionStorage.getItem("username")} to tournament application of Code Defenders web game!</p>
+      <p>Hello {sessionStorage.getItem("username")}! Welcome to tournament application of Code Defenders web game!</p>
     </header>
   );
 }

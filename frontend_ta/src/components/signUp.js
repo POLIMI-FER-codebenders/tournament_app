@@ -1,6 +1,6 @@
 import React from 'react';
 import SignIn from './SignIn';
-import postData from '../utils';
+import postData, { checkEmail, checkPassword, checkUsername } from '../utils';
 import { GoToErrorPage } from '../utils';
 class SignUp extends React.Component {
   constructor(props) {
@@ -36,10 +36,29 @@ class SignUp extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    if (this.state.password != this.state.confirmpassword) {
+    if(!checkUsername(this.state.username)){
+      this.setState({ errorMessage: "username must be from 8 to 20 characters long (8 and 20 are valid lengths), can contain only uppercase char, lowercase char and digits, can NOT start with a digit" })
+      return;
+     }
+     if(!checkEmail(this.state.email)){
+      this.setState({errorMessage: "invalid email address"});
+      return;
+     }
+    if(!checkPassword(this.state.password) ){
+      this.setState({ errorMessage: "password must be from 8 to 20 characters long (8 and 20 are valid lengths), can contain only uppercase char, lowercase char and digits, must contain at least one uppercase, one lowercase and one digit" })
+      return;
+    }
+    if(!checkPassword(this.state.password) ){
+      this.setState({ errorMessage: "password must be from 8 to 20 characters long (8 and 20 are valid lengths), can contain only uppercase char, lowercase char and digits, must contain at least one uppercase, one lowercase and one digit" })
+      return;
+    }
+    
+     
+    if (this.state.password != this.state.username) {
       this.setState({ errorMessage: "confirm password is different from password!" })
       return;
     }
+
     let data = { username: this.state.username, password: this.state.password, email: this.state.email };
     let url = "/authentication/register"
     let username = this.state.username;
@@ -99,9 +118,10 @@ class SignUp extends React.Component {
                 <input type="submit" value="Sign up" />
               </div>
             </form>
-            {this.renderErrorMessage()}
+            
             <button className="formbutton" onClick={() => this.setState({ view: "SignIn" })}> Sign in if you already have an account </button>
           </div>
+          {this.renderErrorMessage()}
         </div>
       </div>
     );
