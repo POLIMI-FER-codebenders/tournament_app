@@ -76,6 +76,14 @@ public class Player {
         return role;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Team> getTeamsCreated() {
+        return teamsCreated;
+    }
+
     public void setRole(TeamRole role) {
         this.role = role;
     }

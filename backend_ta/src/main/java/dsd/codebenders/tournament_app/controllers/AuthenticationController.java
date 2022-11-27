@@ -1,11 +1,14 @@
 package dsd.codebenders.tournament_app.controllers;
 
 import dsd.codebenders.tournament_app.entities.Player;
-import dsd.codebenders.tournament_app.errors.AuthenticationException;
+import dsd.codebenders.tournament_app.errors.BadAuthenticationRequestException;
+import dsd.codebenders.tournament_app.errors.UnauthorizedAuthenticationException;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,14 +25,13 @@ public class AuthenticationController {
 
     @PostMapping(value = "register")
     @ResponseBody
-    public Map<String, String> register(@RequestBody Player player) throws AuthenticationException {
+    public Map<String, String> register(@RequestBody Player player) throws BadAuthenticationRequestException {
         String username = player.getUsername();
         String email = player.getEmail();
         String password = player.getPassword();
         Map<String, String> jsonMap = new HashMap<>();
-        if(username == null || email == null || password == null ||
-                username.isBlank() || email.isBlank() || password.isBlank() ) {
-            throw new AuthenticationException("Some registration parameters are invalid");
+        if(!isUsernameValid(username) || !isEmailValid(email) || !isPasswordValid(password)) {
+            throw new BadAuthenticationRequestException("Some registration parameters are invalid");
         }
         if(playerService.checkUsernameAlreadyTaken(username)) {
             jsonMap.put("result", "Username already taken");
@@ -42,34 +44,49 @@ public class AuthenticationController {
         return jsonMap;
     }
 
-    @PostMapping(value = "login")
-    @ResponseBody
-    public Map<String, Boolean> login(@RequestBody Player player) throws AuthenticationException {
-        String username = player.getUsername();
-        String password = player.getPassword();
-        Map<String, Boolean> jsonMap = new HashMap<>();
-        if(username == null || password == null ||
-                username.isBlank() || password.isBlank() ) {
-            throw new AuthenticationException("Some authentication parameters are invalid");
-        }
-        jsonMap.put("result", playerService.checkAuthentication(player));
-        return jsonMap;
+    @GetMapping(value = "error")
+    public void error() throws UnauthorizedAuthenticationException {
+        throw new UnauthorizedAuthenticationException("You are not authenticated!");
     }
 
-    /*@GetMapping(value = "success")
+    @GetMapping(value = "success")
     @ResponseBody
-    public Map<String, Boolean> success() throws AuthenticationException {
+    public Map<String, Boolean> success() {
         Map<String, Boolean> map = new HashMap<>();
-        map.put("logged", true);
+        map.put("result", true);
         return map;
     }
 
     @GetMapping(value = "failure")
     @ResponseBody
-    public Map<String, Boolean> failure() throws AuthenticationException {
+    public Map<String, Boolean> failure() {
         Map<String, Boolean> map = new HashMap<>();
-        map.put("logged", false);
+        map.put("result", false);
         return map;
-    }*/
+    }
+
+    private boolean isUsernameValid(String username) {
+        String pattern = "^[a-zA-Z][a-zA-Z0-9]{2,19}$";
+        return username != null && username.matches(pattern);
+    }
+
+    private boolean isEmailValid(String email) {
+        if (email == null || email.length() > 40) {
+            return false;
+        }
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
+    }
+
+    private boolean isPasswordValid(String password) {
+        String pattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";
+        return password != null && password.matches(pattern);
+    }
 
 }
