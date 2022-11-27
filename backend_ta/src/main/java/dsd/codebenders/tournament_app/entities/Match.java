@@ -1,5 +1,7 @@
 package dsd.codebenders.tournament_app.entities;
 
+import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+
 import javax.persistence.*;
 @Entity
 @Table(name = "match")
@@ -7,7 +9,8 @@ public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private MatchStatus status;
     private String server;
     private int gameId;
 
@@ -23,7 +26,7 @@ public class Match {
         return ID;
     }
 
-    public String getStatus() {
+    public MatchStatus getStatus() {
         return status;
     }
 

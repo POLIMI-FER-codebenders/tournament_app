@@ -7,17 +7,20 @@ import javax.persistence.*;
 public class CDPlayer {
 
     @Id
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ID;
     private String username;
     private String server;
     private String token;
+
+    private int userId;
 
     @ManyToOne
     @JoinColumn(name = "ID_player")
     private Player realPlayer;
 
-    public Long getUserId() {
-        return userId;
+    public Long getID() {
+        return ID;
     }
 
     public String getUsername() {
@@ -34,6 +37,10 @@ public class CDPlayer {
 
     public Player getRealPlayer() {
         return realPlayer;
+    }
+
+    public int getUserId() {
+        return userId;
     }
 
     public void setServer(String server) {
