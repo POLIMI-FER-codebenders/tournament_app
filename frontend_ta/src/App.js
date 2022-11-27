@@ -7,6 +7,7 @@ import { CreateTeam } from './components/TeamManagement';
 import { DisplayTournament } from './components/DisplayTournament'; 
 import ManageTeams from './components/TeamManagement';
 import TeamCreation from './components/TeamCreation'
+import JoinTeam from './components/JoinTeam';
 
 function Header() {
   return (
@@ -27,6 +28,8 @@ function MainPanel(props) {
       return <TeamCreation />
     case 3:
       return <ManageTeams />;
+    case 4:
+      return <JoinTeam />
     default:
       return <DisplayTournament />;
   }
@@ -60,6 +63,10 @@ class App extends Component {
             <button class="item" 
               onClick={() => this.setState({ view: 3 })}>
               Manage Teams
+            </button>
+            <button class="item" 
+              onClick={() => this.setState({ view: 4 })}>
+              Join Team
             </button>
           </div>
           <MainPanel view={this.state.view} />
