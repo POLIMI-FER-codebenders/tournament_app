@@ -20,17 +20,13 @@ async function postData(url = '', data = {}) {
 
   export async function getData(url =''){
     const response = await fetch(url);
-    let result;
-    result = await response.json();
-    console.log(result);
   if (response.status == 200){
-     
-    result.status = response.status;
+    let result ={result:await response.json(), status : response.status }
     return result;
   } 
   else {
     let errortext= await response.text();
-    result = {status:response.status,message:errortext};
+   let  result = {status:response.status,message:errortext};
     return result;
     }
   }
