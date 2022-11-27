@@ -7,6 +7,7 @@ import dsd.codebenders.tournament_app.requests.GetTeamRequest;
 import dsd.codebenders.tournament_app.requests.JoinTeamRequest;
 import dsd.codebenders.tournament_app.requests.KickMemberFromTeamRequest;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
+import dsd.codebenders.tournament_app.responses.TeamResponse;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,11 @@ public class TeamController {
             throw new BadRequestException("Invalid arguments");
         }
         return teamService.findById(getTeamRequest.getIdTeam());
+    }
+
+    @GetMapping(value = "/get-all")
+    public List<TeamResponse> getAllTeams(){
+        return teamService.findAll();
     }
 
     @GetMapping(value = "/members/get-all")
