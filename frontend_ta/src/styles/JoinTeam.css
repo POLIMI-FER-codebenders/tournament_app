@@ -1,0 +1,10 @@
+.team-entry{
+  display: flex;
+  flex-direction: row; 
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.btn-join{
+    background: #01d28e;
+}
