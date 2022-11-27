@@ -61,7 +61,7 @@ public class MatchService {
 
     private void createCDPlayers(Team team) {
         Map<String, String> queryParameters = new HashMap<>();
-        for(Player p: team.getMembers()) {
+        for(Player p: team.getTeamMembers()) {
             CDPlayer cdPlayer = cdPlayerservice.getCDPlayerByServer(p, server);
             if(cdPlayer == null) {
                 queryParameters.put("name", p.getUsername());
