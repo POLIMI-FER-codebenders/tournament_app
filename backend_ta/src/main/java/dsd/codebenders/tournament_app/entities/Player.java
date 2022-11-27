@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamRole;
+import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 
 import javax.persistence.*;
 import java.util.List;
@@ -44,6 +45,16 @@ public class Player {
     public Player() {
     }
 
+
+    // TODO create meaningful score (or delete if not necessary)
+    public TeamMemberResponse serialize(){
+        return new TeamMemberResponse(
+                this.ID,
+                this.username,
+                this.role,
+                0);
+    }
+
     public Long getID() {
         return ID;
     }
@@ -66,6 +77,14 @@ public class Player {
 
     public TeamRole getRole() {
         return role;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Team> getTeamsCreated() {
+        return teamsCreated;
     }
 
     public void setRole(TeamRole role) {
