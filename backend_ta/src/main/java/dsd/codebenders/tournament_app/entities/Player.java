@@ -42,6 +42,9 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private TeamRole role;
 
+    @OneToMany(mappedBy = "realPlayer", fetch = FetchType.LAZY)
+    private List<CDPlayer> codeDefendersPlayers;
+
     public Player() {
     }
 
@@ -85,6 +88,10 @@ public class Player {
 
     public List<Team> getTeamsCreated() {
         return teamsCreated;
+    }
+
+    public List<CDPlayer> getCodeDefendersPlayers() {
+        return codeDefendersPlayers;
     }
 
     public void setRole(TeamRole role) {

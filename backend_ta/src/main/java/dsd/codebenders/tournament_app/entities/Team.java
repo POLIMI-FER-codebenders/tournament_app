@@ -6,6 +6,7 @@ import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 import dsd.codebenders.tournament_app.responses.TeamResponse;
 
 import javax.persistence.*;
+import java.util.List;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
@@ -55,6 +56,12 @@ public class Team {
                 );
     }
 
+    @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
+    private List<Match> gamesAsAttackers;
+
+    @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
+    private List<Match> gamesAsDefenders;
+
     public Long getID() {
         return ID;
     }
@@ -81,6 +88,14 @@ public class Team {
 
     public Player getCreator() {
         return creator;
+    }
+
+    public List<Match> getGamesAsAttackers() {
+        return gamesAsAttackers;
+    }
+
+    public List<Match> getGamesAsDefenders() {
+        return gamesAsDefenders;
     }
 
     public void setCreator(Player creator) {
