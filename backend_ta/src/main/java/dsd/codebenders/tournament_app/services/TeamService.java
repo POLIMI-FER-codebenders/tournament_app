@@ -9,6 +9,7 @@ import dsd.codebenders.tournament_app.entities.utils.TeamRole;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.ResourceNotFoundException;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
+import dsd.codebenders.tournament_app.responses.TeamResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,5 +112,10 @@ public class TeamService {
         playerRepository.save(playerToKick);
         team.getTeamMembers().remove(playerToKick);
         teamRepository.save(team);
+    }
+
+    public List<TeamResponse> findAll() {
+        List<Team> teams = teamRepository.findAll();
+        return teams.stream().map(Team::serialize).collect(Collectors.toList());
     }
 }
