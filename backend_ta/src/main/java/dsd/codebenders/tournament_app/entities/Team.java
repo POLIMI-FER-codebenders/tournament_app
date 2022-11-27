@@ -1,14 +1,19 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
+import dsd.codebenders.tournament_app.responses.TeamResponse;
 
 import javax.persistence.*;
 import java.util.List;
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "team")
-@JsonIgnoreProperties({ "creator" })
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Team {
 
     @Id
@@ -24,12 +29,31 @@ public class Team {
     @JoinColumn(name = "ID_creator")
     private Player creator;
 
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    private Set<Player> teamMembers;
+
     @Column(name = "policy")
     @Enumerated(EnumType.STRING)
     private TeamPolicy policy;
 
-    @OneToMany(mappedBy = "team")
-    private List<Player> members;
+    @Column(name = "in_tournament")
+    private boolean isInTournament;
+
+    @Column(name = "date_of_creation")
+    private LocalDate dateOfCreation;
+
+    public TeamResponse serialize(){
+        return new TeamResponse(
+                this.ID,
+                this.name,
+                this.maxNumberOfPlayers,
+                this.teamMembers.stream().map(Player::serialize).collect(Collectors.toSet()),
+                this.policy,
+                this.isInTournament,
+                this.dateOfCreation,
+                this.isFull()
+                );
+    }
 
     @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
     private List<Match> gamesAsAttackers;
@@ -49,16 +73,20 @@ public class Team {
         return maxNumberOfPlayers;
     }
 
+    public Set<Player> getTeamMembers() {
+        return teamMembers;
+    }
+
     public TeamPolicy getPolicy() {
         return policy;
     }
 
-    public Player getCreator() {
-        return creator;
+    public boolean isInTournament() {
+        return isInTournament;
     }
 
-    public List<Player> getMembers() {
-        return members;
+    public Player getCreator() {
+        return creator;
     }
 
     public List<Match> getGamesAsAttackers() {
@@ -77,4 +105,23 @@ public class Team {
         this.policy = policy;
     }
 
+    public void setInTournament(boolean inTournament) {
+        isInTournament = inTournament;
+    }
+
+    public void setTeamMembers(Set<Player> teamMembers) {
+        this.teamMembers = teamMembers;
+    }
+
+    public void setDateOfCreation(LocalDate dateOfCreation) {
+        this.dateOfCreation = dateOfCreation;
+    }
+
+    public boolean isFull() {
+        return this.teamMembers.size()==this.maxNumberOfPlayers;
+    }
+
+    public void addMember(Player player) {
+        this.teamMembers.add(player);
+    }
 }
