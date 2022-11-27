@@ -1,0 +1,27 @@
+CREATE TABLE cd_player (
+  id BIGINT AUTO_INCREMENT NOT NULL,
+   username VARCHAR(46) NOT NULL,
+   server VARCHAR(255) NOT NULL,
+   token VARCHAR(32) NULL,
+   user_id INT NOT NULL,
+   id_player BIGINT NOT NULL,
+   CONSTRAINT pk_cd_player PRIMARY KEY (id)
+);
+
+CREATE TABLE game (
+  id BIGINT AUTO_INCREMENT NOT NULL,
+   status enum('CREATED','STARTED','ENDED') DEFAULT 'CREATED' NOT NULL,
+   server VARCHAR(255) NULL,
+   game_id INT NOT NULL,
+   id_attackers_team BIGINT NOT NULL,
+   id_defenders_team BIGINT NOT NULL,
+   CONSTRAINT pk_game PRIMARY KEY (id)
+);
+
+ALTER TABLE cd_player ADD CONSTRAINT uc_03937c85befdf71d84d6ad533 UNIQUE (id_player, server);
+
+ALTER TABLE cd_player ADD CONSTRAINT FK_CD_PLAYER_ON_ID_PLAYER FOREIGN KEY (id_player) REFERENCES player (id);
+
+ALTER TABLE game ADD CONSTRAINT FK_GAME_ON_ID_ATTACKERS_TEAM FOREIGN KEY (id_attackers_team) REFERENCES team (id);
+
+ALTER TABLE game ADD CONSTRAINT FK_GAME_ON_ID_DEFENDERS_TEAM FOREIGN KEY (id_defenders_team) REFERENCES team (id);
