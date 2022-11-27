@@ -7,6 +7,8 @@ import dsd.codebenders.tournament_app.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +30,8 @@ public class AuthenticationController {
         String email = player.getEmail();
         String password = player.getPassword();
         Map<String, String> jsonMap = new HashMap<>();
-        int MAX_EMAIL_LENGTH = 40;
-        if(!isUsernameValid(username) || email == null || password == null
-                || email.isBlank() || password.isBlank() || email.length() > MAX_EMAIL_LENGTH) {
+        if(!isUsernameValid(username) || !isEmailValid(email)
+                || password == null || password.isBlank()) {
             throw new BadAuthenticationRequestException("Some registration parameters are invalid");
         }
         if(playerService.checkUsernameAlreadyTaken(username)) {
@@ -68,6 +69,20 @@ public class AuthenticationController {
     private boolean isUsernameValid(String username) {
         String pattern = "^[a-zA-Z][a-zA-Z0-9]{2,19}$";
         return username != null && username.matches(pattern);
+    }
+
+    private boolean isEmailValid(String email) {
+        if (email == null || email.length() > 40) {
+            return false;
+        }
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
     }
 
 }
