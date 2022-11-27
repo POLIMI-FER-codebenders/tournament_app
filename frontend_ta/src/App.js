@@ -46,7 +46,8 @@ class Home extends React.Component {
     super(props);
     this.state = {
       view: 0,
-      buttontext:"SignIn"
+      buttontext:"SignIn",
+      error:false
     };
     this.backHome = this.backHome.bind(this);
   }
@@ -70,7 +71,12 @@ class Home extends React.Component {
                 {
               if(sessionStorage.getItem("username")!=null) {
                  sessionStorage.removeItem("username");
-                //fetch("/logout");
+                fetch("authentication/logout").then(response => {
+                 if(response.status!=200){
+                   console.log("error");
+                 }
+                                          
+                });
                 this.setState({ view: 1,buttontext:"SignIn" });
               }
                else this.setState({ view: 1 })}
