@@ -20,21 +20,34 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MatchStatus status;
     private String server;
     @Column(name = "game_ID", nullable = false)
     private Integer gameId;
-
+    @Column(name = "round_number", nullable = false)
+    private Integer roundNumber;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "tournament_id", nullable = false)
+    private Tournament tournament;
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_attackers_team", nullable = false)
     private Team attackersTeam;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_defenders_team", nullable = false)
     private Team defendersTeam;
+    @ManyToOne
+    @JoinColumn(name = "winning_team_id")
+    private Team winningTeam;
 
-    public Integer getGameId() {
-        return gameId;
+    public Match() {
+    }
+
+    public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament) {
+        this.attackersTeam = attackersTeam;
+        this.defendersTeam = defendersTeam;
+        this.roundNumber = roundNumber;
+        this.tournament = tournament;
     }
 
     public Long getID() {
@@ -49,6 +62,14 @@ public class Match {
         return server;
     }
 
+    public int getGameId() {
+        return gameId;
+    }
+
+    public Tournament getTournament() {
+        return tournament;
+    }
+
     public Team getAttackersTeam() {
         return attackersTeam;
     }
@@ -56,4 +77,13 @@ public class Match {
     public Team getDefendersTeam() {
         return defendersTeam;
     }
+
+    public Team getWinningTeam() {
+        return winningTeam;
+    }
+
+    public void setWinningTeam(Team winningTeam) {
+        this.winningTeam = winningTeam;
+    }
+
 }

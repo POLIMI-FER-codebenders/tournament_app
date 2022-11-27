@@ -33,5 +33,7 @@
     <exclude-change idName="tournament#status" tagName="dropNotNullConstraint" />
     <exclude-change idName="tournament#type" tagName="addColumn" />
     <exclude-change idName="tournament#type" tagName="dropNotNullConstraint" />
+    <exclude-change idName="game#status" tagName="dropColumn" />
+    <exclude-change idName="game#status" tagName="addColumn" />
   </component>
 </project>
