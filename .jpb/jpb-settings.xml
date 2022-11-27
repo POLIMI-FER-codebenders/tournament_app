@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DatabaseMigrationSettings">
+    <database-infos>
+      <database-info>
+        <option name="enabled" value="true" />
+        <dbms-id>mysql</dbms-id>
+        <mapping-types>
+          <mapping-type sql-type-parameter="Nothing">
+            <java-class>java.lang.String</java-class>
+            <sql-type>varchar(255)</sql-type>
+          </mapping-type>
+        </mapping-types>
+      </database-info>
+    </database-infos>
+  </component>
+  <component name="JpaLiquibaseChangesConfig">
+    <exclude-change idName="tournament#type" tagName="modifyDataType" />
+    <exclude-change idName="tournament#match_type" tagName="dropColumn" />
+    <exclude-change idName="tournament#status" tagName="dropColumn" />
+    <exclude-change idName="tournament#type" tagName="dropColumn" />
+    <exclude-change idName="tournament#match_type" tagName="addColumn" />
+    <exclude-change idName="tournament#match_type" tagName="dropNotNullConstraint" />
+    <exclude-change idName="team#policy" tagName="dropColumn" />
+    <exclude-change idName="team#policy" tagName="addColumn" />
+    <exclude-change idName="team#policy" tagName="dropNotNullConstraint" />
+    <exclude-change idName="player#role" tagName="dropColumn" />
+    <exclude-change idName="player#role" tagName="addColumn" />
+    <exclude-change idName="invitation#status" tagName="dropColumn" />
+    <exclude-change idName="invitation#status" tagName="addColumn" />
+    <exclude-change idName="invitation#status" tagName="dropNotNullConstraint" />
+    <exclude-change idName="tournament#status" tagName="addColumn" />
+    <exclude-change idName="tournament#status" tagName="dropNotNullConstraint" />
+    <exclude-change idName="tournament#type" tagName="addColumn" />
+    <exclude-change idName="tournament#type" tagName="dropNotNullConstraint" />
+  </component>
+</project>
