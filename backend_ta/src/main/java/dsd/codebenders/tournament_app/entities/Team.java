@@ -31,6 +31,12 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Player> members;
 
+    @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
+    private List<Match> gamesAsAttackers;
+
+    @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
+    private List<Match> gamesAsDefenders;
+
     public Long getID() {
         return ID;
     }
@@ -53,6 +59,14 @@ public class Team {
 
     public List<Player> getMembers() {
         return members;
+    }
+
+    public List<Match> getGamesAsAttackers() {
+        return gamesAsAttackers;
+    }
+
+    public List<Match> getGamesAsDefenders() {
+        return gamesAsDefenders;
     }
 
     public void setCreator(Player creator) {

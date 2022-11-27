@@ -15,4 +15,24 @@ public class GameSettingsRequest {
         this.maxAssertionsPerTest = maxAssertionsPerTest;
         this.autoEquivalenceThreshold = autoEquivalenceThreshold;
     }
+
+    public String getGameType() {
+        return gameType;
+    }
+
+    public String getGameLevel() {
+        return gameLevel;
+    }
+
+    public String getMutantValidatorLevel() {
+        return mutantValidatorLevel;
+    }
+
+    public int getMaxAssertionsPerTest() {
+        return maxAssertionsPerTest;
+    }
+
+    public int getAutoEquivalenceThreshold() {
+        return autoEquivalenceThreshold;
+    }
 }

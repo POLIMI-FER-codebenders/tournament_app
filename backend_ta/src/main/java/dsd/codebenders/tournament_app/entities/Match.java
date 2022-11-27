@@ -4,7 +4,7 @@ import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 
 import javax.persistence.*;
 @Entity
-@Table(name = "match")
+@Table(name = "game")
 public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +12,8 @@ public class Match {
     @Enumerated(EnumType.STRING)
     private MatchStatus status;
     private String server;
-    private int gameId;
+    @Column(name="game_ID")
+    private Integer gameId;
 
     @ManyToOne
     @JoinColumn(name = "ID_attackers_team")

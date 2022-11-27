@@ -1,13 +1,23 @@
 package dsd.codebenders.tournament_app.utils;
 
-import dsd.codebenders.tournament_app.errors.HTTPResponseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
 
+@Component
 public class HTTPRequestsSender {
+
+    private static String token;
+    @Value("${code-defenders.token:BZN76hXNoeVE6phworcmorJFOb1NwOjj}")
+    private void setToken(String token) {
+        HTTPRequestsSender.token = token;
+    }
 
     public static <T> T sendGetRequest(String url, Map<String, String> queryParameters, Class<T> returnType) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
@@ -15,20 +25,20 @@ public class HTTPRequestsSender {
             builder.queryParam(s, queryParameters.get(s));
         }
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<T> result = restTemplate.getForEntity(builder.toUriString(), returnType);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Object> entity = new HttpEntity<>(headers);
+        ResponseEntity<T> result = restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity, returnType);
         return result.getBody();
     }
 
-    public static <T> T sendPostRequest(String url, Object body, Class<T> returnType) throws HTTPResponseException {
+    public static <T> T sendPostRequest(String url, Object body, Class<T> returnType) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Object> entity = new HttpEntity<>(body, headers);
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Object> entity = new HttpEntity<>(new ObjectMapper().writeValueAsString(body), headers);
         ResponseEntity<T> result = restTemplate.postForEntity(url, entity, returnType);
-        //TODO: improve HTTPResponseException
-        if(result.getStatusCode() != HttpStatus.OK) {
-            throw new HTTPResponseException(result.getStatusCodeValue());
-        }
         return result.getBody();
     }
 

@@ -14,4 +14,20 @@ public class GameRequest {
         this.settings = settings;
         this.returnUrl = returnUrl;
     }
+
+    public int getClassId() {
+        return classId;
+    }
+
+    public TeamRequest[] getTeams() {
+        return teams;
+    }
+
+    public GameSettingsRequest getSettings() {
+        return settings;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
 }

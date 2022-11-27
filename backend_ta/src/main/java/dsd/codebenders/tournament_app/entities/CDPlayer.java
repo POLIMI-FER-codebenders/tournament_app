@@ -12,7 +12,7 @@ public class CDPlayer {
     private String username;
     private String server;
     private String token;
-
+    @Column(name="user_ID")
     private int userId;
 
     @ManyToOne
