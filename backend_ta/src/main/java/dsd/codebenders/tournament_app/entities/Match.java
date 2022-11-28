@@ -23,7 +23,7 @@ public class Match {
     @Column(nullable = false)
     private MatchStatus status;
     private String server;
-    @Column(name = "game_ID", nullable = false)
+    @Column(name = "game_ID")
     private Integer gameId;
     @Column(name = "round_number", nullable = false)
     private Integer roundNumber;
