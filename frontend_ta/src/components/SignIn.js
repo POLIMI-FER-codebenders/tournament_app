@@ -16,6 +16,7 @@ class SignIn extends React.Component {
       password: '',
       view: "SignIn",
       badResponse: null
+
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -78,6 +79,7 @@ class SignIn extends React.Component {
               <div className="input-container">
                 <label htmlFor="passwordlogin">Password </label>
                 <input type="password" name="password" id="passwordlogin" value={this.state.password} onChange={this.handleChange} required />
+
               </div>
               <div className="button-container">
                 <input type="submit" value="Sign in" />
@@ -92,6 +94,4 @@ class SignIn extends React.Component {
     return nextcomponent;
   }
 }
-
-
 export default SignIn;

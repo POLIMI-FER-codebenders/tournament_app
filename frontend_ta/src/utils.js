@@ -51,13 +51,28 @@ export async function postForm(url = '', formData) {
     }
   }
 
-export function GoToErrorPage(props) {
+  export default postData;
+  export async function getData(url =''){
+    const response = await fetch(url);
+  if (response.status == 200){
+    let result ={result:await response.json(), status : response.status }
+    return result;
+  } 
+  else {
+    let errortext= await response.text();
+   let  result = {status:response.status,message:errortext};
+    return result;
+    }
+  }
+
+ export function GoToErrorPage(props) {
   let navigate = useNavigate();
   useEffect(() => {
     navigate(props.path, { state: { message: props.message } });
   }
   );
 }
+
 export function checkPassword(password){
    return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length>=8 && password.length<=20 &&  !/[^A-Za-z0-9]/.test()
 }
@@ -74,3 +89,4 @@ export function checkEmail(mail)
     
     return (false)
 }
+
