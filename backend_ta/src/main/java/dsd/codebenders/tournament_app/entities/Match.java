@@ -20,6 +20,7 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MatchStatus status;
     private String server;
     @Column(name = "game_ID")
@@ -29,11 +30,11 @@ public class Match {
     @ManyToOne(optional = false)
     @JoinColumn(name = "tournament_id", nullable = false)
     private Tournament tournament;
-    @ManyToOne
-    @JoinColumn(name = "ID_attackers_team")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_attackers_team", nullable = false)
     private Team attackersTeam;
-    @ManyToOne
-    @JoinColumn(name = "ID_defenders_team")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_defenders_team", nullable = false)
     private Team defendersTeam;
     @ManyToOne
     @JoinColumn(name = "winning_team_id")

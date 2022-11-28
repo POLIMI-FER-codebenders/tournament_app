@@ -38,27 +38,29 @@ public abstract class Tournament {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "number_of_teams")
+    @Column(name = "number_of_teams", nullable = false)
     private Integer numberOfTeams;
 
-    @Column(name = "team_size")
+    @Column(name = "team_size", nullable = false)
     private Integer teamSize;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_creator")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_creator", nullable = false)
     private Player creator;
 
+    @Column(nullable = false, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    @Column(insertable = false, updatable = false)
     private TournamentType type;
 
-    @Column(name = "match_type")
+    @Column(name = "match_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private MatchType matchType;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TournamentStatus status = TournamentStatus.TEAMS_JOINING;
 
     @Column(name = "current_round")
