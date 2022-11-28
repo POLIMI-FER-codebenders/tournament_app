@@ -54,6 +54,7 @@ public class TeamController {
         return teamService.getAllMembers(getTeamRequest.getIdTeam());
     }
 
+
     @PostMapping(value = "/create")
     public Team createTeam(@RequestBody Team team){
         Player creator = playerService.getSelf();
