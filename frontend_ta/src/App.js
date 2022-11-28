@@ -6,8 +6,8 @@ import SignIn from './components/SignIn';
 import { CreateTeam } from './components/TeamManagement';
 import { DisplayTournament } from './components/DisplayTournament';
 import ManageTeams from './components/TeamManagement';
-
-import TeamCreation from './components/TeamCreation'
+import { CreateTournament } from './components/TournamentCreation';
+import TeamCreation from './components/TeamCreation';
 import JoinTeam from './components/JoinTeam';
 
 import ErrorPage from "./Error.js";
@@ -41,6 +41,12 @@ function MainPanel(props) {
     case 3:
       if (sessionStorage.getItem("username") != null) return <ManageTeams />;
       else return <SignIn backHome={props.backHome} index={3} />
+    case 4:
+      if (sessionStorage.getItem("username") != null) return <JoinTeam />;
+      else return <SignIn backHome={props.backHome} index={4} />
+    case 5: 
+    if (sessionStorage.getItem("username") != null) return <CreateTournament />;
+      else return <SignIn backHome={props.backHome} index={5} />
     default:
       return <DisplayTournament />;
   }
@@ -100,6 +106,10 @@ class Home extends React.Component {
             <button class="item" 
               onClick={() => this.setState({ view: 4 })}>
               Join Team
+            </button>
+            <button class="item" 
+              onClick={() => this.setState({ view: 5 })}>
+              Tournament Creation
             </button>
           </div>
           <MainPanel view={this.state.view} backHome={this.backHome} />

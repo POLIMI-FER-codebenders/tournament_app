@@ -1,5 +1,7 @@
 import { Component, useState } from "react";
 import "../styles/JoinTeam.css"
+import { getData } from "../utils";
+import React, {  useEffect } from 'react';
 
 function Member(props){
   return(<div class="item-member">{props.name}</div>);
@@ -44,17 +46,39 @@ function TeamEntry(props) {
   );
 };
 
-export function ListTeams() {
-    const data =[{"name":"team1", "type":"open", "members":["Anny", "Ric"], "size":2},{"name":"team2"}];
+export class  ListTeams extends React.Component {
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      data:[]
+    };
+
+  }
+  componentDidMount() {
     
-    return (
+    getData("/api/team/get-all").then((response)=> {
+     if (response.status == 200) {
+      this.setState({data: response.result});
+     }
+     else console.log("error");
+    }
+    );
+  }
+   
+   
+    //const data =[{"name":"team1", "type":"open", "members":["Anny", "Ric"], "size":2},{"name":"team2"}];
+    
+    render(){
+      return (
         <div class="main-panel">
           <h2>Teams</h2>
-          {data.map((object, i) => <TeamEntry team={object} key={i} />)}
+          {this.state.data.map((object, i) => <TeamEntry team={object} key={i} />)}
           
         </div>
     );
   }
+}
 
 class JoinTeam extends Component{
   render (){

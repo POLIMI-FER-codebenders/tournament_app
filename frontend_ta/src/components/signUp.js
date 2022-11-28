@@ -54,7 +54,7 @@ class SignUp extends React.Component {
     }
     
      
-    if (this.state.password != this.state.username) {
+    if (this.state.password != this.state.confirmpassword) {
       this.setState({ errorMessage: "confirm password is different from password!" })
       return;
     }
@@ -91,7 +91,7 @@ class SignUp extends React.Component {
 
   render() {
     if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.view == "SignIn") return (<SignIn />);
+    if (this.state.view == "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} />);
     else if (this.state.view == "SignUp") return (
       <div className="app" class="main-panel">
         <div className="login-form">

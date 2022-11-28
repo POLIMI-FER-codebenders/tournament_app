@@ -50,8 +50,6 @@ export async function postForm(url = '', formData) {
     return result;
     }
   }
-
-  export default postData;
   export async function getData(url =''){
     const response = await fetch(url);
   if (response.status == 200){

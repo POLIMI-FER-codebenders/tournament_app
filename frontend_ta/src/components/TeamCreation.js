@@ -1,11 +1,11 @@
 import { Component } from "react";
-
+import postData from "../utils";
 class TeamCreation extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "",
-      type: "open"
+      type: "OPEN"
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);  
@@ -17,6 +17,9 @@ class TeamCreation extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    console.log(this.state.type);
+    let data={name:this.state.name,maxNumberOfPlayers:4,policy:this.state.type}
+      postData("/api/team/create",data);
     alert(`The name you entered was: ${this.state.name}, ${this.state.type} to new members`);
   };
 
@@ -34,15 +37,15 @@ class TeamCreation extends Component {
                 <input
                   type="text"
                   value={this.state.name}
-                  onChange={(e) => this.setState({ username: e.target.value })}
+                  onChange={(e) => this.setState({ name: e.target.value })}
                 />
               </label>
             </div>
             <div class="container">
               <p>Please select whether your team will be open or closed to new members:</p>
               <select class="selector" value={this.state.type} onChange={this.handleChange}>
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
+                <option value="OPEN">OPEN</option>
+                <option value="CLOSED">CLOSED</option>
               </select>
             </div>
             <input type="submit" class="item" />
