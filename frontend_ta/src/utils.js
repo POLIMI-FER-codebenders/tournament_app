@@ -1,18 +1,76 @@
+import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react'
 async function postData(url = '', data = {}) {
-    // Default options are marked with *
-    const response = await fetch(url, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors', // no-cors, *cors, same-origin
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
-      headers: {
-        'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      redirect: 'follow', // manual, *follow, error
-      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify(data) // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  let result;
+  if (response.status == 200){
+     result = await response.json();
+    result.status = response.status;
+    return result;
+  } 
+  else {
+    let errortext= await response.text();
+    result = {status:response.status,message:errortext};
+    return result;
+    }
+}
+export default postData;
+export async function postForm(url = '', formData) {
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'include', // include, *same-origin, omit
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: formData
+  });
+  let result;
+  if (response.status == 200){
+     result = await response.json();
+    result.status = response.status;
+    return result;
+  } 
+  else {
+    let errortext= await response.text();
+    result = {status:response.status,message:errortext};
+    return result;
+    }
   }
-  export default postData;
+
+export function GoToErrorPage(props) {
+  let navigate = useNavigate();
+  useEffect(() => {
+    navigate(props.path, { state: { message: props.message } });
+  }
+  );
+}
+export function checkPassword(password){
+   return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length>=8 && password.length<=20 &&  !/[^A-Za-z0-9]/.test()
+}
+export function checkUsername(username){
+  
+  return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9].*/)
+}
+export function checkEmail(mail) 
+{
+ if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))
+  {
+    return (true)
+  }
+    
+    return (false)
+}
