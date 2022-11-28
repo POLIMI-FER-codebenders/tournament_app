@@ -57,7 +57,10 @@ pipeline {
                 }
             }
             steps {
+                sh 'ls'
                 sh 'cd frontend_ta'
+                sh 'ls'
+                sh 'npm install'
                 sh 'npm run build'
             }
             post{
