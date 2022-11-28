@@ -1,8 +1,9 @@
 import { Component, useState } from "react";
+import postData from "../utils";
 
 export function CreateTournament() {
     const [name, setName] = useState("");
-    const [type, setType] = useState("Single Elimination");
+    const [type, setType] = useState("KNOCKOUT");
     const [size, setSize] = useState(2);
     const [start_date, setDate] = useState("");
   
@@ -17,6 +18,10 @@ export function CreateTournament() {
   
     const handleSubmit = (event) => {
       event.preventDefault();
+      let data={name:name,numberOfTeams:8,teamSize:8,type:type,matchType:"MELEE"}
+      postData("/api/tournament/create",data);
+      
+
       alert(`you want to create tournament: ${name}, of type ${type}, for ${size} teams, starting on ${start_date}`);
     };
   
@@ -39,8 +44,8 @@ export function CreateTournament() {
           <div class="container">
             <p>Please select whether the tournament will be Single Elimination or League:</p>
             <select class="selector" value={type} onChange={handleChange}>
-              <option value="Single Elimination">Single Elimination</option>
-              <option value="League">League</option>
+              <option value="KNOCKOUT">Single Elimination</option>
+              <option value="LEAGUE">League</option>
             </select>
             <label>Enter the number of participants (2-16):
                 <input 

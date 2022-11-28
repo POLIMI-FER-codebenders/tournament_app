@@ -1,6 +1,7 @@
 import { Component, useState } from "react";
 import ListPlayers from "./ListPlayers";
 import postData from '../utils';
+import { getData } from "../utils";
 import "../styles/teamManagement.css";
 
 class ManageTeams extends Component {
@@ -28,17 +29,16 @@ class ManageTeams extends Component {
       "date": "16.10.2022",
       "type": "Closed"
     };
-    // let url_team = "http://localhost:8080/api/team/get/"
-    // let dt = { id: this.state.user.id_team };
-    // postData(url_team, dt)
-    //   .then((response) => {
-    //     if (response.result) {
-    //       this.setState({ team: response.result })
-    //     }
-    //     else {
-    //       this.setState({ errorMessage: "No teams for this user" })
-    //     }
-    //   });
+     let url_team = "/api/team/get-mine"
+     getData(url_team)
+       .then((response) => {
+         if (response.result) {
+           this.setState({ team: response.result })
+         }
+         else {
+           this.setState({ errorMessage: "No teams for this user" })
+         }
+       });
     return (data_team)
   }
   initPlayers() {
@@ -129,11 +129,11 @@ class ManageTeams extends Component {
             </div>
             <div className="flex-container-info">
               <span className="flex-items-info name-entry">Team policy:</span>
-              <span className="flex-items-info">{this.state.team.type}</span>
+              <span className="flex-items-info">{this.state.team.policy}</span>
             </div>
             <div className="flex-container-info">
               <span className="flex-items-info name-entry">Date of creation:</span>
-              <span className="flex-items-info">{this.state.team.date}</span>
+              <span className="flex-items-info">{this.state.team.policy}</span>
             </div>
           </div>
           {this.actionInvit()}
