@@ -43,4 +43,12 @@ public class Invitation {
     public Team getTeam() {
         return team;
     }
+
+    public InvitationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(InvitationStatus status) {
+        this.status = status;
+    }
 }
