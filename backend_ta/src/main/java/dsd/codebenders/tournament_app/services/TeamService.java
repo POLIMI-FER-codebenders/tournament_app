@@ -13,11 +13,13 @@ import dsd.codebenders.tournament_app.responses.TeamResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Service
 public class TeamService {
@@ -53,6 +55,7 @@ public class TeamService {
         return teamRepository.save(team);
     }
 
+
     public void joinTeam(Player player, Team team) {
         if(team.getPolicy() != TeamPolicy.OPEN){
             throw new BadRequestException("Team's policy is CLOSED, you need an invitation to join!");
@@ -66,6 +69,9 @@ public class TeamService {
         if(team.getTeamMembers().contains(player)){
             throw new BadRequestException("You are already part of the team!");
         }
+        player.setTeam(team);
+        player.setRole(TeamRole.MEMBER);
+        playerRepository.save(player);
         team.addMember(player);
         teamRepository.save(team);
     }
@@ -119,3 +125,4 @@ public class TeamService {
         return teams.stream().map(Team::serialize).collect(Collectors.toList());
     }
 }
+
