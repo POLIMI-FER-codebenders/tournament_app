@@ -57,7 +57,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'ls'
+                sh 'cd frontend_ta'
                 sh 'npm run build'
             }
             post{
@@ -90,6 +90,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'cd backend_ta'
                 sh 'mvn clean package -DskipTests'
             }
             post{
