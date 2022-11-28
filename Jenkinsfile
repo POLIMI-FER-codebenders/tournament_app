@@ -57,6 +57,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'ls'
                 sh 'npm run build'
             }
             post{
