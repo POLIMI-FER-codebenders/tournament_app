@@ -57,11 +57,10 @@ pipeline {
                 }
             }
             steps {
-                sh 'ls'
-                sh 'cd frontend_ta'
-                sh 'ls'
-                sh 'npm install'
-                sh 'npm run build'
+                dir("frontend_ta"){
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
             }
             post{
                 unsuccessful {
@@ -93,8 +92,9 @@ pipeline {
                 }
             }
             steps {
-                sh 'cd backend_ta'
-                sh 'mvn clean package -DskipTests'
+                dir("backend_ta"){
+                    sh 'mvn clean package -DskipTests'
+                }
             }
             post{
                 unsuccessful {
