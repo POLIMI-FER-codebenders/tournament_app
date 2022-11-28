@@ -4,6 +4,7 @@ import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.errors.BadAuthenticationRequestException;
 import dsd.codebenders.tournament_app.errors.UnauthorizedAuthenticationException;
 import dsd.codebenders.tournament_app.services.PlayerService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

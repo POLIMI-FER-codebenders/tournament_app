@@ -10,6 +10,7 @@ import dsd.codebenders.tournament_app.entities.utils.TeamRole;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
+import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.JoinTournamentRequest;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
@@ -58,7 +59,11 @@ public class TournamentController {
 
     private Player spoofPlayer(Optional<Long> playerID) {
         if (debug && playerID.isPresent()) {
-            return playerService.findById(playerID.get());
+            if (playerService.findById(playerID.get()) != null) {
+                return playerService.findById(playerID.get());
+            } else {
+                throw new BadRequestException("Spoofed ID not found");
+            }
         } else {
             return playerService.getSelf();
         }
@@ -124,7 +129,7 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/join")
-    public Tournament joinTournament(@RequestParam Optional<Long> playerID, @RequestBody JoinTournamentRequest request) {
+    public Tournament joinTournament(@RequestParam Optional<Long> playerID, @RequestBody JoinTournamentRequest request) throws MatchCreationException {
         Player player = spoofPlayer(playerID);
         Optional<Tournament> optTournament = tournamentService.getTournamentByID(request.getIdTournament());
         if (player.getRole() != TeamRole.LEADER) {

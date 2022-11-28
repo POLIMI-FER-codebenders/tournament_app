@@ -35,5 +35,7 @@
     <exclude-change idName="tournament#type" tagName="dropNotNullConstraint" />
     <exclude-change idName="game#status" tagName="dropColumn" />
     <exclude-change idName="game#status" tagName="addColumn" />
+    <exclude-change idName="flyway_schema_history" tagName="createTable" />
+    <exclude-change idName="flyway_schema_history_s_idx" tagName="createIndex" />
   </component>
 </project>

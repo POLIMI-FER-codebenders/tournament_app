@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "server"}))
 public class CDPlayer {
@@ -21,6 +23,7 @@ public class CDPlayer {
     private String username;
     @Column(nullable = false)
     private String server;
+    @JsonIgnore
     private String token;
     @Column(name = "user_ID", nullable = false)
     private int userId;

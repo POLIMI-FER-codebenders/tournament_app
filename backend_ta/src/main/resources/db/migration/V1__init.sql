@@ -49,6 +49,7 @@ CREATE TABLE tournament_score (
    score INT DEFAULT NULL NULL,
    id_team BIGINT NOT NULL,
    tournament_id BIGINT NOT NULL,
+   forfeit BIT(1) DEFAULT 0 NOT NULL,
    CONSTRAINT PK_TOURNAMENT_SCORE PRIMARY KEY (id)
 );
 

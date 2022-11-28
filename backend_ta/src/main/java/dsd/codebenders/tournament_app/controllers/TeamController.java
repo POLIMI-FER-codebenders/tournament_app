@@ -58,7 +58,7 @@ public class TeamController {
     @PostMapping(value = "/create")
     public Team createTeam(@RequestBody Team team){
         // retrieve currently authenticated user from session
-        Player creator = playerService.findByUsername("ciccio");
+        Player creator = playerService.getSelf();
         return teamService.createTeam(team, creator);
     }
 
@@ -73,7 +73,7 @@ public class TeamController {
     @PostMapping(value = "/leave")
     public void leaveTeam(){
         // retrieve currently authenticated user from session
-        Player player = playerService.findByUsername("ciccio");
+        Player player = playerService.getSelf();
         teamService.leaveTeam(player);
     }
 

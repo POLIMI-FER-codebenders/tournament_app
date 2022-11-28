@@ -12,7 +12,7 @@ CREATE TABLE game (
   id BIGINT AUTO_INCREMENT NOT NULL,
    status enum('CREATED','STARTED','ENDED') DEFAULT 'CREATED' NOT NULL,
    server VARCHAR(255) NULL,
-   game_id INT NOT NULL,
+   game_id INT NULL,
    id_attackers_team BIGINT NOT NULL,
    id_defenders_team BIGINT NOT NULL,
    CONSTRAINT pk_game PRIMARY KEY (id)

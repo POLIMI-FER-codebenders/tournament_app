@@ -38,6 +38,9 @@ public class TournamentScore {
     @Column(name = "league_points")
     private Integer leaguePoints = 0;
 
+    @Column(name = "forfeit", nullable = false)
+    private Boolean forfeit = false;
+
     public TournamentScore() {
     }
 
@@ -64,5 +67,13 @@ public class TournamentScore {
 
     public Integer getLeaguePoints() {
         return leaguePoints;
+    }
+
+    public Boolean hasForfeited() {
+        return forfeit;
+    }
+
+    public void forfeit() {
+        this.forfeit = true;
     }
 }

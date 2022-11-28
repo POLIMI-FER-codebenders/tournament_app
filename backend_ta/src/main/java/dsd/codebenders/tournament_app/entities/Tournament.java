@@ -19,15 +19,15 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.entities.utils.MatchType;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
+import dsd.codebenders.tournament_app.serializers.PlayerIDAndNameSerializer;
+import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = LeagueTournament.class, name = "LEAGUE"),
-        @JsonSubTypes.Type(value = KnockoutTournament.class, name = "KNOCKOUT")
-})
+@JsonSubTypes({@JsonSubTypes.Type(value = LeagueTournament.class, name = "LEAGUE"), @JsonSubTypes.Type(value = KnockoutTournament.class, name = "KNOCKOUT")})
 @Entity
 @Table(name = "tournament")
 @DiscriminatorColumn(name = "type")
@@ -36,38 +36,42 @@ public abstract class Tournament {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
+    protected Long ID;
 
     @Column(nullable = false)
-    private String name;
+    protected String name;
 
     @Column(name = "number_of_teams", nullable = false)
-    private Integer numberOfTeams;
+    protected Integer numberOfTeams;
 
     @Column(name = "team_size", nullable = false)
-    private Integer teamSize;
+    protected Integer teamSize;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_creator", nullable = false)
-    private Player creator;
+    @JsonSerialize(using = PlayerIDAndNameSerializer.class)
+    protected Player creator;
 
     @Column(nullable = false, insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    private TournamentType type;
+    protected TournamentType type;
 
     @Column(name = "match_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private MatchType matchType;
+    protected MatchType matchType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TournamentStatus status = TournamentStatus.TEAMS_JOINING;
+    protected TournamentStatus status = TournamentStatus.TEAMS_JOINING;
 
     @Column(name = "current_round")
-    private Integer currentRound;
+    protected Integer currentRound = 0;
 
     @OneToMany(mappedBy = "tournament")
-    private List<TournamentScore> tournamentScores = new ArrayList<>();
+    protected List<TournamentScore> tournamentScores = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament")
+    protected List<Match> matches = new ArrayList<>();
 
     public Long getID() {
         return ID;
@@ -113,7 +117,19 @@ public abstract class Tournament {
         return tournamentScores;
     }
 
+    public List<Match> getMatches() {
+        return matches;
+    }
+
     public Integer getCurrentRound() {
         return currentRound;
     }
+
+    public Integer incrementCurrentRound() {
+        return currentRound++;
+    }
+
+    public abstract int getNumberOfRounds();
+
+    public abstract List<List<Long>> scheduleMatches(List<Long> allTeamIds, List<Long> winningTeamIds);
 }

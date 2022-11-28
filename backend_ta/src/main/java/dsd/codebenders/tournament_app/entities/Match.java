@@ -11,7 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
+import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
 
 @Entity
 @Table(name = "game")
@@ -19,9 +22,9 @@ public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private MatchStatus status;
+    @Enumerated(EnumType.STRING)
+    private MatchStatus status = MatchStatus.CREATED;
     private String server;
     @Column(name = "game_ID")
     private Integer gameId;
@@ -29,15 +32,19 @@ public class Match {
     private Integer roundNumber;
     @ManyToOne(optional = false)
     @JoinColumn(name = "tournament_id", nullable = false)
+    @JsonSerialize(using = TournamentIDSerializer.class)
     private Tournament tournament;
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_attackers_team", nullable = false)
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team attackersTeam;
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_defenders_team", nullable = false)
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team defendersTeam;
     @ManyToOne
     @JoinColumn(name = "winning_team_id")
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team winningTeam;
 
     public Match() {
@@ -58,12 +65,24 @@ public class Match {
         return status;
     }
 
+    public void setStatus(MatchStatus status) {
+        this.status = status;
+    }
+
     public String getServer() {
         return server;
     }
 
-    public int getGameId() {
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public Integer getGameId() {
         return gameId;
+    }
+
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
     }
 
     public Tournament getTournament() {
@@ -85,5 +104,4 @@ public class Match {
     public void setWinningTeam(Team winningTeam) {
         this.winningTeam = winningTeam;
     }
-
 }
