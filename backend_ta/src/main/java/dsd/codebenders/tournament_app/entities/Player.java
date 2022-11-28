@@ -14,13 +14,13 @@ import java.util.Set;
 @Entity
 @Table(name = "player")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "username")
+@JsonIgnoreProperties(value = {"password"}, allowSetters = true)
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     private String username;
     private String email;
-    @JsonIgnore
     private String password;
 
     // The teams whose this player is the creator
