@@ -4,7 +4,7 @@ pipeline {
     agent any
     environment {
        CI = 'false'
-       DISCORD_WEBHOOK = credentials('discord_webhook')
+       DISCORD_WEBHOOK = credentials('discord_webhook_ta')
     }
     
     stages {
