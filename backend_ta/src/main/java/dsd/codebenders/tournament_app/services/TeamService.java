@@ -69,6 +69,9 @@ public class TeamService {
         if(team.getTeamMembers().contains(player)){
             throw new BadRequestException("You are already part of the team!");
         }
+        player.setTeam(team);
+        player.setRole(TeamRole.MEMBER);
+        playerRepository.save(player);
         team.addMember(player);
         teamRepository.save(team);
     }
