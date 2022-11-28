@@ -1,9 +1,7 @@
 package dsd.codebenders.tournament_app.entities;
 
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamRole;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 
