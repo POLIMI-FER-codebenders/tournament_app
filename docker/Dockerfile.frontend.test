@@ -1,0 +1,10 @@
+
+FROM node:16.13.2-alpine AS frontend
+
+#WORKDIR /app
+
+#COPY ./frontend_ta/package.json/ ./
+#RUN npm install
+
+#COPY ./frontend_ta/ ./
+#RUN npm run build

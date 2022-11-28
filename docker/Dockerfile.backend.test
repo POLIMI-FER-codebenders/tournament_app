@@ -1,0 +1,8 @@
+
+FROM maven:3.8-openjdk-17 AS backend
+
+#RUN mkdir /Tournament_app/
+#WORKDIR /Tournament_app/
+#COPY ./backend_ta/pom.xml .
+#COPY ./backend_ta/src ./src/
+#RUN mvn clean package -DskipTests
