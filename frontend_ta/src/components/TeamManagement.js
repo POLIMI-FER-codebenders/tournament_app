@@ -174,7 +174,7 @@ class ManageTeams extends Component {
   actionInvit() {
     if (this.state.user.role === "Leader"){
       return (
-        <div class="btn btn-yellow flex-items-btn" name="display_invit" onClick={this.handleClickInvit}>Invit players</div>
+        <div class="btn btn-yellow flex-items-btn" name="display_invit" onClick={this.handleClickInvit}>Invite players</div>
       );
     } else return;
   }
