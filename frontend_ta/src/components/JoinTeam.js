@@ -20,7 +20,7 @@ function TeamEntry(props) {
   return (
     <div class="team-entry">
       <button class="item button-container"
-        onClick={toggle}>{props.team.name}
+       >{props.team.name}
       </button>
       
       {open && (
