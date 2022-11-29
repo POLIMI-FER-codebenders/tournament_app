@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,20 +16,20 @@ import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
 
 @Entity
-@Table(name = "tournament_score")
+@Table(name = "tournament_score", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_team", "tournament_id"}))
 @JsonIgnoreProperties({"id"})
 public class TournamentScore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_team")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_team", nullable = false)
     @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team team;
 
-    @ManyToOne
-    @JoinColumn(name = "tournament_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "tournament_id", nullable = false)
     @JsonSerialize(using = TournamentIDSerializer.class)
     private Tournament tournament;
 
@@ -36,6 +37,9 @@ public class TournamentScore {
 
     @Column(name = "league_points")
     private Integer leaguePoints = 0;
+
+    @Column(name = "forfeit", nullable = false)
+    private Boolean forfeit = false;
 
     public TournamentScore() {
     }
@@ -63,5 +67,13 @@ public class TournamentScore {
 
     public Integer getLeaguePoints() {
         return leaguePoints;
+    }
+
+    public Boolean hasForfeited() {
+        return forfeit;
+    }
+
+    public void forfeit() {
+        this.forfeit = true;
     }
 }

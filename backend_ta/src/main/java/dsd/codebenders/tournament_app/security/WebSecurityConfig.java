@@ -53,6 +53,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .antMatchers("/authentication/register").permitAll()
                         .antMatchers("/authentication/failure").permitAll()
+                        .antMatchers("/api/tournament/list").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

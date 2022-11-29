@@ -21,26 +21,27 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "max_number_of_players")
+    @Column(name = "max_number_of_players", nullable = false)
     private int maxNumberOfPlayers;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_creator")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_creator", nullable = false)
     private Player creator;
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private Set<Player> teamMembers;
 
-    @Column(name = "policy")
+    @Column(name = "policy", nullable = false)
     @Enumerated(EnumType.STRING)
     private TeamPolicy policy;
 
-    @Column(name = "in_tournament")
+    @Column(name = "in_tournament", nullable = false)
     private boolean isInTournament;
 
-    @Column(name = "date_of_creation")
+    @Column(name = "date_of_creation", nullable = false)
     private LocalDate dateOfCreation;
 
     public TeamResponse serialize(){
@@ -61,6 +62,14 @@ public class Team {
 
     @OneToMany(mappedBy = "attackersTeam", fetch = FetchType.LAZY)
     private List<Match> gamesAsDefenders;
+
+    public LocalDate getDateOfCreation() {
+        return dateOfCreation;
+    }
+
+    public boolean getIsInTournament() {
+        return isInTournament;
+    }
 
     public Long getID() {
         return ID;
