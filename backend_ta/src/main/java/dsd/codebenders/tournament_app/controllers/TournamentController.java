@@ -57,18 +57,6 @@ public class TournamentController {
         this.tournamentService = tournamentService;
     }
 
-    private Player spoofPlayer(Optional<Long> playerID) {
-        if (debug && playerID.isPresent()) {
-            if (playerService.findById(playerID.get()) != null) {
-                return playerService.findById(playerID.get());
-            } else {
-                throw new BadRequestException("Spoofed ID not found");
-            }
-        } else {
-            return playerService.getSelf();
-        }
-    }
-
     @GetMapping(value = "/list")
     public List<Tournament> getTournaments(@RequestParam(name = "type") Optional<String> sType) {
         if (sType.isPresent()) {
@@ -84,20 +72,22 @@ public class TournamentController {
     }
 
     @GetMapping(value = "/personal")
-    public List<Tournament> getJoinedTournaments(@RequestParam Optional<Long> playerID) {
-        Player player = spoofPlayer(playerID);
+    public List<Tournament> getJoinedTournaments() {
+        Player player = playerService.getSelf();
         return tournamentService.getJoinedTournaments(player);
     }
 
     @PostMapping(value = "/create")
-    public Tournament createTournament(@RequestParam Optional<Long> playerID, @RequestBody Tournament tournament) {
-        Player creator = spoofPlayer(playerID);
+    public Tournament createTournament(@RequestBody Tournament tournament) {
+        Player creator = playerService.getSelf();
         if (tournament.getName() == null || tournament.getName().isEmpty()) {
             throw new BadRequestException("The tournament name cannot be empty");
         } else if (tournament.getName().length() > 255) {
             throw new BadRequestException("The maximum length of the tournament name is 255 characters");
         } else if (tournamentService.getActiveTournamentByName(tournament.getName()).isPresent()) {
             throw new BadRequestException("An active tournament with the same name already exists");
+        } else if (tournament.getMatchType() == null) {
+            throw new BadRequestException("Missing match type");
         } else if (tournament.getType().equals(TournamentType.LEAGUE)) {
             if (tournament.getNumberOfTeams() < minLeagueTeams) {
                 throw new BadRequestException("The minimum number of teams for a league tournament is " + minLeagueTeams);
@@ -129,8 +119,8 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/join")
-    public Tournament joinTournament(@RequestParam Optional<Long> playerID, @RequestBody JoinTournamentRequest request) throws MatchCreationException {
-        Player player = spoofPlayer(playerID);
+    public Tournament joinTournament(@RequestBody JoinTournamentRequest request) throws MatchCreationException {
+        Player player = playerService.getSelf();
         Optional<Tournament> optTournament = tournamentService.getTournamentByID(request.getIdTournament());
         if (player.getRole() != TeamRole.LEADER) {
             throw new BadRequestException("You are not the leader of the team");
@@ -154,8 +144,8 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/leave")
-    public Tournament leaveTournament(@RequestParam Optional<Long> playerID) {
-        Player player = spoofPlayer(playerID);
+    public Tournament leaveTournament() {
+        Player player = playerService.getSelf();
         if (player.getRole() != TeamRole.LEADER) {
             throw new BadRequestException("You are not the leader of the team");
         } else if (!player.getTeam().isInTournament()) {
