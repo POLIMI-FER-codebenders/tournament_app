@@ -30,7 +30,7 @@ public class InvitationService {
 
     public List<Invitation> getPending(String invitedPlayerUsername){
         Player invitedPlayer = playerRepository.findByUsername(invitedPlayerUsername);
-         return invitationRepository.findByInvitedPlayerAndStatusEquals(invitedPlayer, InvitationStatus.PENDING);
+        return invitationRepository.findByInvitedPlayerAndStatusEquals(invitedPlayer, InvitationStatus.PENDING);
     }
 
     public Invitation createInvitation(String senderUsername, Long IDInvitedPlayer, Long IDTeam){
@@ -50,6 +50,9 @@ public class InvitationService {
         Invitation invitation = invitationRepository.findById(idInvitation).orElseThrow(() -> new ResourceNotFoundException("Invitation doesn't exist!"));
         if(!invitation.getInvitedPlayer().equals(player)){
             throw new BadRequestException("You can't accept others' invitations.");
+        }
+        if(player.getTeam() != null){
+            throw new BadRequestException("You are already in a team! Leave your current team before joining another one.");
         }
         if(invitation.getStatus() != InvitationStatus.PENDING){
             throw new BadRequestException("You can't accept this invitation.");

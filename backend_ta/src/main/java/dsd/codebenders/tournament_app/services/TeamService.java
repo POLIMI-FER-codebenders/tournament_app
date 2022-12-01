@@ -39,6 +39,9 @@ public class TeamService {
         if(creator.getTeam() != null){
             throw new BadRequestException("You are already in a team, you can't create a new one.");
         }
+        if(teamRepository.existsTeamByName(team.getName())){
+            throw new BadRequestException("A team with the name chosen already exists. Choose another one.");
+        }
         // add the creator as the first member of the team
         Set<Player> players = new HashSet<>();
         players.add(creator);
