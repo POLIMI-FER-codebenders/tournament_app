@@ -3,6 +3,7 @@ FROM node:16.13.2-alpine AS build
 WORKDIR /app
 COPY ./frontend_ta/package.json/ ./
 RUN npm install
+RUN npm install react-router-dom
 COPY ./frontend_ta/ ./
 RUN npm run build
 
