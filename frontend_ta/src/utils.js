@@ -6,7 +6,7 @@ async function postData(url = '', data = {}) {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
+    credentials: 'include', // include, *same-origin, omit
     headers: {
       'Content-Type': 'application/json'
       // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -28,6 +28,7 @@ async function postData(url = '', data = {}) {
     }
 }
 export default postData;
+
 export async function postForm(url = '', formData) {
   const response = await fetch(url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -50,8 +51,11 @@ export async function postForm(url = '', formData) {
     return result;
     }
   }
+
   export async function getData(url =''){
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      credentials: 'include', // include, *same-origin, omit
+    });
   if (response.status == 200){
     let result ={result:await response.json(), status : response.status }
     return result;
