@@ -124,5 +124,19 @@ public class TeamService {
         List<Team> teams = teamRepository.findAll();
         return teams.stream().map(Team::serialize).collect(Collectors.toList());
     }
+
+    public void promoteToLeader(Player playerLogged, Player playerToPromote) {
+        if(playerLogged.getRole() != TeamRole.LEADER) {
+            throw new BadRequestException("Only the leader can promote other members.");
+        }
+        Team team = playerLogged.getTeam();
+        if(!team.getTeamMembers().contains(playerToPromote)) {
+            throw new BadRequestException("The player is not in the team.");
+        }
+        playerLogged.setRole(TeamRole.MEMBER);
+        playerRepository.save(playerLogged);
+        playerToPromote.setRole(TeamRole.LEADER);
+        playerRepository.save(playerToPromote);
+    }
 }
 
