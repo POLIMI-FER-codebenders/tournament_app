@@ -24,7 +24,7 @@ public class PlayerController {
 
     @GetMapping(value = "get")
     public Player getLoggedPlayer(){
-        return playerService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        return playerService.getSelf();
     }
 
     @GetMapping(value = "get-all")
