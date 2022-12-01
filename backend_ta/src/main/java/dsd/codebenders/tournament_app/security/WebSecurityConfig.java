@@ -1,9 +1,6 @@
 package dsd.codebenders.tournament_app.security;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -21,13 +17,15 @@ public class WebSecurityConfig {
 
     private final UserDetailsService playerDetailsService;
     private final JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler;
+    private final JsonAuthenticationSuccessHandler jsonAuthenticationSuccessHandler;
     @Value("${request-debug:false}")
     private Boolean debug;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService, JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler, JsonAuthenticationSuccessHandler jsonAuthenticationSuccessHandler) {
         this.playerDetailsService = userDetailsService;
         this.jsonAuthenticationFailureHandler = jsonAuthenticationFailureHandler;
+        this.jsonAuthenticationSuccessHandler = jsonAuthenticationSuccessHandler;
     }
 
     @Bean
@@ -69,7 +67,7 @@ public class WebSecurityConfig {
                         .loginPage("/authentication/error")
                         .loginProcessingUrl("/authentication/login")
                         .permitAll()
-                        .successHandler(new SimpleUrlAuthenticationSuccessHandler("/authentication/success"))
+                        .successHandler(jsonAuthenticationSuccessHandler)
                         .failureHandler(jsonAuthenticationFailureHandler)
                         .permitAll()
                 )

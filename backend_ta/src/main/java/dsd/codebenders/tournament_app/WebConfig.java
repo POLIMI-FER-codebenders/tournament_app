@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("tournament-app.web-server.address")
+    @Value("${tournament-app.web-server.address:http://localhost:80}")
     private String webServerAddress;
 
     @Override
