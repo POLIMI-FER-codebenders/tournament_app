@@ -1,5 +1,6 @@
 package dsd.codebenders.tournament_app;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -9,11 +10,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("tournament-app.web-server.address")
+    private String webServerAddress;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
                 .allowCredentials(true)
-                .allowedOrigins("http://localhost:3000", "http://localhost:80");
+                .allowedOrigins("http://localhost:3000", webServerAddress);
     }
 }
