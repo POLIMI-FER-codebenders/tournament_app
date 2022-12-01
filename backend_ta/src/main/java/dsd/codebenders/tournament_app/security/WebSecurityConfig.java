@@ -1,6 +1,9 @@
 package dsd.codebenders.tournament_app.security;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,14 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
-import javax.servlet.http.HttpServletResponse;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
     private final UserDetailsService playerDetailsService;
     private final JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler;
+    @Value("${request-debug:false}")
+    private Boolean debug;
 
     @Autowired
     public WebSecurityConfig(UserDetailsService userDetailsService, JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler) {
@@ -50,11 +53,17 @@ public class WebSecurityConfig {
         http
                 .cors().and()
                 .csrf().disable()
-                .authorizeHttpRequests((requests) -> requests
-                        .antMatchers("/authentication/register").permitAll()
-                        .antMatchers("/authentication/failure").permitAll()
-                        .antMatchers("/api/tournament/list").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests((requests) -> {
+                            if (debug) {
+                                requests
+                                        .anyRequest().permitAll();
+                            } else {
+                                requests
+                                        .antMatchers("/authentication/register", "/authentication/failure").permitAll()
+                                        .antMatchers("/api/tournament/list").permitAll()
+                                        .anyRequest().authenticated();
+                            }
+                        }
                 )
                 .formLogin((form) -> form
                         .loginPage("/authentication/error")

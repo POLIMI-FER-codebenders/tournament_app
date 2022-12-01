@@ -85,6 +85,10 @@ public class Match {
         this.gameId = gameId;
     }
 
+    public Integer getRoundNumber() {
+        return roundNumber;
+    }
+
     public Tournament getTournament() {
         return tournament;
     }

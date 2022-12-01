@@ -131,10 +131,6 @@ public class Team {
         return this.teamMembers.size()==this.maxNumberOfPlayers;
     }
 
-    public void addMember(Player player) {
-        this.teamMembers.add(player);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

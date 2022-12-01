@@ -75,8 +75,6 @@ public class TeamService {
         player.setTeam(team);
         player.setRole(TeamRole.MEMBER);
         playerRepository.save(player);
-        team.addMember(player);
-        teamRepository.save(team);
     }
 
     public List<TeamMemberResponse> getAllMembers(Long idTeam) {
@@ -98,8 +96,6 @@ public class TeamService {
         player.setTeam(null);
         player.setRole(null);
         playerRepository.save(player);
-        team.getTeamMembers().remove(player);
-        teamRepository.save(team);
     }
 
     public void kickMember(String loggedPlayerUsername, Long playerToKickId) {
@@ -119,8 +115,6 @@ public class TeamService {
         playerToKick.setTeam(null);
         playerToKick.setRole(null);
         playerRepository.save(playerToKick);
-        team.getTeamMembers().remove(playerToKick);
-        teamRepository.save(team);
     }
 
     public List<TeamResponse> findAll() {

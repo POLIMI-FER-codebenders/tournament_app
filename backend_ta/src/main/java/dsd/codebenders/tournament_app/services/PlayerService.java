@@ -1,21 +1,32 @@
 package dsd.codebenders.tournament_app.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.Transient;
+
 import dsd.codebenders.tournament_app.dao.PlayerRepository;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
+    @Value("${request-debug:false}")
+    private boolean debug;
+    @Transient
+    private Long spoofedID;
+    private Logger log = LoggerFactory.getLogger(PlayerService.class);
 
     @Autowired
     public PlayerService(PlayerRepository playerRepository, PasswordEncoder passwordEncoder) {
@@ -23,7 +34,7 @@ public class PlayerService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Player findById(Long ID){
+    public Player findById(Long ID) {
         return playerRepository.findById(ID).orElse(null);
     }
 
@@ -51,6 +62,26 @@ public class PlayerService {
     }
 
     public Player getSelf() {
-        return findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (debug && spoofedID != null) {
+            return findById(spoofedID);
+        } else {
+            return findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        }
+    }
+
+    public void spoofID(Long spoofedID) {
+        if (!debug) {
+            throw new BadRequestException("Tried to spoof ID without debug enabled");
+        }
+        if (spoofedID == 0) {
+            this.spoofedID = null;
+            //log.info("Unspoofed");
+        } else {
+            if (findById(spoofedID) == null) {
+                throw new BadRequestException("Spoofed user with ID " + spoofedID + " not found");
+            }
+            this.spoofedID = spoofedID;
+            //log.info("Spoofed to " + this.spoofedID);
+        }
     }
 }

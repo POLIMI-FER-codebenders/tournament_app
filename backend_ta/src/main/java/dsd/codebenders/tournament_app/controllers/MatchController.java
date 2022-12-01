@@ -30,7 +30,7 @@ public class MatchController {
     @GetMapping(value = "/current_match")
     public Map<String, String> createTeam(){
         Map<String, String> map = new HashMap<>();
-        Player player = playerService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        Player player = playerService.getSelf();
         Match match = matchService.getOngoingMatchByPlayer(player);
         if(match == null) {
             map.put("result", "ongoing match not found");
