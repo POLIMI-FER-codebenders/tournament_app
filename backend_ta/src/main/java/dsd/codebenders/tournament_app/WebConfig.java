@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${tournament-app.web-server.address:http://localhost:80}")
+    @Value("${tournament-app.web-server.address:http://localhost:3000}")
     private String webServerAddress;
 
     @Override
@@ -18,6 +18,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry
                 .addMapping("/**")
                 .allowCredentials(true)
-                .allowedOrigins("http://localhost:3000", webServerAddress);
+                .allowedOrigins("http://localhost", webServerAddress);
     }
 }

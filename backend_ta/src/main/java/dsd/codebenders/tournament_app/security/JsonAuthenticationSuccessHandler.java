@@ -12,13 +12,18 @@ import java.io.IOException;
 @Component
 public class JsonAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${tournament-app.web-server.address:http://localhost:80}")
+    @Value("${tournament-app.web-server.address:http://localhost:3000}")
     private String webServerAddress;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+        String origin = request.getHeader("Origin");
+        if(origin.equals("http://localhost") && webServerAddress.equals("http://localhost:80")) {
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost");
+        } else {
+            response.setHeader("Access-Control-Allow-Origin", webServerAddress);
+        }
         response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Origin", webServerAddress);
         response.sendRedirect("/authentication/success");
     }
 }
