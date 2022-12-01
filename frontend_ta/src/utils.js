@@ -53,8 +53,15 @@ export async function postForm(url = '', formData) {
   export async function getData(url =''){
     const response = await fetch(url);
   if (response.status == 200){
-    let result ={result:await response.json(), status : response.status }
+       let textresponse= await response.text();
+       if(textresponse.length==0){
+       let result= {result:null,status: response.status}
+       return result;
+    }
+    else{
+    let result ={result: JSON.parse(textresponse), status : response.status }
     return result;
+    }
   } 
   else {
     let errortext= await response.text();

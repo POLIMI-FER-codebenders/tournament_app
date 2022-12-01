@@ -26,7 +26,7 @@ export class DisplayTournament extends React.Component {
     return (
       <div class="main-panel">
         <h2>Tournaments</h2>
-        <ListTournamentComponent tournaments={this.state.data} />
+        <ListTournamentComponent tournaments={this.state.data} backHome={this.props.backHome} index={this.props.index} />
       </div>
     );
   }

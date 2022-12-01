@@ -2,22 +2,30 @@ import "../styles/TournamentListComponent.css";
 import "../styles/MatchEntry.css";
 import React from 'react';
 import { MatchEntry } from "./MatchEntry";
-import {getData} from "../utils.js";
+import postData, { getData } from "../utils.js";
+import { GoToErrorPage } from "../utils.js";
 
 export class TournamentEntry extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            form: null
+            form: null,
+            joinreply: "",
+            badResponse: null
         };
         this.DisplayTeamForm = this.DisplayTeamForm.bind(this)
         this.JoinButton = this.JoinButton.bind(this);
         this.DisplayTournamentInfo = this.DisplayTournamentInfo.bind(this);
+        this.JoinTournament = this.JoinTournament.bind(this);
+
     }
     render() {
         let formtoshow;
         if (this.props.viewindex != this.props.currentview) formtoshow = null;
         else formtoshow = this.state.form;
+        let joinreplytext;
+        if (this.state.joinreply == "OK") joinreplytext = <p>You have successfully joined the tournament!</p>
+        else if (this.state.joinreply == "KO") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
         return (
             <div>
                 <div className="list-entry flex-container" >
@@ -33,6 +41,7 @@ export class TournamentEntry extends React.Component {
                     </div>
                 </div>
                 {formtoshow}
+                {joinreplytext}
             </div>
         );
     }
@@ -41,7 +50,7 @@ export class TournamentEntry extends React.Component {
         if (status == "TEAMS_JOINING") {
             return <div className="joinable" onClick={this.DisplayTeamForm}>Join</div>
         }
-        else if (status == "SCHEDULING"   || status == "IN PROGRESS"  || status=="ENDED") {
+        else if (status == "SCHEDULING" || status == "IN PROGRESS" || status == "ENDED") {
             return <div className="btn" >Join</div>
         }
     }
@@ -86,41 +95,59 @@ export class TournamentEntry extends React.Component {
             </div>
         }
         else { //the game is not started yet 
-         content= <p> The total number of teams for this tournament is {tourinfo.totalnumberofteams}, there are still {tourinfo.totalnumberofteams-tourinfo.currentnumberofteams} slots </p>
+            content = <p> The total number of teams for this tournament is {tourinfo.totalnumberofteams}, there are still {tourinfo.totalnumberofteams - tourinfo.currentnumberofteams} slots </p>
         }
         this.props.refreshView(this.props.viewindex);
         this.setState({ form: content })
     }
-    DisplayTeamForm() {
-
-        getData("/api/team/get-mine").then((response)=> {
-            if (response.status == 200) {
-             let data= response.result
-             let formtodisplay;
-             if (data != null) {
-                formtodisplay = (
-                    <div>
-                        <form>
-                            <label forhtml="teamtojointour">Join with your team: {data.name}</label>
-                        </form>
-                        <input type="submit" value="Join Tournament" />
-                    </div>
-                )
-            }
+    JoinTournament(event) {
+        event.preventDefault();
+        let data = { idTournament: this.props.record.id };
+        postData("/api/tournament/join", data).then((response) => {
+            if (response.status == 200) this.setState({ joinreply: "OK" });
             else {
-                formtodisplay = (
-                    <div>
-                        <p>To join a tournament you must be owner of one team</p>
-                    </div>
-                )
+                this.setState({ joinreply: "KO" });
+                this.setState({ badResponse: response.message });
             }
-            this.props.refreshView(this.props.viewindex);
-            this.setState({ form: formtodisplay })
+        }
+        );
+    }
+    DisplayTeamForm() {
+        if (sessionStorage.getItem("username") == null) {
+            console.log(this.props.index);
+            this.props.backHome(this.props.index);
+            return;
+        };
+
+        getData("/api/team/get-mine").then((response) => {
+            if (response.status == 200) {
+                let data = response.result
+                let formtodisplay;
+                if (data != null) {
+                    formtodisplay = (
+                        <div>
+                            <form onSubmit={this.JoinTournament}>
+                                <label forhtml="teamtojointour">Join with your team: {data.name}</label>
+                                <input type="submit" value="Join Tournament" />
+                            </form>
+
+                        </div>
+                    )
+                }
+                else {
+                    formtodisplay = (
+                        <div>
+                            <p>To join a tournament you must be owner of one team</p>
+                        </div>
+                    )
+                }
+                this.props.refreshView(this.props.viewindex);
+                this.setState({ form: formtodisplay })
             }
             else console.log("error");
-           }
+        }
         )
-        
-        
+
+
     }
 }
