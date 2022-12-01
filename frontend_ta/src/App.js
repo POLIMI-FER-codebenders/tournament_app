@@ -82,7 +82,7 @@ class Home extends React.Component {
                 {
               if(sessionStorage.getItem("username")!=null) {
                  sessionStorage.removeItem("username");
-                fetch("authentication/logout").then(response => {
+                fetch(process.env.REACT_APP_BACKEND_ADDRESS + "authentication/logout").then(response => {
                  if(response.status!=200){
                    console.log("error");
                  }

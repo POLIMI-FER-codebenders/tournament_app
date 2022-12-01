@@ -29,7 +29,7 @@ class ManageTeams extends Component {
       "date": "16.10.2022",
       "type": "Closed"
     };
-     let url_team = "/api/team/get-mine"
+     let url_team = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/get-mine"
      getData(url_team)
        .then((response) => {
          if (response.result) {

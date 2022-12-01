@@ -31,7 +31,7 @@ services:
       CODE-DEFENDERS_TEST-CLASS-ID: 100
       TOURNAMENT-APP_WEB-SERVER_ADDRESS: http://localhost:${TA_FRONTEND_PORT:-80}
     ports:
-      - "8080:8080"
+      - "${TA_BACKEND_PORT:-8080}:8080"
     depends_on:
       database:
         condition: service_healthy
@@ -41,6 +41,8 @@ services:
     build:
       context: ./
       dockerfile: ./docker/frontend/Dockerfile
+      args:
+        REACT_APP_BACKEND_ADDRESS: http://localhost:${TA_BACKEND_PORT:-8080}
     image: polimifercodebenders/tournament_app_frontend_image:2.0.0
     container_name: tournament_app_frontend
     ports:

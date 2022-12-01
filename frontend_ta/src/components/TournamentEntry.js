@@ -93,7 +93,7 @@ export class TournamentEntry extends React.Component {
     }
     DisplayTeamForm() {
 
-        getData("/api/team/get-mine").then((response)=> {
+        getData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/get-mine").then((response)=> {
             if (response.status == 200) {
              let data= response.result
              let formtodisplay;
