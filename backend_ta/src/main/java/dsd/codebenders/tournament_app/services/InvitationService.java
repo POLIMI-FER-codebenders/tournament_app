@@ -49,7 +49,11 @@ public class InvitationService {
         if (!invitation.getInvitedPlayer().equals(player)) {
             throw new BadRequestException("You can't accept others' invitations.");
         }
-        if (invitation.getStatus() != InvitationStatus.PENDING) {
+
+        if(player.getTeam() != null){
+            throw new BadRequestException("You are already in a team! Leave your current team before joining another one.");
+        }
+        if(invitation.getStatus() != InvitationStatus.PENDING){
             throw new BadRequestException("You can't accept this invitation.");
         }
         Team team = invitation.getTeam();

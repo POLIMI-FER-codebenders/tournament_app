@@ -13,6 +13,10 @@ import dsd.codebenders.tournament_app.responses.TeamResponse;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,11 +42,11 @@ public class TeamController {
     }
 
     @GetMapping(value = "/get")
-    public Team getTeam(@RequestBody GetTeamRequest getTeamRequest) {
-        if (getTeamRequest.getIdTeam() == null) {
+    public Team getTeam(@RequestParam(name = "id") Long idTeam){
+        if(idTeam == null){
             throw new BadRequestException("Invalid arguments");
         }
-        return teamService.findById(getTeamRequest.getIdTeam());
+        return teamService.findById(idTeam);
     }
 
     @GetMapping(value = "/get-all")
@@ -51,11 +55,11 @@ public class TeamController {
     }
 
     @GetMapping(value = "/members/get-all")
-    public List<TeamMemberResponse> getAllMembers(@RequestBody GetTeamRequest getTeamRequest) {
-        if (getTeamRequest.getIdTeam() == null) {
+    public List<TeamMemberResponse> getAllMembers(@RequestParam(name = "id") Long idTeam){
+        if(idTeam == null){
             throw new BadRequestException("Invalid arguments");
         }
-        return teamService.getAllMembers(getTeamRequest.getIdTeam());
+        return teamService.getAllMembers(idTeam);
     }
 
 
