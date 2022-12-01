@@ -13,7 +13,8 @@ class SignUp extends React.Component {
       confirmpassword: '',
       email: '',
       view: "SignUp",
-      badResponse: null
+      badResponse: null,
+      registered:false
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,7 +38,7 @@ class SignUp extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     if(!checkUsername(this.state.username)){
-      this.setState({ errorMessage: "username must be from 8 to 20 characters long (8 and 20 are valid lengths), can contain only uppercase char, lowercase char and digits, can NOT start with a digit" })
+      this.setState({ errorMessage: "username must be from 3 to 20 characters long (3 and 20 are valid lengths), can contain only uppercase char, lowercase char and digits, can NOT start with a digit" })
       return;
      }
      if(!checkEmail(this.state.email)){
@@ -54,7 +55,7 @@ class SignUp extends React.Component {
     }
     
      
-    if (this.state.password != this.state.username) {
+    if (this.state.password != this.state.confirmpassword) {
       this.setState({ errorMessage: "confirm password is different from password!" })
       return;
     }
@@ -66,8 +67,7 @@ class SignUp extends React.Component {
       if (response.status == 200) {
         if (response.result == "Registered") {
           this.setState({ errorMessage: null })
-          sessionStorage.setItem("username", username)
-          this.props.backHome(this.props.index,true);
+          this.setState({view:"SignIn",registered:true})
         }
         else if (response.result == "Email already taken") {
           this.setState({ errorMessage: "email already taken" })
@@ -91,7 +91,7 @@ class SignUp extends React.Component {
 
   render() {
     if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.view == "SignIn") return (<SignIn />);
+    if (this.state.view == "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} registered={this.state.registered} />);
     else if (this.state.view == "SignUp") return (
       <div className="app" class="main-panel">
         <div className="login-form">

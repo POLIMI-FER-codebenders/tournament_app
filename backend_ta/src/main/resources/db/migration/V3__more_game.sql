@@ -1,0 +1,13 @@
+ALTER TABLE game ADD round_number INT NULL;
+
+ALTER TABLE game ADD tournament_id BIGINT NULL;
+
+ALTER TABLE game ADD winning_team_id BIGINT NULL;
+
+ALTER TABLE game MODIFY round_number INT NOT NULL;
+
+ALTER TABLE game MODIFY tournament_id BIGINT NOT NULL;
+
+ALTER TABLE game ADD CONSTRAINT FK_GAME_ON_TOURNAMENT FOREIGN KEY (tournament_id) REFERENCES tournament (id);
+
+ALTER TABLE game ADD CONSTRAINT FK_GAME_ON_WINNING_TEAM FOREIGN KEY (winning_team_id) REFERENCES team (id);

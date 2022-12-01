@@ -66,9 +66,12 @@ class SignIn extends React.Component {
     let nextcomponent;
     if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     if (this.state.view == "SignUp") nextcomponent = (<SignUp backHome={this.props.backHome} index={this.props.index} />);
+    let registrationmessage;
+    if(this.props.registered) registrationmessage=<p>Registration successfull, please login</p>
     if (this.state.view == "SignIn") nextcomponent = (
       <div className="app" class="main-panel">
         <div className="login-form">
+          {registrationmessage}
           <h2>Sign In</h2>
           <div className="form">
             <form onSubmit={this.handleSubmit}>

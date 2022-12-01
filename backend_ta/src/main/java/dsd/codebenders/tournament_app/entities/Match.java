@@ -1,27 +1,61 @@
 package dsd.codebenders.tournament_app.entities;
 
-import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
+import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
+
 @Entity
 @Table(name = "game")
 public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MatchStatus status;
+    private MatchStatus status = MatchStatus.CREATED;
     private String server;
-    @Column(name="game_ID")
+    @Column(name = "game_ID")
     private Integer gameId;
-
-    @ManyToOne
-    @JoinColumn(name = "ID_attackers_team")
+    @Column(name = "round_number", nullable = false)
+    private Integer roundNumber;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "tournament_id", nullable = false)
+    @JsonSerialize(using = TournamentIDSerializer.class)
+    private Tournament tournament;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_attackers_team", nullable = false)
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team attackersTeam;
-
-    @ManyToOne
-    @JoinColumn(name = "ID_defenders_team")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_defenders_team", nullable = false)
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team defendersTeam;
+    @ManyToOne
+    @JoinColumn(name = "winning_team_id")
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
+    private Team winningTeam;
+
+    public Match() {
+    }
+
+    public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament) {
+        this.attackersTeam = attackersTeam;
+        this.defendersTeam = defendersTeam;
+        this.roundNumber = roundNumber;
+        this.tournament = tournament;
+    }
 
     public Long getID() {
         return ID;
@@ -31,12 +65,28 @@ public class Match {
         return status;
     }
 
+    public void setStatus(MatchStatus status) {
+        this.status = status;
+    }
+
     public String getServer() {
         return server;
     }
 
-    public int getGameId() {
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public Integer getGameId() {
         return gameId;
+    }
+
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
+    }
+
+    public Tournament getTournament() {
+        return tournament;
     }
 
     public Team getAttackersTeam() {
@@ -45,5 +95,13 @@ public class Match {
 
     public Team getDefendersTeam() {
         return defendersTeam;
+    }
+
+    public Team getWinningTeam() {
+        return winningTeam;
+    }
+
+    public void setWinningTeam(Team winningTeam) {
+        this.winningTeam = winningTeam;
     }
 }

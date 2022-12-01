@@ -1,5 +1,7 @@
 package dsd.codebenders.tournament_app.controllers;
 
+import java.util.List;
+
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
@@ -15,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "api/team")
@@ -24,13 +31,13 @@ public class TeamController {
     private final TeamService teamService;
 
     @Autowired
-    public TeamController(TeamService teamService, PlayerService playerService){
+    public TeamController(TeamService teamService, PlayerService playerService) {
         this.playerService = playerService;
         this.teamService = teamService;
     }
 
     @GetMapping(value = "/get-mine")
-    public Team getMyTeam(){
+    public Team getMyTeam() {
         return playerService.getSelf().getTeam();
     }
 
@@ -43,7 +50,7 @@ public class TeamController {
     }
 
     @GetMapping(value = "/get-all")
-    public List<TeamResponse> getAllTeams(){
+    public List<TeamResponse> getAllTeams() {
         return teamService.findAll();
     }
 
@@ -55,14 +62,15 @@ public class TeamController {
         return teamService.getAllMembers(idTeam);
     }
 
+
     @PostMapping(value = "/create")
-    public Team createTeam(@RequestBody Team team){
+    public Team createTeam(@RequestBody Team team) {
         Player creator = playerService.getSelf();
         return teamService.createTeam(team, creator);
     }
 
     @PostMapping(value = "/join")
-    public void joinTeam(@RequestBody JoinTeamRequest request){
+    public void joinTeam(@RequestBody JoinTeamRequest request) {
         // retrieve currently authenticated user from session
         Player player = playerService.getSelf();
         Team team = teamService.findById(request.getIdTeam());
@@ -70,15 +78,15 @@ public class TeamController {
     }
 
     @PostMapping(value = "/leave")
-    public void leaveTeam(){
+    public void leaveTeam() {
         // retrieve currently authenticated user from session
         Player player = playerService.getSelf();
         teamService.leaveTeam(player);
     }
 
     @PostMapping(value = "/kick_member")
-    public void kickMember(@RequestBody KickMemberFromTeamRequest kickMemberFromTeamRequest){
-        if(kickMemberFromTeamRequest == null || kickMemberFromTeamRequest.getIdKickedPlayer() == null){
+    public void kickMember(@RequestBody KickMemberFromTeamRequest kickMemberFromTeamRequest) {
+        if (kickMemberFromTeamRequest == null || kickMemberFromTeamRequest.getIdKickedPlayer() == null) {
             throw new BadRequestException("Invalid arguments");
         }
         // retrieve currently authenticated user from session

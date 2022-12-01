@@ -50,8 +50,6 @@ export async function postForm(url = '', formData) {
     return result;
     }
   }
-
-  export default postData;
   export async function getData(url =''){
     const response = await fetch(url);
   if (response.status == 200){
@@ -77,8 +75,8 @@ export function checkPassword(password){
    return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length>=8 && password.length<=20 &&  !/[^A-Za-z0-9]/.test()
 }
 export function checkUsername(username){
-  
-  return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9].*/)
+  return /^[a-zA-Z][a-zA-Z0-9]{2,19}$/.test(username);
+ // return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9](.)*/)
 }
 export function checkEmail(mail) 
 {
