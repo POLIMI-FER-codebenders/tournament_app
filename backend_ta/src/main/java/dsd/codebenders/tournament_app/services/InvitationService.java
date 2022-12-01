@@ -46,11 +46,6 @@ public class InvitationService {
 
     public void acceptInvitation(Player player, Long idInvitation) {
         Invitation invitation = invitationRepository.findById(idInvitation).orElseThrow(() -> new ResourceNotFoundException("Invitation doesn't exist!"));
-/*
-        if (player.getTeam() != null) {
-            throw new BadRequestException("You are already part of another team. Leave it before accepting this request.");
-        }
-*/
         if (!invitation.getInvitedPlayer().equals(player)) {
             throw new BadRequestException("You can't accept others' invitations.");
         }
