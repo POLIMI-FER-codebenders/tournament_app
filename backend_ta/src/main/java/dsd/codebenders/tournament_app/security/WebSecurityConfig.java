@@ -16,16 +16,18 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     private final UserDetailsService playerDetailsService;
-    private final JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler;
-    private final JsonAuthenticationSuccessHandler jsonAuthenticationSuccessHandler;
+    private final CorsAuthenticationFailureHandler corsAuthenticationFailureHandler;
+    private final CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler;
+    private final CorsLogoutSuccessHandler corsLogoutSuccessHandler;
     @Value("${request-debug:false}")
     private Boolean debug;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService, JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler, JsonAuthenticationSuccessHandler jsonAuthenticationSuccessHandler) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, CorsAuthenticationFailureHandler corsAuthenticationFailureHandler, CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler, CorsLogoutSuccessHandler corsLogoutSuccessHandler) {
         this.playerDetailsService = userDetailsService;
-        this.jsonAuthenticationFailureHandler = jsonAuthenticationFailureHandler;
-        this.jsonAuthenticationSuccessHandler = jsonAuthenticationSuccessHandler;
+        this.corsAuthenticationFailureHandler = corsAuthenticationFailureHandler;
+        this.corsAuthenticationSuccessHandler = corsAuthenticationSuccessHandler;
+        this.corsLogoutSuccessHandler = corsLogoutSuccessHandler;
     }
 
     @Bean
@@ -67,13 +69,13 @@ public class WebSecurityConfig {
                         .loginPage("/authentication/error")
                         .loginProcessingUrl("/authentication/login")
                         .permitAll()
-                        .successHandler(jsonAuthenticationSuccessHandler)
-                        .failureHandler(jsonAuthenticationFailureHandler)
+                        .successHandler(corsAuthenticationSuccessHandler)
+                        .failureHandler(corsAuthenticationFailureHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/authentication/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
+                        .logoutSuccessHandler(corsLogoutSuccessHandler)
                         .invalidateHttpSession(true).permitAll()
                 );
 
