@@ -81,7 +81,7 @@ public class TeamController {
         teamService.leaveTeam(player);
     }
 
-    @PostMapping(value = "/kick_member")
+    @PostMapping(value = "/kick-member")
     public void kickMember(@RequestBody KickMemberFromTeamRequest kickMemberFromTeamRequest) {
         if (kickMemberFromTeamRequest == null || kickMemberFromTeamRequest.getIdKickedPlayer() == null) {
             throw new BadRequestException("Invalid arguments");
