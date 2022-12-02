@@ -1,7 +1,8 @@
 package dsd.codebenders.tournament_app.entities;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -18,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -69,7 +69,7 @@ public abstract class Tournament {
     @Column(name = "current_round")
     protected Integer currentRound = 0;
 
-    protected LocalDateTime nextRoundStartTime;
+    protected Date nextRoundStartTime = Date.from(Instant.now()); //TODO remove the default when we have scheduling
 
     @OneToMany(mappedBy = "tournament")
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
@@ -114,11 +114,11 @@ public abstract class Tournament {
         return matchType;
     }
 
-    public LocalDateTime getNextRoundStartTime() {
+    public Date getNextRoundStartTime() {
         return nextRoundStartTime;
     }
 
-    public void setNextRoundStartTime(LocalDateTime nextRoundStartTime) {
+    public void setNextRoundStartTime(Date nextRoundStartTime) {
         this.nextRoundStartTime = nextRoundStartTime;
     }
 
