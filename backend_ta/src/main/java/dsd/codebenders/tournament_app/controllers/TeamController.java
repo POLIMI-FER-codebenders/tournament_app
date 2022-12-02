@@ -8,6 +8,7 @@ import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.requests.GetTeamRequest;
 import dsd.codebenders.tournament_app.requests.JoinTeamRequest;
 import dsd.codebenders.tournament_app.requests.KickMemberFromTeamRequest;
+import dsd.codebenders.tournament_app.requests.PromoteToTeamLeaderRequest;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import dsd.codebenders.tournament_app.responses.TeamResponse;
 import dsd.codebenders.tournament_app.services.PlayerService;
@@ -84,7 +85,7 @@ public class TeamController {
         teamService.leaveTeam(player);
     }
 
-    @PostMapping(value = "/kick_member")
+    @PostMapping(value = "/kick-member")
     public void kickMember(@RequestBody KickMemberFromTeamRequest kickMemberFromTeamRequest) {
         if (kickMemberFromTeamRequest == null || kickMemberFromTeamRequest.getIdKickedPlayer() == null) {
             throw new BadRequestException("Invalid arguments");
@@ -93,6 +94,15 @@ public class TeamController {
         String loggedPlayerUsername = playerService.getSelf().getUsername();
         Long playerToKickId = kickMemberFromTeamRequest.getIdKickedPlayer();
         teamService.kickMember(loggedPlayerUsername, playerToKickId);
+    }
+
+    @PostMapping(value = "/members/promote-leader")
+    public void promoteToLeader(@RequestBody PromoteToTeamLeaderRequest promoteToTeamLeaderRequest) {
+        Player playerLogged = playerService.getSelf();
+        Player playerToPromote = playerService.findById(promoteToTeamLeaderRequest.getIdPlayer());
+
+        teamService.promoteToLeader(playerLogged, playerToPromote);
+
     }
 
 }
