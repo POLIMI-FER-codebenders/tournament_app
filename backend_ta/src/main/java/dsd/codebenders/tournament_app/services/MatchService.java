@@ -22,13 +22,15 @@ import org.springframework.web.client.RestClientException;
 public class MatchService {
 
     private final CDPlayerService cdPlayerservice;
+    private final ServerService serverService;
     private final MatchRepository matchRepository;
     @Value("${code-defenders.test-class-id:100}")
     private int classId;
 
     @Autowired
-    public MatchService(CDPlayerService cdPlayerservice, MatchRepository matchRepository) {
+    public MatchService(CDPlayerService cdPlayerservice, ServerService serverService, MatchRepository matchRepository) {
         this.cdPlayerservice = cdPlayerservice;
+        this.serverService = serverService;
         this.matchRepository = matchRepository;
     }
 
@@ -37,8 +39,7 @@ public class MatchService {
     }
 
     public void createAndStartMatch(Match match) throws MatchCreationException {
-        // TODO: choose CD server
-        Server server = new Server();
+        Server server = serverService.getCDServer();
         createCDPlayers(match.getAttackersTeam(), server);
         createCDPlayers(match.getDefendersTeam(), server);
         GameRequest gameRequest = createGameRequest(match, server);
