@@ -13,7 +13,7 @@ import javax.persistence.UniqueConstraint;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "server"}))
+@Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "ID_server"}))
 public class CDPlayer {
 
     @Id
@@ -21,8 +21,6 @@ public class CDPlayer {
     private Long ID;
     @Column(nullable = false)
     private String username;
-    @Column(nullable = false)
-    private String server;
     @JsonIgnore
     private String token;
     @Column(name = "user_ID", nullable = false)
@@ -32,6 +30,10 @@ public class CDPlayer {
     @JoinColumn(name = "ID_player", nullable = false)
     private Player realPlayer;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_server", nullable = false)
+    private Server server;
+
     public Long getID() {
         return ID;
     }
@@ -40,11 +42,11 @@ public class CDPlayer {
         return username;
     }
 
-    public String getServer() {
+    public Server getServer() {
         return server;
     }
 
-    public void setServer(String server) {
+    public void setServer(Server server) {
         this.server = server;
     }
 

@@ -6,11 +6,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
-import dsd.codebenders.tournament_app.entities.CDPlayer;
-import dsd.codebenders.tournament_app.entities.Match;
-import dsd.codebenders.tournament_app.entities.Player;
-import dsd.codebenders.tournament_app.entities.Team;
-import dsd.codebenders.tournament_app.entities.Tournament;
+import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.GameRequest;
@@ -27,8 +23,6 @@ public class MatchService {
 
     private final CDPlayerService cdPlayerservice;
     private final MatchRepository matchRepository;
-    @Value("${code-defenders.address:http://localhost:4000}")
-    private String server;
     @Value("${code-defenders.test-class-id:100}")
     private int classId;
 
@@ -44,17 +38,18 @@ public class MatchService {
 
     public void createAndStartMatch(Match match) throws MatchCreationException {
         // TODO: choose CD server
-        createCDPlayers(match.getAttackersTeam());
-        createCDPlayers(match.getDefendersTeam());
-        GameRequest gameRequest = createGameRequest(match);
+        Server server = new Server();
+        createCDPlayers(match.getAttackersTeam(), server);
+        createCDPlayers(match.getDefendersTeam(), server);
+        GameRequest gameRequest = createGameRequest(match, server);
         Match createdMatch;
         try {
-            createdMatch = HTTPRequestsSender.sendPostRequest(server + "/admin/api/game", gameRequest, Match.class);
+            createdMatch = HTTPRequestsSender.sendPostRequest(server, "/admin/api/game", gameRequest, Match.class);
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to create game. Caused by: " + e.getMessage());
         }
         try {
-            HTTPRequestsSender.sendPostRequest(server + "/admin/api/game/start", createdMatch, void.class);
+            HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/start", createdMatch, void.class);
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
@@ -68,13 +63,13 @@ public class MatchService {
         return matchRepository.findStartedMatchByPlayer(player);
     }
 
-    private void createCDPlayers(Team team) {
+    private void createCDPlayers(Team team, Server server) {
         Map<String, String> queryParameters = new HashMap<>();
         for (Player p : team.getTeamMembers()) {
             CDPlayer cdPlayer = cdPlayerservice.getCDPlayerByServer(p, server);
             if (cdPlayer == null) {
                 queryParameters.put("name", p.getUsername());
-                cdPlayer = HTTPRequestsSender.sendGetRequest(server + "/admin/api/auth/newUser", queryParameters, CDPlayer.class);
+                cdPlayer = HTTPRequestsSender.sendGetRequest(server, "/admin/api/auth/newUser", queryParameters, CDPlayer.class);
                 cdPlayer.setServer(server);
                 cdPlayer.setRealPlayer(p);
                 cdPlayerservice.addNewCDPlayer(cdPlayer);
@@ -82,15 +77,15 @@ public class MatchService {
         }
     }
 
-    private GameRequest createGameRequest(Match match) {
+    private GameRequest createGameRequest(Match match, Server server) {
         GameSettingsRequest gameSettingsRequest = new GameSettingsRequest("multiplayer", "easy", "moderate", 10, 10);
         TeamRequest[] teams = new TeamRequest[2];
-        teams[0] = createTeamRequest(match.getAttackersTeam(), "attacker");
-        teams[1] = createTeamRequest(match.getDefendersTeam(), "defender");
+        teams[0] = createTeamRequest(match.getAttackersTeam(), "attacker", server);
+        teams[1] = createTeamRequest(match.getDefendersTeam(), "defender", server);
         return new GameRequest(classId, teams, gameSettingsRequest, "http://localhost:3000/");
     }
 
-    private TeamRequest createTeamRequest(Team team, String role) {
+    private TeamRequest createTeamRequest(Team team, String role, Server server) {
         List<CDPlayer> cdMembers = cdPlayerservice.getCDPlayersByTeamAndServer(team, server);
         int[] members = new int[cdMembers.size()];
         for (int i = 0; i < members.length; i++) {
@@ -99,11 +94,11 @@ public class MatchService {
         return new TeamRequest(members, role);
     }
 
-    public List<Team> getWinnersOfRound(Tournament tournament, int roundNumber, TournamentService tournamentService) {
+    public List<Team> getWinnersOfRound(Tournament tournament, int roundNumber) {
         return matchRepository.findByTournamentAndRoundNumber(tournament, roundNumber).stream().map(Match::getWinningTeam).toList();
     }
 
-    List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round, TournamentService tournamentService) {
+    List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
         return matchRepository.findByTournamentAndRoundNumber(tournament, round);
     }
 }
