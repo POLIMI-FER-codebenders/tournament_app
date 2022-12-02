@@ -25,7 +25,6 @@ public class Match {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MatchStatus status = MatchStatus.CREATED;
-    private String server;
     @Column(name = "game_ID")
     private Integer gameId;
     @Column(name = "round_number", nullable = false)
@@ -46,6 +45,9 @@ public class Match {
     @JoinColumn(name = "winning_team_id")
     @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team winningTeam;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_server")
+    private Server server;
 
     public Match() {
     }
@@ -69,11 +71,11 @@ public class Match {
         this.status = status;
     }
 
-    public String getServer() {
+    public Server getServer() {
         return server;
     }
 
-    public void setServer(String server) {
+    public void setServer(Server server) {
         this.server = server;
     }
 

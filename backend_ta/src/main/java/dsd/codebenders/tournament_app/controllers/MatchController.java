@@ -3,12 +3,14 @@ package dsd.codebenders.tournament_app.controllers;
 import dsd.codebenders.tournament_app.entities.CDPlayer;
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.Server;
 import dsd.codebenders.tournament_app.services.CDPlayerService;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +38,10 @@ public class MatchController {
             map.put("result", "ongoing match not found");
             return map;
         }
-        String server = match.getServer();
+        Server server = match.getServer();
         CDPlayer cdPlayer = cdPlayerService.getCDPlayerByServer(player, server);
         map.put("result", "ongoing match found");
-        map.put("server", server);
+        map.put("server", server.getAddress());
         map.put("token", cdPlayer.getToken());
         return map;
     }
