@@ -26,6 +26,16 @@ public class Server {
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
     private List<Match> matches;
 
+    public Server() {
+
+    }
+
+    public Server(String address, String adminToken) {
+        this.address = address;
+        this.adminToken = adminToken;
+        this.isActive = true;
+    }
+
     public Boolean getIsActive() {
         return isActive;
     }
