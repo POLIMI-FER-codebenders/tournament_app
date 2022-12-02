@@ -19,7 +19,7 @@ export function CreateTournament() {
     const handleSubmit = (event) => {
       event.preventDefault();
       let data={name:name,numberOfTeams:8,teamSize:8,type:type,matchType:"MELEE"}
-      postData("/api/tournament/create",data);
+      postData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/tournament/create",data);
       
 
       alert(`you want to create tournament: ${name}, of type ${type}, for ${size} teams, starting on ${start_date}`);

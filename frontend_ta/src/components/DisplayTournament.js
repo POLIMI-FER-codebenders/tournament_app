@@ -13,7 +13,7 @@ export class DisplayTournament extends React.Component {
   }
   componentDidMount() {
     
-    getData("/api/tournament/list").then((response)=> {
+    getData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/tournament/list").then((response)=> {
      if (response.status == 200) {
       this.setState({data: response.result});
      }

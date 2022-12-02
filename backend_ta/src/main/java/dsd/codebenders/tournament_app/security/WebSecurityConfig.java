@@ -1,7 +1,5 @@
 package dsd.codebenders.tournament_app.security;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,21 +11,24 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
 
     private final UserDetailsService playerDetailsService;
-    private final JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler;
+    private final CorsAuthenticationFailureHandler corsAuthenticationFailureHandler;
+    private final CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler;
+    private final CorsLogoutSuccessHandler corsLogoutSuccessHandler;
     @Value("${request-debug:false}")
     private Boolean debug;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService, JsonAuthenticationFailureHandler jsonAuthenticationFailureHandler) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, CorsAuthenticationFailureHandler corsAuthenticationFailureHandler, CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler, CorsLogoutSuccessHandler corsLogoutSuccessHandler) {
         this.playerDetailsService = userDetailsService;
-        this.jsonAuthenticationFailureHandler = jsonAuthenticationFailureHandler;
+        this.corsAuthenticationFailureHandler = corsAuthenticationFailureHandler;
+        this.corsAuthenticationSuccessHandler = corsAuthenticationSuccessHandler;
+        this.corsLogoutSuccessHandler = corsLogoutSuccessHandler;
     }
 
     @Bean
@@ -69,13 +70,13 @@ public class WebSecurityConfig {
                         .loginPage("/authentication/error")
                         .loginProcessingUrl("/authentication/login")
                         .permitAll()
-                        .successHandler(new SimpleUrlAuthenticationSuccessHandler("/authentication/success"))
-                        .failureHandler(jsonAuthenticationFailureHandler)
+                        .successHandler(corsAuthenticationSuccessHandler)
+                        .failureHandler(corsAuthenticationFailureHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/authentication/logout")
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
+                        .logoutSuccessHandler(corsLogoutSuccessHandler)
                         .invalidateHttpSession(true).permitAll()
                 );
 
