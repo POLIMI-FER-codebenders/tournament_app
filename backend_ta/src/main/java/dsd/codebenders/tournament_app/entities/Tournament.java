@@ -1,5 +1,6 @@
 package dsd.codebenders.tournament_app.entities;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -31,7 +33,7 @@ import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 @Entity
 @Table(name = "tournament")
 @DiscriminatorColumn(name = "type")
-@JsonIgnoreProperties(value = {"id", "tournamentScores", "creator", "currentRound", "status"}, allowGetters = true)
+@JsonIgnoreProperties(value = {"id", "tournamentScores", "creator", "currentRound", "status", "nextRoundStartTime", "winningTeam", "matches"}, allowGetters = true)
 public abstract class Tournament {
 
     @Id
@@ -67,11 +69,18 @@ public abstract class Tournament {
     @Column(name = "current_round")
     protected Integer currentRound = 0;
 
+    protected LocalDateTime nextRoundStartTime;
+
     @OneToMany(mappedBy = "tournament")
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament")
     protected List<Match> matches = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "winning_team_id")
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
+    protected Team winningTeam;
 
     public Long getID() {
         return ID;
@@ -105,12 +114,28 @@ public abstract class Tournament {
         return matchType;
     }
 
+    public LocalDateTime getNextRoundStartTime() {
+        return nextRoundStartTime;
+    }
+
+    public void setNextRoundStartTime(LocalDateTime nextRoundStartTime) {
+        this.nextRoundStartTime = nextRoundStartTime;
+    }
+
     public TournamentStatus getStatus() {
         return status;
     }
 
     public void setStatus(TournamentStatus status) {
         this.status = status;
+    }
+
+    public Team getWinningTeam() {
+        return winningTeam;
+    }
+
+    public void setWinningTeam(Team winningTeam) {
+        this.winningTeam = winningTeam;
     }
 
     public List<TournamentScore> getTournamentScores() {
