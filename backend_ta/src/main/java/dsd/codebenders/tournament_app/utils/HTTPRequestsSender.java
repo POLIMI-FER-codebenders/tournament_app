@@ -8,10 +8,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class HTTPRequestsSender {
+
+    public static <T> T sendGetRequest(Server server, String api, Class<T> returnType) {
+        return sendGetRequest(server, api, new HashMap<>(), returnType);
+    }
 
     public static <T> T sendGetRequest(Server server, String api, Map<String, String> queryParameters, Class<T> returnType) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(server.getAddress() + api);
