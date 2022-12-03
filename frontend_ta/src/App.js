@@ -55,9 +55,12 @@ class Home extends React.Component {
 
   constructor(props) {
     super(props);
+    let buttontext ;
+    if(sessionStorage.getItem("username")!=null)buttontext="Logout"
+    else buttontext="SignIn"
     this.state = {
       view: 0,
-      buttontext:"SignIn",
+      buttontext: buttontext,
       error:false
     };
     this.backHome = this.backHome.bind(this);

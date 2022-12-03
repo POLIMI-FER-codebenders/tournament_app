@@ -9,24 +9,25 @@ export class DisplayTournament extends React.Component {
     this.state = {
       data:[]
     };
-
+   this.reloadPage=this.reloadPage.bind(this);
   }
   componentDidMount() {
-    
+    this.reloadPage();
+  }
+  reloadPage(){
     getData("/api/tournament/list").then((response)=> {
-     if (response.status == 200) {
-      this.setState({data: response.result});
+      if (response.status == 200) {
+       this.setState({data: response.result});
+       console.log(response.result);}
+      else console.log("error");
      }
-     else console.log("error");
-    }
-    );
+     );
   }
   render() {
-    
     return (
       <div class="main-panel">
         <h2>Tournaments</h2>
-        <ListTournamentComponent tournaments={this.state.data} backHome={this.props.backHome} index={this.props.index} />
+        <ListTournamentComponent tournaments={this.state.data} backHome={this.props.backHome} index={this.props.index} reloadPage={this.reloadPage} />
       </div>
     );
   }

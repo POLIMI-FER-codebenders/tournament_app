@@ -75,8 +75,19 @@
     padding: 5px 10px;
     text-align: center;
 }
+.joined {
+    cursor: pointer;
+    padding: 5px 10px;
+    text-align: center;
 
+}
 
+.col6 .joined{
+    border: 1px solid #07be44;
+    background: #07be44;
+    color: #fff;
+
+}
 
 .col6 .joinable {
     border: 1px solid #07be44;
