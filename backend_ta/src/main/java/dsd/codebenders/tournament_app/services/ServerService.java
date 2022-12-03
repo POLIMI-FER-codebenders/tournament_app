@@ -20,7 +20,7 @@ public class ServerService {
     }
 
     public Server getCDServer() {
-        List<Server> serverList = serverRepository.findAll();
+        List<Server> serverList = serverRepository.findAllActive();
         Server lessLoaded = null;
         Integer minimumLoad = Integer.MAX_VALUE;
         for(Server s: serverList) {

@@ -6,10 +6,15 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface ServerRepository extends JpaRepository<Server,Long> {
 
     @Query("SELECT s FROM Server s WHERE s.address = ?1")
     Server findByAddress(String address);
+
+    @Query("SELECT s FROM Server s WHERE s.isActive = true")
+    List<Server> findAllActive();
 
     @Transactional
     @Modifying
