@@ -64,4 +64,11 @@ public class Server {
         return matches;
     }
 
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public void setAdminToken(String adminToken) {
+        this.adminToken = adminToken;
+    }
 }

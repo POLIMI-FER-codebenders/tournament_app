@@ -2,6 +2,8 @@ package dsd.codebenders.tournament_app.services;
 
 import dsd.codebenders.tournament_app.dao.ServerRepository;
 import dsd.codebenders.tournament_app.entities.Server;
+import dsd.codebenders.tournament_app.errors.CDServerAlreadyRegisteredException;
+import dsd.codebenders.tournament_app.errors.CDServerNotFoundException;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,20 +33,35 @@ public class ServerService {
         return lessLoaded;
     }
 
-    public Server getServerByAddress(String address) {
-        return serverRepository.findByAddress(address);
+    public void addServer(Server server) throws CDServerAlreadyRegisteredException {
+        Server storedServer = serverRepository.findByAddress(server.getAddress());
+        if(storedServer == null) {
+            server.setActive(true);
+            serverRepository.save(server);
+        } else if (storedServer.isActive()) {
+            throw new CDServerAlreadyRegisteredException();
+        } else {
+            serverRepository.updateToken(server.getAdminToken(), storedServer);
+            serverRepository.updateAsActive(storedServer);
+        }
     }
 
-    public void addServer(Server server) {
-        serverRepository.save(server);
+    public void updateServer(Server server) throws CDServerNotFoundException {
+        Server storedServer = serverRepository.findByAddress(server.getAddress());
+        if(storedServer == null || !storedServer.isActive()) {
+            throw new CDServerNotFoundException();
+        } else {
+            serverRepository.updateToken(server.getAdminToken(), storedServer);
+        }
     }
 
-    public void updateServer(Server server) {
-        serverRepository.updateToken(server.getAddress(), server);
-    }
-
-    public void deleterServer(Server server) {
-        serverRepository.delete(server);
+    public void deleteServer(Server server) throws CDServerNotFoundException {
+        Server storedServer = serverRepository.findByAddress(server.getAddress());
+        if(storedServer == null || !storedServer.isActive()) {
+            throw new CDServerNotFoundException();
+        } else {
+            serverRepository.updateAsInactive(storedServer);
+        }
     }
 
 }

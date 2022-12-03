@@ -2,6 +2,8 @@ package dsd.codebenders.tournament_app.controllers;
 
 import dsd.codebenders.tournament_app.entities.Server;
 import dsd.codebenders.tournament_app.errors.BadAdminRequestException;
+import dsd.codebenders.tournament_app.errors.CDServerAlreadyRegisteredException;
+import dsd.codebenders.tournament_app.errors.CDServerNotFoundException;
 import dsd.codebenders.tournament_app.errors.UnauthorizedAuthenticationException;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.ServerService;
@@ -32,10 +34,10 @@ public class CDServerController {
         if(!isServerValid(server)) {
             throw new BadAdminRequestException("Address or token is missing");
         }
-        if(serverService.getServerByAddress(server.getAddress()) != null) {
-            throw new BadAdminRequestException("Server already registered");
-        } else {
+        try {
             serverService.addServer(server);
+        } catch (CDServerAlreadyRegisteredException e) {
+            throw new BadAdminRequestException(e.getMessage());
         }
     }
 
@@ -47,10 +49,10 @@ public class CDServerController {
         if(!isServerValid(server)) {
             throw new BadAdminRequestException("Address or token is missing");
         }
-        if(serverService.getServerByAddress(server.getAddress()) == null) {
-            throw new BadAdminRequestException("Server not found");
-        } else {
+        try {
             serverService.updateServer(server);
+        } catch (CDServerNotFoundException e) {
+            throw new BadAdminRequestException(e.getMessage());
         }
     }
 
@@ -62,10 +64,10 @@ public class CDServerController {
         if(server.getAddress() == null || server.getAddress().isBlank()) {
             throw new BadAdminRequestException("Address is missing");
         }
-        if(serverService.getServerByAddress(server.getAddress()) == null) {
-            throw new BadAdminRequestException("Server not found");
-        } else {
-            serverService.deleterServer(server);
+        try {
+            serverService.deleteServer(server);
+        } catch (CDServerNotFoundException e) {
+            throw new BadAdminRequestException(e.getMessage());
         }
     }
 

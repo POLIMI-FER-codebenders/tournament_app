@@ -16,4 +16,14 @@ public interface ServerRepository extends JpaRepository<Server,Long> {
     @Query("UPDATE Server s SET s.adminToken = ?1 WHERE s = ?2")
     void updateToken(String token, Server server);
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE Server s SET s.isActive = 1 WHERE s = ?1")
+    void updateAsActive(Server server);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Server s SET s.isActive = 0 WHERE s = ?1")
+    void updateAsInactive(Server server);
+
 }
