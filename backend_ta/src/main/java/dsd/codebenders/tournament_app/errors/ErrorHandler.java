@@ -27,4 +27,9 @@ public class ErrorHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadAdminRequestException.class)
+    public ResponseEntity<String> handleBadAdminRequestException(BadAdminRequestException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
 }
