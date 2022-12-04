@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "cd_player")
+@Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "id_server"}))
 @JsonIgnoreProperties(value = {"token"}, allowSetters = true)
 public class CDPlayer {
 
