@@ -72,7 +72,7 @@ public class CDServerController {
     }
 
     private boolean isAdminLogged() {
-        return playerService.getSelf().getUsername().equals("admin");
+        return playerService.getSelf().isAdmin();
     }
 
     private boolean isServerValid(Server server) {
