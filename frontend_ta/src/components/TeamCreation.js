@@ -19,7 +19,7 @@ class TeamCreation extends Component {
     event.preventDefault();
     console.log(this.state.type);
     let data={name:this.state.name,maxNumberOfPlayers:4,policy:this.state.type}
-      postData("/api/team/create",data);
+      postData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/create",data);
     alert(`The name you entered was: ${this.state.name}, ${this.state.type} to new members`);
   };
 

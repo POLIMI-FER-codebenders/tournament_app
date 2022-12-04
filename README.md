@@ -5,9 +5,9 @@ Tournament application for CodeDefenders. Developed by a team of POLIMI and FER 
 Our application can be easily deployed and run using Docker!
 
 ### Before deploying
-You can change database credentials and default port for the web server by editing the [.env](.env) file.
+You can change database credentials and default port for web and application servers by editing the [.env](.env) file.
 
-WARNING: At the moment it is only possible to change the default port for the web server and not for the application server. Make sure that port 8080 is available on you local machine.
+WARNING: At the moment application server port can only be changed if you are building frontend image yourself. It can't be changed if you are using an image downloaded from Dockerhub.
 
 ### How to deploy
 Follow these three steps:
