@@ -82,26 +82,6 @@ class ManageTeams extends Component {
       });
   }
 
-  renderErrorMessage() {
-    if (this.state.errorMessage == null) return;
-    return (
-      <p>{this.state.errorMessage}</p>
-    );
-  }
-
-
-  render() {
-    return (
-      <div className="main-panel">
-        <h2>Team Management</h2>
-        <div className="flex-container-main">
-          {this.displayTeamInfo()}
-          {this.invitations()}
-        </div>
-      </div>
-    );
-  }
-
   handleClickInvite() {
     const previous_value = this.state.display_invite
     this.setState({ display_invite: !previous_value })
@@ -121,7 +101,7 @@ class ManageTeams extends Component {
   }
 
   handleClickKick(event) {
-    let url_kick = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/kick_member/"
+    let url_kick = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/kick-member/"
     let data = { idKickedPlayer: event.target.id };
     postData(url_kick, data)
       .then((response) => {
@@ -133,7 +113,42 @@ class ManageTeams extends Component {
         };
         
       });
+  }
 
+  handleSendInvite(event) {
+    let url_invit = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/invit/"
+    let data = { id: event.target.id };
+    postData(url_invit, data)
+      .then((response) => {
+        if (response.result) {
+          alert(`An invitation has been send to the player ${event.target.id} to join the team`);
+          this.setState({ errorMessage: "Invitation has been send" })
+        }
+        else {
+          alert(`Error while sending an invitation to the player ${event.target.id} to join the team`);
+          this.setState({ errorMessage: "Problem in sending invitation" })
+        }
+      });
+  }
+
+  renderErrorMessage() {
+    if (this.state.errorMessage == null) return;
+    return (
+      <p>{this.state.errorMessage}</p>
+    );
+  }
+
+
+  render() {
+    return (
+      <div className="main-panel">
+        <h2>Team Management</h2>
+        <div className="flex-container-main">
+          {this.displayTeamInfo()}
+          {this.invitations()}
+        </div>
+      </div>
+    );
   }
 
   displayTeamInfo() {
@@ -168,11 +183,7 @@ class ManageTeams extends Component {
 
   displayTeamMember() {
     // to erase after fix pb teamMember back
-    console.log('ici')
-    console.log(this.state.isTeamLoaded1 )
-    console.log(this.state.isTeamLoaded)
     if (this.state.isTeamLoaded1 && !this.state.isTeamLoaded) {
-      console.log('ici')
 
       let teamMember = []
       this.state.team.teamMembers.forEach(element => {
@@ -237,22 +248,6 @@ class ManageTeams extends Component {
         );
       } else return;
     }
-  }
-
-  handleSendInvite(event) {
-    let url_invit = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/invit/"
-    let data = { id: event.target.id };
-    postData(url_invit, data)
-      .then((response) => {
-        if (response.result) {
-          alert(`An invitation has been send to the player ${event.target.id} to join the team`);
-          this.setState({ errorMessage: "Invitation has been send" })
-        }
-        else {
-          alert(`Error while sending an invitation to the player ${event.target.id} to join the team`);
-          this.setState({ errorMessage: "Problem in sending invitation" })
-        }
-      });
   }
 
   invitations() {
