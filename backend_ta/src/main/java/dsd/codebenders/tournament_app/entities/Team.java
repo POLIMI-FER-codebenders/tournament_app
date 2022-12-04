@@ -1,5 +1,7 @@
 package dsd.codebenders.tournament_app.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 import dsd.codebenders.tournament_app.responses.TeamResponse;
 
@@ -39,6 +41,7 @@ public class Team {
     private boolean isInTournament;
 
     @Column(name = "date_of_creation", nullable = false)
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate dateOfCreation;
 
     public TeamResponse serialize(){
