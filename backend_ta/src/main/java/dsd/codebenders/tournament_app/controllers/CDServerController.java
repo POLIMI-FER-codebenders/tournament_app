@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "admin/api/cd_server")
+@RequestMapping(path = "admin/api/cd-server")
 public class CDServerController {
 
     private final ServerService serverService;
