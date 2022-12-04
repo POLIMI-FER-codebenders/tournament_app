@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
 async function postData(url = '', data = {}) {
   // Default options are marked with *
-  const response = await fetch(url, {
+  const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -29,7 +29,7 @@ async function postData(url = '', data = {}) {
 }
 export default postData;
 export async function postForm(url = '', formData) {
-  const response = await fetch(url, {
+  const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -51,7 +51,7 @@ export async function postForm(url = '', formData) {
     }
   }
   export async function getData(url =''){
-    const response = await fetch(url);
+    const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url);
   if (response.status == 200){
        let textresponse= await response.text();
        if(textresponse.length==0){
