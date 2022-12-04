@@ -1,6 +1,8 @@
 package dsd.codebenders.tournament_app.entities;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -31,7 +33,7 @@ import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 @Entity
 @Table(name = "tournament")
 @DiscriminatorColumn(name = "type")
-@JsonIgnoreProperties(value = {"id", "tournamentScores", "creator", "currentRound", "status"}, allowGetters = true)
+@JsonIgnoreProperties(value = {"id", "tournamentScores", "creator", "currentRound", "status", "nextRoundStartTime", "winningTeam", "matches"}, allowGetters = true)
 public abstract class Tournament {
 
     @Id
@@ -67,11 +69,18 @@ public abstract class Tournament {
     @Column(name = "current_round")
     protected Integer currentRound = 0;
 
+    protected Date nextRoundStartTime = Date.from(Instant.now()); //TODO remove the default when we have scheduling
+
     @OneToMany(mappedBy = "tournament")
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament")
     protected List<Match> matches = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "winning_team_id")
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
+    protected Team winningTeam;
 
     public Long getID() {
         return ID;
@@ -105,12 +114,28 @@ public abstract class Tournament {
         return matchType;
     }
 
+    public Date getNextRoundStartTime() {
+        return nextRoundStartTime;
+    }
+
+    public void setNextRoundStartTime(Date nextRoundStartTime) {
+        this.nextRoundStartTime = nextRoundStartTime;
+    }
+
     public TournamentStatus getStatus() {
         return status;
     }
 
     public void setStatus(TournamentStatus status) {
         this.status = status;
+    }
+
+    public Team getWinningTeam() {
+        return winningTeam;
+    }
+
+    public void setWinningTeam(Team winningTeam) {
+        this.winningTeam = winningTeam;
     }
 
     public List<TournamentScore> getTournamentScores() {
