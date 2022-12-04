@@ -53,7 +53,7 @@ export async function postForm(url = '', formData) {
   }
 
   export async function getData(url =''){
-    const response = await fetch(url, {
+    const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
       credentials: 'include', // include, *same-origin, omit
     });
   if (response.status == 200){
