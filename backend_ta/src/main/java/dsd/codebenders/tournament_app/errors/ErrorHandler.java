@@ -39,7 +39,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(CDServerUnreachableException.class)
     public ResponseEntity<String> handleCDServerUnreachableException(CDServerUnreachableException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 
 }
