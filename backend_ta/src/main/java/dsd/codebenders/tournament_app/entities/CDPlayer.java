@@ -1,9 +1,12 @@
 package dsd.codebenders.tournament_app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "ID_server"}))
+@Table(name = "cd_player")
+@JsonIgnoreProperties(value = {"token"}, allowSetters = true)
 public class CDPlayer {
 
     @Id
