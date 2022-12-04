@@ -68,6 +68,10 @@ public class Server {
         isActive = active;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public void setAdminToken(String adminToken) {
         this.adminToken = adminToken;
     }

@@ -45,7 +45,7 @@ public class Match {
     @JoinColumn(name = "winning_team_id")
     @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team winningTeam;
-    @ManyToOne(optional = false)
+    @ManyToOne()
     @JoinColumn(name = "ID_server")
     private Server server;
 
