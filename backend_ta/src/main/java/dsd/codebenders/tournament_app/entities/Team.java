@@ -1,7 +1,5 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 import dsd.codebenders.tournament_app.responses.TeamResponse;
 
@@ -14,7 +12,6 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "team")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Team {
 
     @Id
