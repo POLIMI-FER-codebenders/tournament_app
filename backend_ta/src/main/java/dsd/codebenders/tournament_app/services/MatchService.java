@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
 import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.GameRequest;
 import dsd.codebenders.tournament_app.requests.GameSettingsRequest;
@@ -39,7 +40,12 @@ public class MatchService {
     }
 
     public void createAndStartMatch(Match match) throws MatchCreationException {
-        Server server = serverService.getCDServer();
+        Server server;
+        try {
+            server = serverService.getCDServer();
+        } catch (CDServerUnreachableException e) {
+            throw new MatchCreationException("Unable to create game. Caused by: " + e.getMessage());
+        }
         createCDPlayers(match.getAttackersTeam(), server);
         createCDPlayers(match.getDefendersTeam(), server);
         GameRequest gameRequest = createGameRequest(match, server);

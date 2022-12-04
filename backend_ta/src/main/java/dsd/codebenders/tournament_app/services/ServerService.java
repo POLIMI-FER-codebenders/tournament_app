@@ -1,14 +1,16 @@
 package dsd.codebenders.tournament_app.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.ServerRepository;
 import dsd.codebenders.tournament_app.entities.Server;
-import dsd.codebenders.tournament_app.errors.CDServerAlreadyRegisteredException;
-import dsd.codebenders.tournament_app.errors.CDServerNotFoundException;
+import dsd.codebenders.tournament_app.errors.*;
 import dsd.codebenders.tournament_app.responses.LoadResponse;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
+import java.net.ConnectException;
 import java.util.List;
 
 @Service
@@ -20,16 +22,24 @@ public class ServerService {
         this.serverRepository = serverRepository;
     }
 
-    public Server getCDServer() {
+    public Server getCDServer() throws CDServerUnreachableException {
         List<Server> serverList = serverRepository.findAllActive();
         Server lessLoaded = null;
         Integer minimumLoad = Integer.MAX_VALUE;
         for(Server s: serverList) {
-            Integer load = HTTPRequestsSender.sendGetRequest(s, "/admin/api/load", LoadResponse.class).getTotal();
+            Integer load;
+            try {
+                load = HTTPRequestsSender.sendGetRequest(s, "/admin/api/load", LoadResponse.class).getTotal();
+            } catch (RestClientException e) {
+                continue;
+            }
             if(load < minimumLoad) {
                 minimumLoad = load;
                 lessLoaded = s;
             }
+        }
+        if(lessLoaded == null) {
+            throw new CDServerUnreachableException("All CD servers are unreachable");
         }
         return lessLoaded;
     }
@@ -76,6 +86,22 @@ public class ServerService {
         } else {
             serverRepository.updateAsInactive(storedServer);
         }
+    }
+
+    public boolean isTokenValid(Server server) throws CDServerUnreachableException, BadRequestToCDException {
+        boolean isValid;
+        try {
+            isValid = HTTPRequestsSender.sendPostRequest(server, "/api/verify-token", server, Boolean.class);
+        } catch(JsonProcessingException e) {
+            throw new BadRequestToCDException("Unable to send request to CD");
+        } catch(RestClientException e) {
+            if (e.getCause() instanceof ConnectException) {
+                throw new CDServerUnreachableException(server.getAddress() + " server unreachable");
+            } else {
+                throw new BadRequestToCDException("Bad request to CD");
+            }
+        }
+        return isValid;
     }
 
 }

@@ -1,10 +1,7 @@
 package dsd.codebenders.tournament_app.controllers;
 
 import dsd.codebenders.tournament_app.entities.Server;
-import dsd.codebenders.tournament_app.errors.BadAdminRequestException;
-import dsd.codebenders.tournament_app.errors.CDServerAlreadyRegisteredException;
-import dsd.codebenders.tournament_app.errors.CDServerNotFoundException;
-import dsd.codebenders.tournament_app.errors.UnauthorizedAuthenticationException;
+import dsd.codebenders.tournament_app.errors.*;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +24,9 @@ public class CDServerController {
     }
 
     @PostMapping(value = "register")
-    public void register(@RequestBody Server server) throws BadAdminRequestException, UnauthorizedAuthenticationException {
-        if(!isAdminLogged()) {
-            throw new UnauthorizedAuthenticationException("Admin rights required");
-        }
-        if(!isServerValid(server)) {
-            throw new BadAdminRequestException("Address or token is missing");
-        }
+    public void register(@RequestBody Server server)
+            throws BadAdminRequestException, UnauthorizedAuthenticationException, InternalServerException, CDServerUnreachableException {
+        validateRequest(server);
         try {
             serverService.addServer(server);
         } catch (CDServerAlreadyRegisteredException e) {
@@ -42,13 +35,9 @@ public class CDServerController {
     }
 
     @PostMapping(value = "update")
-    public void update(@RequestBody Server server) throws BadAdminRequestException, UnauthorizedAuthenticationException {
-        if(!isAdminLogged()) {
-            throw new UnauthorizedAuthenticationException("Admin rights required");
-        }
-        if(!isServerValid(server)) {
-            throw new BadAdminRequestException("Address or token is missing");
-        }
+    public void update(@RequestBody Server server)
+            throws BadAdminRequestException, UnauthorizedAuthenticationException, InternalServerException, CDServerUnreachableException {
+        validateRequest(server);
         try {
             serverService.updateServer(server);
         } catch (CDServerNotFoundException e) {
@@ -68,6 +57,23 @@ public class CDServerController {
             serverService.deleteServer(server);
         } catch (CDServerNotFoundException e) {
             throw new BadAdminRequestException(e.getMessage());
+        }
+    }
+
+    private void validateRequest(@RequestBody Server server)
+            throws UnauthorizedAuthenticationException, BadAdminRequestException, CDServerUnreachableException, InternalServerException {
+        if(!isAdminLogged()) {
+            throw new UnauthorizedAuthenticationException("Admin rights required");
+        }
+        if(!isServerValid(server)) {
+            throw new BadAdminRequestException("Address or token is missing");
+        }
+        try {
+            if (!serverService.isTokenValid(server)) {
+                throw new BadAdminRequestException("Token is invalid");
+            }
+        } catch(BadRequestToCDException e) {
+            throw new InternalServerException(e.getMessage());
         }
     }
 
