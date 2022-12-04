@@ -94,6 +94,10 @@ public class Player {
         return isAdmin;
     }
 
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
     public Team getTeam() {
         return team;
     }
