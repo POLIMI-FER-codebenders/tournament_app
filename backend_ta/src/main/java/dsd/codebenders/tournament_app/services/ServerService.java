@@ -88,7 +88,7 @@ public class ServerService {
         }
     }
 
-    public boolean isTokenValid(Server server) throws CDServerUnreachableException, BadRequestToCDException {
+    public boolean isTokenValid(Server server) throws CDServerUnreachableException {
         boolean isValid = true;
         try {
             HTTPRequestsSender.sendGetRequest(server, "/admin/api/auth/self", String.class);
@@ -96,7 +96,7 @@ public class ServerService {
             if (e.getCause() instanceof ConnectException) {
                 throw new CDServerUnreachableException(server.getAddress() + " server unreachable");
             } else {
-                throw new BadRequestToCDException("Bad request to CD");
+                isValid = false;
             }
         }
         return isValid;

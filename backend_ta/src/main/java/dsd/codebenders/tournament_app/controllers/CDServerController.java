@@ -25,7 +25,7 @@ public class CDServerController {
 
     @PostMapping(value = "register")
     public void register(@RequestBody Server server)
-            throws BadAdminRequestException, UnauthorizedAuthenticationException, InternalServerException, CDServerUnreachableException {
+            throws BadAdminRequestException, UnauthorizedAuthenticationException, CDServerUnreachableException {
         validateRequest(server);
         try {
             serverService.addServer(server);
@@ -36,7 +36,7 @@ public class CDServerController {
 
     @PostMapping(value = "update")
     public void update(@RequestBody Server server)
-            throws BadAdminRequestException, UnauthorizedAuthenticationException, InternalServerException, CDServerUnreachableException {
+            throws BadAdminRequestException, UnauthorizedAuthenticationException, CDServerUnreachableException {
         validateRequest(server);
         try {
             serverService.updateServer(server);
@@ -61,19 +61,15 @@ public class CDServerController {
     }
 
     private void validateRequest(@RequestBody Server server)
-            throws UnauthorizedAuthenticationException, BadAdminRequestException, CDServerUnreachableException, InternalServerException {
+            throws UnauthorizedAuthenticationException, BadAdminRequestException, CDServerUnreachableException {
         if(!isAdminLogged()) {
             throw new UnauthorizedAuthenticationException("Admin rights required");
         }
         if(!isServerValid(server)) {
             throw new BadAdminRequestException("Address or token is missing");
         }
-        try {
-            if (!serverService.isTokenValid(server)) {
-                throw new BadAdminRequestException("Token is invalid");
-            }
-        } catch(BadRequestToCDException e) {
-            throw new InternalServerException(e.getMessage());
+        if (!serverService.isTokenValid(server)) {
+            throw new BadAdminRequestException("Token is invalid");
         }
     }
 
