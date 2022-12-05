@@ -1,6 +1,7 @@
 package dsd.codebenders.tournament_app.services;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import dsd.codebenders.tournament_app.dao.TeamRepository;
@@ -184,5 +185,9 @@ public class TournamentService {
 
     public List<Team> getTournamentTeams(Tournament tournament) {
         return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
+    }
+
+    public List<Match> getMatchesInCurrentRound(Tournament tournament) {
+        return tournament.getMatches().stream().filter(m -> Objects.equals(m.getRoundNumber(), tournament.getCurrentRound())).toList();
     }
 }

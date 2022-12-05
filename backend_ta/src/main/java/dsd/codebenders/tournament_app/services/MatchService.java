@@ -67,6 +67,7 @@ public class MatchService {
     }
 
     public Match getOngoingMatchByPlayer(Player player) {
+        //TODO: check for FAILED
         return matchRepository.findStartedMatchByPlayer(player);
     }
 
@@ -106,6 +107,13 @@ public class MatchService {
     }
 
     List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
+        //TODO: check for FAILED
         return matchRepository.findByTournamentAndRoundNumber(tournament, round);
     }
+
+    public void setFailedMatch(Match match) {
+        match.setStatus(MatchStatus.FAILED);
+        matchRepository.save(match);
+    }
+
 }
