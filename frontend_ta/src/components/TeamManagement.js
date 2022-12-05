@@ -29,7 +29,6 @@ class ManageTeams extends Component {
     this.initUser();
     this.initTeam();
     this.initPlayers();
-
   }
 
   initUser() {
@@ -43,7 +42,7 @@ class ManageTeams extends Component {
           })
         }
         else {
-          this.setState({ errorMessage: "Error finding player for user" })
+          this.setState({ errorMessage: "Error finding player for current user" })
         }
       });
     this.setState({})
@@ -60,7 +59,7 @@ class ManageTeams extends Component {
           })
         }
         else {
-          this.setState({ errorMessage: "No teams for this user" })
+          this.setState({ errorMessage: "You are not in any team" })
         }
       });
 
@@ -77,7 +76,7 @@ class ManageTeams extends Component {
           })
         }
         else {
-          this.setState({ errorMessage: "No player in tha team" })
+          this.setState({ errorMessage: "Error while finding players of the app" })
         }
       });
   }
@@ -91,7 +90,7 @@ class ManageTeams extends Component {
     let url_leave = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/leave/"
     postData(url_leave)
       .then((response) => {
-        if (response.result) {
+        if (response.status === 200) {
           alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
         }
         else {
@@ -111,7 +110,7 @@ class ManageTeams extends Component {
         else {
           this.setState({ errorMessage: "Error" })
         };
-        
+
       });
   }
 
@@ -147,6 +146,7 @@ class ManageTeams extends Component {
           {this.displayTeamInfo()}
           {this.invitations()}
         </div>
+        {this.renderErrorMessage()}
       </div>
     );
   }
@@ -216,7 +216,7 @@ class ManageTeams extends Component {
           <tbody>
             <tr></tr>
             {this.state.team.teamMembers.map(player =>
-              <tr id={this.state.players.find(p => p.username == player).id}>
+              <tr key={player} id={this.state.players.find(p => p.username == player).id}>
                 <td>{player}</td>
                 <td>{this.state.players.find(p => p.username == player).role}</td>
                 <td>

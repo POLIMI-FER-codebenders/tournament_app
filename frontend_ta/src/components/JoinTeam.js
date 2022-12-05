@@ -1,7 +1,6 @@
 import { Component, useState } from "react";
 import "../styles/JoinTeam.css"
 import { getData } from "../utils";
-import postData from '../utils';
 import React, {  useEffect } from 'react';
 
 function Member(props){
@@ -82,28 +81,9 @@ export class  ListTeams extends React.Component {
 }
 
 class JoinTeam extends Component{
-
-  handleJoin(event) {
-    let url_kick = "/api/team/join/"
-    let data = { idTeam: 1 };
-    postData(url_kick, data)
-      .then((response) => {
-        if (response.result) {
-          alert(`The player has been join the team 1`);
-        }
-        else {
-          this.setState({ errorMessage: "Error" })
-        }
-      });
-  };
-
-
   render (){
     return(
-      <div>
-        <button onClick={this.handleJoin}>Join team 1</button>
-        <ListTeams />
-      </div>
+      <ListTeams />
   );}
 }
 
