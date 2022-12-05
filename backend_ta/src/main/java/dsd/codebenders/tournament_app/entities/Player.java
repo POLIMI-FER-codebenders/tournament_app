@@ -36,6 +36,8 @@ public class Player {
     private String email;
     @Column(nullable = false)
     private String password;
+    @Column(name = "is_admin", nullable = false, columnDefinition="Boolean default '0'")
+    private Boolean isAdmin;
 
     // The teams whose this player is the creator
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
@@ -86,6 +88,14 @@ public class Player {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     public Team getTeam() {

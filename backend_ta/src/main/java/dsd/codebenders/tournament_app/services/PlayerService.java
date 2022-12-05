@@ -52,6 +52,7 @@ public class PlayerService {
 
     public void addNewPlayer(Player player) {
         player.setPassword(passwordEncoder.encode(player.getPassword()));
+        player.setIsAdmin(false);
         playerRepository.save(player);
     }
 
