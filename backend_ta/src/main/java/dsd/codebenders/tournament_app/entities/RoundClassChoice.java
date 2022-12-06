@@ -1,14 +1,16 @@
 package dsd.codebenders.tournament_app.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import dsd.codebenders.tournament_app.serializers.GameClassIDFilenameAuthorSerializer;
 import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "round_class_choice", uniqueConstraints = @UniqueConstraint(columnNames = {"tournament_id", "round"}))
-@JsonIgnoreProperties({"id", "gameClass"})
+@JsonIgnoreProperties({"id"})
 public class RoundClassChoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +26,17 @@ public class RoundClassChoice {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "class")
+    @JsonSerialize(using = GameClassIDFilenameAuthorSerializer.class)
     private GameClass gameClass;
 
     public RoundClassChoice() {
 
     }
 
-    public RoundClassChoice(Tournament tournament, Integer round) {
+    public RoundClassChoice(Tournament tournament, Integer round, GameClass gameClass) {
         this.tournament = tournament;
         this.round = round;
+        this.gameClass = gameClass;
     }
 
     public Integer getRound() {
@@ -49,5 +53,9 @@ public class RoundClassChoice {
 
     public Long getId() {
         return id;
+    }
+
+    public void setGameClass(GameClass gameClass) {
+        this.gameClass = gameClass;
     }
 }

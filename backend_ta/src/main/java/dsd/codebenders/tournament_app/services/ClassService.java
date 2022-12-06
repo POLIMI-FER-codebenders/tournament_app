@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ClassService {
@@ -21,7 +22,7 @@ public class ClassService {
     }
 
 
-    public void uploadFile(MultipartFile file, Player author) {
+    public GameClass uploadClass(MultipartFile file, Player author) {
         String filename = file.getOriginalFilename();
 
         if(gameClassRepository.existsByFilename(filename)){
@@ -36,9 +37,14 @@ public class ClassService {
         try {
             gameClass.setData(file.getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BadRequestException("Cannot read contents of multipart file");
         }
 
         gameClassRepository.save(gameClass);
+        return gameClass;
+    }
+
+    public List<GameClass> getAllClasses() {
+        return gameClassRepository.findAll();
     }
 }
