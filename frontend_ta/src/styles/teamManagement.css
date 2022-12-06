@@ -5,6 +5,7 @@
 .flex-container-main {
     display: flex;
     flex-direction: row;
+    width: fit-content;
 }
 
 @media (max-width: 1200px) {
@@ -14,7 +15,7 @@
 }
 
 .flex-items-main {
-    margin: auto 10px;
+    padding: 0px 10px;
 }
 
 .flex-container-info {

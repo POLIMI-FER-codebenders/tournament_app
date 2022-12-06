@@ -2,6 +2,7 @@ import { Component, useState } from "react";
 import ListPlayers from "./ListPlayers";
 import postData from '../utils';
 import { getData } from "../utils";
+import { GoToErrorPage } from '../utils';
 import "../styles/teamManagement.css";
 
 class ManageTeams extends Component {
@@ -13,10 +14,11 @@ class ManageTeams extends Component {
       team: {},
       players: [],
       errorMessage: "",
+      badResponse: "",
       display_invite: false,
       isUserLoaded: false,
-      isTeamLoaded1: false,
       isTeamLoaded: false,
+      isMembersOk: false,
       isPlayersLoaded: false
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
@@ -35,14 +37,24 @@ class ManageTeams extends Component {
     let url_player = process.env.REACT_APP_BACKEND_ADDRESS + "/api/player/get"
     getData(url_player)
       .then((response) => {
-        if (response.result) {
-          this.setState({
-            isUserLoaded: true,
-            user: response.result
-          })
+        if (response.status === 200) {
+          if (response.result) {
+            this.setState({
+              isUserLoaded: true,
+              user: response.result
+            })
+          } else {
+            this.setState({
+              errorMessage: "Empty response",
+              badResponse: 'No player has been found for the current user in the database'
+            })
+          }
         }
         else {
-          this.setState({ errorMessage: "Error finding player for current user" })
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
         }
       });
     this.setState({})
@@ -52,14 +64,23 @@ class ManageTeams extends Component {
     let url_team = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/get-mine"
     getData(url_team)
       .then((response) => {
-        if (response.result) {
-          this.setState({
-            isTeamLoaded1: true,
-            team: response.result
-          })
+        if (response.status === 200) {
+          if (response.result) {
+            this.setState({
+              isTeamLoaded: true,
+              team: response.result
+            })
+          } else {
+            this.setState({ 
+              errorMessage: "You are not in any team.",
+            })
+          }
         }
         else {
-          this.setState({ errorMessage: "You are not in any team" })
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
         }
       });
 
@@ -69,14 +90,24 @@ class ManageTeams extends Component {
     let url_player = process.env.REACT_APP_BACKEND_ADDRESS + "/api/player/get-all/"
     getData(url_player)
       .then((response) => {
-        if (response.result) {
-          this.setState({
-            isPlayersLoaded: true,
-            players: response.result
-          })
+        if (response.status === 200) {
+          if (response.result) {
+            this.setState({
+              isPlayersLoaded: true,
+              players: response.result
+            })
+          } else {
+            this.setState({
+              errorMessage: "Empty response",
+              badResponse: 'No players found in the database'
+            })
+          }
         }
         else {
-          this.setState({ errorMessage: "Error while finding players of the app" })
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
         }
       });
   }
@@ -94,7 +125,10 @@ class ManageTeams extends Component {
           alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
         }
         else {
-          this.setState({ errorMessage: "Error" })
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
         }
       });
   }
@@ -104,11 +138,14 @@ class ManageTeams extends Component {
     let data = { idKickedPlayer: event.target.id };
     postData(url_kick, data)
       .then((response) => {
-        if (response.result) {
+        if (response.status === 200) {
           alert(`The player ${this.state.players.find(p => p.id = event.target.id).username} has been kicked from the team ${this.state.team.name}`);
         }
         else {
-          this.setState({ errorMessage: "Error" })
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
         };
 
       });
@@ -119,13 +156,14 @@ class ManageTeams extends Component {
     let data = { id: event.target.id };
     postData(url_invit, data)
       .then((response) => {
-        if (response.result) {
+        if (response.status === 200) {
           alert(`An invitation has been send to the player ${event.target.id} to join the team`);
-          this.setState({ errorMessage: "Invitation has been send" })
         }
         else {
-          alert(`Error while sending an invitation to the player ${event.target.id} to join the team`);
-          this.setState({ errorMessage: "Problem in sending invitation" })
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
         }
       });
   }
@@ -139,6 +177,8 @@ class ManageTeams extends Component {
 
 
   render() {
+    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.errorMessage == "Empty response") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <div className="main-panel">
         <h2>Team Management</h2>
@@ -152,7 +192,7 @@ class ManageTeams extends Component {
   }
 
   displayTeamInfo() {
-    if (this.state.isTeamLoaded1) {
+    if (this.state.isTeamLoaded) {
       return (
         <div className="flex-items-main">
           <h3>Your team</h3>
@@ -183,7 +223,7 @@ class ManageTeams extends Component {
 
   displayTeamMember() {
     // to erase after fix pb teamMember back
-    if (this.state.isTeamLoaded1 && !this.state.isTeamLoaded) {
+    if (this.state.isTeamLoaded && !this.state.isMembersOk) {
 
       let teamMember = []
       this.state.team.teamMembers.forEach(element => {
@@ -198,7 +238,7 @@ class ManageTeams extends Component {
       newteam.teamMembers = teamMember;
       this.setState({ team: newteam })
       this.setState({
-        isTeamLoaded: true
+        isMembersOk: true
       })
 
     }
