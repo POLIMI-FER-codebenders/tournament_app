@@ -3,6 +3,7 @@ package dsd.codebenders.tournament_app.scheduler;
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.TournamentService;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-@Service
 public class TournamentScheduler extends ThreadPoolTaskScheduler {
 
     @Value("${tournament-app.tournament-delay.phase-two:15}")
@@ -29,19 +29,20 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
     private final TournamentService tournamentService;
     private final MatchService matchService;
 
-    @Autowired
     public TournamentScheduler(TournamentService tournamentService, MatchService matchService) {
         this.tournamentService = tournamentService;
         this.matchService = matchService;
     }
-
-    @Async
-    public void prepareRoundAndStartMatches(Tournament tournament) {
+    
+    public Tournament prepareRoundAndStartMatches(Tournament tournament) {
         try {
-            tournamentService.tryAdvance(tournament);
+            tournament = tournamentService.tryAdvance(tournament);
         } catch (MatchCreationException e) {
-            tournamentService.forceTournamentEnd(tournament);
-            return;
+            tournament = tournamentService.forceTournamentEnd(tournament);
+            return tournament;
+        }
+        if(tournament.getStatus() != TournamentStatus.IN_PROGRESS) {
+            return tournament;
         }
         List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
         for(Match m: matches) {
@@ -53,6 +54,7 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
                 schedule(new EndMatchTask(m, matchService, this), DateUtility.addSeconds(roundStart, matchEndingDelay));
             }
         }
+        return tournament;
     }
 
 }

@@ -17,6 +17,7 @@ import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
+import dsd.codebenders.tournament_app.scheduler.TournamentScheduler;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class TournamentService {
     private final TournamentScoreRepository tournamentScoreRepository;
     private final TeamRepository teamRepository;
     private final MatchService matchService;
+    private final TournamentScheduler tournamentScheduler;
 
     @Autowired
     public TournamentService(TeamRepository teamRepository, TournamentRepository tournamentRepository, TournamentScoreRepository tournamentScoreRepository,
@@ -42,6 +44,7 @@ public class TournamentService {
         this.tournamentScoreRepository = tournamentScoreRepository;
         this.teamRepository = teamRepository;
         this.matchService = matchService;
+        this.tournamentScheduler = new TournamentScheduler(this, matchService);
     }
 
     public Tournament findById(Long ID) {
@@ -53,12 +56,12 @@ public class TournamentService {
         return tournamentRepository.save(tournament);
     }
 
-    public Tournament addTeam(Tournament tournament, Team team) throws MatchCreationException {
+    public Tournament addTeam(Tournament tournament, Team team) {
         TournamentScore tournamentScore = new TournamentScore(tournament, team);
         tournamentScoreRepository.save(tournamentScore);
         team.setInTournament(true);
         teamRepository.save(team);
-        return tryAdvance(getTournamentByID(tournament.getID()).get());
+        return tournamentScheduler.prepareRoundAndStartMatches(getTournamentByID(tournament.getID()).get());
     }
 
     public Tournament removeTeam(Tournament tournament, Team team) {
