@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
 async function postData(url = '', data = {}) {
   // Default options are marked with *
-  const response = await fetch(url, {
+  const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -35,7 +35,7 @@ async function postData(url = '', data = {}) {
 export default postData;
 
 export async function postForm(url = '', formData) {
-  const response = await fetch(url, {
+  const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -47,6 +47,7 @@ export async function postForm(url = '', formData) {
   let result;
   if (response.status == 200) {
     result = await response.json();
+
     result.status = response.status;
     return result;
   }
@@ -57,19 +58,19 @@ export async function postForm(url = '', formData) {
   }
 }
 
-export async function getData(url = '') {
-  const response = await fetch(url, {
-    credentials: 'include', // include, *same-origin, omit
-  });
-  if (response.status == 200) {
-    let textresponse = await response.text();
-    if (textresponse.length == 0) {
-      let result = { result: null, status: response.status }
-      return result;
+  export async function getData(url =''){
+    const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
+      credentials: 'include', // include, *same-origin, omit
+    });
+  if (response.status === 200){
+       let textresponse= await response.text();
+       if(textresponse.length===0){
+       let result= {result:null,status: response.status}
+       return result;
     }
-    else {
-      let result = { result: JSON.parse(textresponse), status: response.status }
-      return result;
+    else{
+    let result ={result: JSON.parse(textresponse), status : response.status }
+    return result;
     }
   }
   else {
@@ -94,11 +95,12 @@ export function checkUsername(username) {
   return /^[a-zA-Z][a-zA-Z0-9]{2,19}$/.test(username);
   // return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9](.)*/)
 }
-export function checkEmail(mail) {
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+export function checkEmail(mail)
+{
+ if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))
+  {
     return (true)
   }
 
-  return (false)
+    return (false)
 }
-

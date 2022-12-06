@@ -73,7 +73,7 @@ public class TournamentService {
                 }
             }
             case IN_PROGRESS -> {
-                if (matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound(), this).stream()
+                if (matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound()).stream()
                         .allMatch(match -> match.getStatus() == MatchStatus.ENDED)) {
                     if (tournament.getCurrentRound() >= tournament.getNumberOfRounds()) {
                         newStatus = TournamentStatus.ENDED;
@@ -112,7 +112,7 @@ public class TournamentService {
         if (tournament.getCurrentRound() == 1) {
             winners = getTournamentTeams(tournament);
         } else {
-            winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound(), this);
+            winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound());
         }
         logger.error(getTournamentTeams(tournament).stream().map(Team::getID).toList().toString());
         logger.error(winners.stream().map(Team::getID).toList().toString());

@@ -27,4 +27,19 @@ public class ErrorHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadAdminRequestException.class)
+    public ResponseEntity<String> handleBadAdminRequestException(BadAdminRequestException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<String> handleInternalServerException(InternalServerException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(CDServerUnreachableException.class)
+    public ResponseEntity<String> handleCDServerUnreachableException(CDServerUnreachableException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
 }
