@@ -54,4 +54,8 @@ public class RoundClassChoice {
     public Long getId() {
         return id;
     }
+
+    public void setGameClass(GameClass gameClass) {
+        this.gameClass = gameClass;
+    }
 }

@@ -37,7 +37,7 @@ public class ClassService {
         try {
             gameClass.setData(file.getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BadRequestException("Cannot read contents of multipart file");
         }
 
         gameClassRepository.save(gameClass);
