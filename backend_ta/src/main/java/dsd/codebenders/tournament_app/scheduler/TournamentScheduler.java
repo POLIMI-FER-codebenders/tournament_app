@@ -2,23 +2,23 @@ package dsd.codebenders.tournament_app.scheduler;
 
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Tournament;
+import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
+import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.TournamentService;
+import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-@Component
+@Service
 public class TournamentScheduler extends ThreadPoolTaskScheduler {
 
-    @Value("${tournament-app.tournament-delay.round-start:15}")
-    private int roundStartDelay;
     @Value("${tournament-app.tournament-delay.phase-two:15}")
     private int phaseTwoDelay;
     @Value("${tournament-app.tournament-delay.phase-three:15}")
@@ -37,23 +37,22 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
 
     @Async
     public void prepareRoundAndStartMatches(Tournament tournament) {
-        // TODO: schedule the round
-        List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
-        Date roundStart = addSeconds(new Date(), roundStartDelay);
-        for(Match m: matches) {
-            matchService.setStartDate(m, roundStart);
-            schedule(new CreateAndStartMatchesTask(matchService, m), roundStart);
-            schedule(new DisableTestsAndMutantsTask(matchService, m), addSeconds(roundStart, phaseTwoDelay));
-            schedule(new DisableEquivalenceClaimsTask(matchService, m), addSeconds(roundStart, phaseThreeDelay));
-            schedule(new EndMatchTask(this, matchService, m), addSeconds(roundStart, matchEndingDelay));
+        try {
+            tournamentService.tryAdvance(tournament);
+        } catch (MatchCreationException e) {
+            tournamentService.forceTournamentEnd(tournament);
+            return;
         }
-    }
-
-    private Date addSeconds(Date date, int seconds) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.SECOND, seconds);
-        return calendar.getTime();
+        List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
+        for(Match m: matches) {
+            if(m.getStatus() == MatchStatus.CREATED) {
+                Date roundStart = m.getStartDate();
+                schedule(new StartMatchTask(m, matchService, this), roundStart);
+                schedule(new DisableTestsAndMutantsTask(m, matchService, this), DateUtility.addSeconds(roundStart, phaseTwoDelay));
+                schedule(new DisableEquivalenceClaimsTask(m, matchService, this), DateUtility.addSeconds(roundStart, phaseThreeDelay));
+                schedule(new EndMatchTask(m, matchService, this), DateUtility.addSeconds(roundStart, matchEndingDelay));
+            }
+        }
     }
 
 }

@@ -56,11 +56,12 @@ public class Match {
     public Match() {
     }
 
-    public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament) {
+    public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament, Date startDate) {
         this.attackersTeam = attackersTeam;
         this.defendersTeam = defendersTeam;
         this.roundNumber = roundNumber;
         this.tournament = tournament;
+        this.startDate = startDate;
     }
 
     public Long getID() {

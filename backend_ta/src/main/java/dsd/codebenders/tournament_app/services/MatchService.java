@@ -1,10 +1,5 @@
 package dsd.codebenders.tournament_app.services;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
 import dsd.codebenders.tournament_app.entities.*;
@@ -20,6 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MatchService {
@@ -41,7 +40,7 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public void createAndStartMatch(Match match) throws MatchCreationException {
+    public void createMatchOnCD(Match match) throws MatchCreationException {
         Server server;
         try {
             server = serverService.getCDServer();
@@ -57,14 +56,20 @@ public class MatchService {
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to create game. Caused by: " + e.getMessage());
         }
+        match.setStatus(MatchStatus.CREATED);
+        match.setServer(server);
+        match.setGameId(createdMatch.getGameId());
+        matchRepository.save(match);
+    }
+
+    public void startMatchOnCD(Match match) throws MatchCreationException {
+        Server server = match.getServer();
         try {
-            HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/start", createdMatch, void.class);
+            HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/start", match, void.class);
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
         match.setStatus(MatchStatus.STARTED);
-        match.setServer(server);
-        match.setGameId(createdMatch.getGameId());
         matchRepository.save(match);
     }
 
@@ -125,18 +130,22 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public void setStartDate(Match match, Date date) {
-        match.setStartDate(date);
-        matchRepository.save(match);
+    @Transactional
+    public boolean setFailedMatchAndCheckRoundEnding(Match match) {
+        setFailedMatch(match);
+        long activeMatches =
+                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
+                        .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
+        return activeMatches == 0;
     }
 
     @Transactional
     public boolean endMatchAndCheckRoundEnding(Match match) {
         setEndedMatch(match);
-        long notEndedMatchesNumber =
-                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber())
-                        .stream().filter(m -> m.getStatus() != MatchStatus.ENDED).count();
-        return notEndedMatchesNumber == 0;
+        long activeMatches =
+                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
+                        .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
+        return activeMatches == 0;
     }
 
 }
