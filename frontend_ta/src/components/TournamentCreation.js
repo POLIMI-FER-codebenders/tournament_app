@@ -58,12 +58,12 @@ export function CreateTournament() {
     const inputFile = document.getElementById("file");
     const formData = new FormData();
     for (const file of inputFile.files) {
-        formData.append("files", file);
+        formData.append("file", file);
         console.log(file);
     }
     
 
-    fetch(process.env.REACT_APP_BACKEND_ADDRESS + "api/classes/upload", {
+    fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/api/classes/upload", {
         method: "post",
         body: formData,
     }).catch((error) => ("Something went wrong!", error));
