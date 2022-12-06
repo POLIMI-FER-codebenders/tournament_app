@@ -5,6 +5,7 @@ import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,15 @@ import java.util.List;
 
 @Component
 public class TournamentScheduler extends ThreadPoolTaskScheduler {
+
+    @Value("${tournament-app.tournament-delay.round-start:15}")
+    private int roundStartDelay;
+    @Value("${tournament-app.tournament-delay.phase-two:15}")
+    private int phaseTwoDelay;
+    @Value("${tournament-app.tournament-delay.phase-three:15}")
+    private int phaseThreeDelay;
+    @Value("${tournament-app.tournament-delay.match-ending:15}")
+    private int matchEndingDelay;
 
     private final TournamentService tournamentService;
     private final MatchService matchService;
@@ -29,20 +39,20 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
     public void prepareRoundAndStartMatches(Tournament tournament) {
         // TODO: schedule the round
         List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
-        Date roundStart = addMinutes(new Date(), 60);
+        Date roundStart = addSeconds(new Date(), roundStartDelay);
         for(Match m: matches) {
             matchService.setStartDate(m, roundStart);
             schedule(new CreateAndStartMatchesTask(matchService, m), roundStart);
-            schedule(new DisableTestsAndMutantsTask(matchService, m), addMinutes(roundStart, 120));
-            schedule(new DisableEquivalenceClaimsTask(matchService, m), addMinutes(roundStart, 150));
-            schedule(new EndMatchTask(this, matchService, m), addMinutes(roundStart, 180));
+            schedule(new DisableTestsAndMutantsTask(matchService, m), addSeconds(roundStart, phaseTwoDelay));
+            schedule(new DisableEquivalenceClaimsTask(matchService, m), addSeconds(roundStart, phaseThreeDelay));
+            schedule(new EndMatchTask(this, matchService, m), addSeconds(roundStart, matchEndingDelay));
         }
     }
 
-    private Date addMinutes(Date date, int minutes) {
+    private Date addSeconds(Date date, int seconds) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.MINUTE, minutes);
+        calendar.add(Calendar.SECOND, seconds);
         return calendar.getTime();
     }
 
