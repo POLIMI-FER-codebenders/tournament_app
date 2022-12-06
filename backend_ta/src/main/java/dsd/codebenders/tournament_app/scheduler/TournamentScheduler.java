@@ -35,7 +35,7 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
             schedule(new CreateAndStartMatchesTask(matchService, m), roundStart);
             schedule(new DisableTestsAndMutantsTask(matchService, m), addMinutes(roundStart, 120));
             schedule(new DisableEquivalenceClaimsTask(matchService, m), addMinutes(roundStart, 150));
-            schedule(new EndMatchTask(this, matchService, m), addMinutes(roundStart, 180));
+            schedule(new EndMatchTask(this, tournamentService, matchService, m), addMinutes(roundStart, 180));
         }
     }
 

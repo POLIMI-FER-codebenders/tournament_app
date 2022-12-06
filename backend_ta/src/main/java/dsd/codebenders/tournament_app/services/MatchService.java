@@ -117,6 +117,11 @@ public class MatchService {
         matchRepository.save(match);
     }
 
+    public void setEndedMatch(Match match) {
+        match.setStatus(MatchStatus.ENDED);
+        matchRepository.save(match);
+    }
+
     public void serStartDate(Match match, Date date) {
         match.setStartDate(date);
         matchRepository.save(match);

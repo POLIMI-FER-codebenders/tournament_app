@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TournamentService {
@@ -190,4 +191,13 @@ public class TournamentService {
     public List<Match> getMatchesInCurrentRound(Tournament tournament) {
         return tournament.getMatches().stream().filter(m -> Objects.equals(m.getRoundNumber(), tournament.getCurrentRound())).toList();
     }
+
+    @Transactional
+    public boolean endMatchAndCheckRoundEnding(Match match) {
+        matchService.setEndedMatch(match);
+        Tournament tournament = match.getTournament();
+        long notEndedMatchesNumber = tournamentRepository.countNotEndedMatchesByCurrentRound(tournament);
+        return notEndedMatchesNumber == 0;
+    }
+
 }
