@@ -68,8 +68,11 @@ public class MatchService {
     }
 
     public Match getOngoingMatchByPlayer(Player player) {
-        //TODO: check for FAILED
-        return matchRepository.findStartedMatchByPlayer(player);
+        Match match = matchRepository.findStartedMatchByPlayer(player);
+        if(match == null || match.getStatus() == MatchStatus.FAILED) {
+            return null;
+        }
+        return match;
     }
 
     private void createCDPlayers(Team team, Server server) {
@@ -108,7 +111,6 @@ public class MatchService {
     }
 
     List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
-        //TODO: check for FAILED
         return matchRepository.findByTournamentAndRoundNumber(tournament, round);
     }
 
