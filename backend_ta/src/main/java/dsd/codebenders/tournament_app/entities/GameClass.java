@@ -1,13 +1,15 @@
 package dsd.codebenders.tournament_app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.serializers.PlayerIDAndNameSerializer;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "game_class")
+@JsonIgnoreProperties(value = {"data"}, allowSetters = true)
 public class GameClass {
 
     @Id
@@ -23,6 +25,7 @@ public class GameClass {
 
     @Basic(fetch = FetchType.LAZY)
     @Lob
+    @JsonIgnore
     private byte[] data;
 
     public Long getId() {

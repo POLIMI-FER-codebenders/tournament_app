@@ -150,8 +150,8 @@ public abstract class Tournament {
         return roundClassChoiceList;
     }
 
-    public void setRoundClassChoiceList(List<RoundClassChoice> roundClassChoiceList) {
-        this.roundClassChoiceList = roundClassChoiceList;
+    public void addRoundClassChoice(RoundClassChoice roundClassChoice) {
+        this.roundClassChoiceList.add(roundClassChoice);
     }
 
     public abstract int getNumberOfRounds();

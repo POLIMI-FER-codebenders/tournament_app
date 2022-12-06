@@ -30,9 +30,10 @@ public class RoundClassChoice {
 
     }
 
-    public RoundClassChoice(Tournament tournament, Integer round) {
+    public RoundClassChoice(Tournament tournament, Integer round, GameClass gameClass) {
         this.tournament = tournament;
         this.round = round;
+        this.gameClass = gameClass;
     }
 
     public Integer getRound() {
