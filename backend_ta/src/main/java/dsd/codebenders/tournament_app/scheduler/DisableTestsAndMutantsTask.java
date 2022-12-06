@@ -22,10 +22,11 @@ public class DisableTestsAndMutantsTask implements Runnable {
 
     @Override
     public void run() {
-        if(match.getStatus() == MatchStatus.STARTED) {
+        if(match.getStatus() == MatchStatus.IN_PHASE_ONE) {
             Server server = match.getServer();
             try {
                 HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/disable-uploads", "{gameId: " + match.getGameId() + "}", void.class);
+                matchService.goToNextPhase(match);
             } catch (RestClientException | JsonProcessingException e) {
                 if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
                     tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());

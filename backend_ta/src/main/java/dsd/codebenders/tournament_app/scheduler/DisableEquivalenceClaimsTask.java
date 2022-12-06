@@ -22,10 +22,11 @@ public class DisableEquivalenceClaimsTask implements Runnable {
 
     @Override
     public void run() {
-        if(match.getStatus() == MatchStatus.STARTED) {
+        if(match.getStatus() == MatchStatus.IN_PHASE_TWO) {
             Server server = match.getServer();
             try {
                 HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/disable-claims", "{gameId: " + match.getGameId() + "}", void.class);
+                matchService.goToNextPhase(match);
             } catch (RestClientException | JsonProcessingException e) {
                 if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
                     tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());

@@ -69,8 +69,7 @@ public class MatchService {
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
-        match.setStatus(MatchStatus.STARTED);
-        matchRepository.save(match);
+        goToNextPhase(match);
     }
 
     public Match getOngoingMatchByPlayer(Player player) {
@@ -125,9 +124,14 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public void setEndedMatch(Match match) {
-        match.setStatus(MatchStatus.ENDED);
-        matchRepository.save(match);
+    public Match goToNextPhase(Match match) {
+        switch (match.getStatus()) {
+            case CREATED -> match.setStatus(MatchStatus.IN_PHASE_ONE);
+            case IN_PHASE_ONE -> match.setStatus(MatchStatus.IN_PHASE_TWO);
+            case IN_PHASE_TWO -> match.setStatus(MatchStatus.IN_PHASE_THREE);
+            case IN_PHASE_THREE -> match.setStatus(MatchStatus.ENDED);
+        }
+        return matchRepository.save(match);
     }
 
     @Transactional
@@ -141,7 +145,7 @@ public class MatchService {
 
     @Transactional
     public boolean endMatchAndCheckRoundEnding(Match match) {
-        setEndedMatch(match);
+        match = goToNextPhase(match);
         long activeMatches =
                 getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
                         .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();

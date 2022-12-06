@@ -22,7 +22,7 @@ public class EndMatchTask implements Runnable {
 
     @Override
     public void run() {
-        if(match.getStatus() == MatchStatus.STARTED) {
+        if(match.getStatus() == MatchStatus.IN_PHASE_THREE) {
             Server server = match.getServer();
             try {
                 HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/end", "{gameId: " + match.getGameId() + "}", void.class);

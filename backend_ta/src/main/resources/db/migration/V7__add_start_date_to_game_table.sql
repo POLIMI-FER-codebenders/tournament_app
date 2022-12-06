@@ -1,8 +1,5 @@
 ALTER TABLE game
-    ADD start_date datetime NULL;
+    ADD start_date datetime NOT NULL;
 
-ALTER TABLE server
-    ALTER is_active SET DEFAULT 1;
-
-ALTER TABLE player
-    ALTER is_admin SET DEFAULT 0;
+ALTER TABLE game
+    MODIFY status enum('CREATED','IN_PHASE_ONE','IN_PHASE_TWO','IN_PHASE_THREE','ENDED','FAILED') DEFAULT 'CREATED' NOT NULL
