@@ -16,7 +16,7 @@ export class DisplayTournament extends React.Component {
   }
   reloadPage(){
     getData("/api/tournament/list").then((response)=> {
-      if (response.status == 200) {
+      if (response.status === 200) {
        this.setState({data: response.result});
        console.log(response.result);}
       else console.log("error");

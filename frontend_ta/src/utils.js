@@ -16,7 +16,7 @@ async function postData(url = '', data = {}) {
     body: JSON.stringify(data) // body data type must match "Content-Type" header
   });
   let result;
-  if (response.status == 200){
+  if (response.status === 200){
      result = await response.json();
     result.status = response.status;
     return result;
@@ -40,7 +40,7 @@ export async function postForm(url = '', formData) {
     body: formData
   });
   let result;
-  if (response.status == 200){
+  if (response.status === 200){
      result = await response.json();
     result.status = response.status;
     return result;
@@ -56,9 +56,9 @@ export async function postForm(url = '', formData) {
     const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
       credentials: 'include', // include, *same-origin, omit
     });
-  if (response.status == 200){
+  if (response.status === 200){
        let textresponse= await response.text();
-       if(textresponse.length==0){
+       if(textresponse.length===0){
        let result= {result:null,status: response.status}
        return result;
     }

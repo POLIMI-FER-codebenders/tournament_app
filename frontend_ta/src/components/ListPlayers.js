@@ -35,7 +35,7 @@ class ListPlayers extends Component {
   //     }
   //   });
   
-  return (data_players.filter(user => !players_team.find(p => p.id == user.id)) );
+  return (data_players.filter(user => !players_team.find(p => p.id === user.id)) );
   }
 
   render() {
