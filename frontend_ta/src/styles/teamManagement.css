@@ -5,6 +5,7 @@
 .flex-container-main {
     display: flex;
     flex-direction: row;
+    width: fit-content;
 }
 
 @media (max-width: 1200px) {
@@ -14,7 +15,7 @@
 }
 
 .flex-items-main {
-    margin: auto 10px;
+    padding: 0px 10px;
 }
 
 .flex-container-info {
@@ -99,6 +100,14 @@ tr:nth-child(even) {
 
 .col3 {
     min-width: 140px;
+}
+
+.btn-inactive {
+    padding: 5px 10px;
+    text-align: center;
+    background: #b0aeaea3;
+    border: 1px solid #b0aeaea3;
+    color: #fff;
 }
 
 .btn {

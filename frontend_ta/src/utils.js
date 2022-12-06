@@ -15,17 +15,22 @@ async function postData(url = '', data = {}) {
     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(data) // body data type must match "Content-Type" header
   });
-  let result;
-  if (response.status === 200){
-     result = await response.json();
-    result.status = response.status;
-    return result;
+  if (response.status == 200) {
+    let textresponse = await response.text();
+    if (textresponse.length == 0) {
+      let result = { result: null, status: response.status }
+      return result;
+    }
+    else {
+      let result = { result: JSON.parse(textresponse), status: response.status }
+      return result;
+    }
   }
   else {
-    let errortext= await response.text();
-    result = {status:response.status,message:errortext};
+    let errortext = await response.text();
+    let result = { status: response.status, message: errortext };
     return result;
-    }
+  }
 }
 export default postData;
 
@@ -40,17 +45,18 @@ export async function postForm(url = '', formData) {
     body: formData
   });
   let result;
-  if (response.status === 200){
-     result = await response.json();
+  if (response.status == 200) {
+    result = await response.json();
+
     result.status = response.status;
     return result;
   }
   else {
-    let errortext= await response.text();
-    result = {status:response.status,message:errortext};
+    let errortext = await response.text();
+    result = { status: response.status, message: errortext };
     return result;
-    }
   }
+}
 
   export async function getData(url =''){
     const response = await fetch(process.env.REACT_APP_BACKEND_ADDRESS + url, {
@@ -68,13 +74,13 @@ export async function postForm(url = '', formData) {
     }
   }
   else {
-    let errortext= await response.text();
-   let  result = {status:response.status,message:errortext};
+    let errortext = await response.text();
+    let result = { status: response.status, message: errortext };
     return result;
-    }
   }
+}
 
- export function GoToErrorPage(props) {
+export function GoToErrorPage(props) {
   let navigate = useNavigate();
   useEffect(() => {
     navigate(props.path, { state: { message: props.message } });
@@ -82,12 +88,12 @@ export async function postForm(url = '', formData) {
   );
 }
 
-export function checkPassword(password){
-   return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length>=8 && password.length<=20 &&  !/[^A-Za-z0-9]/.test()
+export function checkPassword(password) {
+  return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length >= 8 && password.length <= 20 && !/[^A-Za-z0-9]/.test()
 }
-export function checkUsername(username){
+export function checkUsername(username) {
   return /^[a-zA-Z][a-zA-Z0-9]{2,19}$/.test(username);
- // return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9](.)*/)
+  // return username.length>=8 && username.length<=20  && !/[^A-Za-z0-9]/.test(username)  && !username.match(/[0-9](.)*/)
 }
 export function checkEmail(mail)
 {
