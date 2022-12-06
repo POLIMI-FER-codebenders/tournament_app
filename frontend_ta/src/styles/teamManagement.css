@@ -102,6 +102,14 @@ tr:nth-child(even) {
     min-width: 140px;
 }
 
+.btn-inactive {
+    padding: 5px 10px;
+    text-align: center;
+    background: #b0aeaea3;
+    border: 1px solid #b0aeaea3;
+    color: #fff;
+}
+
 .btn {
     cursor: pointer;
     padding: 5px 10px;

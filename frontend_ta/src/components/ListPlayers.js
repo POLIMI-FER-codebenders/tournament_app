@@ -1,19 +1,47 @@
 import { Component } from "react";
 // import "../styles/listPlayers.css";
 import "../styles/teamManagement.css";
+import postData from '../utils';
+import { GoToErrorPage } from '../utils';
 
 class ListPlayers extends Component {
   constructor(props) {
     super(props);
     this.state = {
       players: props.players,
-      handleClick: props.handleClick,
-      btn_name: props.btn_name
+      errorMessage: "",
+      badResponse: "",
+      teamId: props.teamId,
+      invitNotSend: props.invitNotSend
     };
   }
 
+  handleSendInvite(event) {
+    let url_invit = process.env.REACT_APP_BACKEND_ADDRESS + "/api/invitation/create/"
+    let data = { 
+      idInvitedPlayer: event.target.id,
+      idTeam: this.state.teamId
+    };
+    postData(url_invit, data)
+      .then((response) => {
+        if (response.status === 200) {
+          alert(`An invitation has been send to the player ${event.target.id} to join the team ${this.state.teamId}`);
+          let tmpInvitNotSend = this.state.invitNotSend;
+          this.setState({
+            invitNotSend: tmpInvitNotSend.filter(elem => elem !== parseInt(event.target.id))
+          })
+        }
+        else {
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
+        }
+      });
+  }
 
   render() {
+    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <div class="list">
         <div class="list-headers flex-container-list">
@@ -21,8 +49,14 @@ class ListPlayers extends Component {
           <div class="col2 flex-items-list">Score</div>
           <div class="col3 flex-items-list"></div>
         </div>
-        {this.state.players.map((object, i) => 
-          <PlayerEntry obj={object} key={i} handleClick={event => this.state.handleClick(event)} btn_name={this.state.btn_name}/>
+        {this.state.players.map((object, i) =>
+          <PlayerEntry
+            obj={object}
+            key={i}
+            handleClick={event => this.handleSendInvite(event)}
+            teamId={this.state.teamId}
+            isInactive={this.state.invitNotSend.find(i => i === object.id) === undefined}
+          />
         )}
       </div>
     );
@@ -31,15 +65,31 @@ class ListPlayers extends Component {
 }
 
 function PlayerEntry(props) {
-  return (
-    <div class="list-entry flex-container-list">
-      <div class="col1 flex-items-list">{props.obj.username}</div>
-      <div class="col2 flex-items-list">{props.obj.score}</div>
-      <div class="col3 flex-items-list">
-        <div class="btn btn-green" id={props.obj.id} onClick={props.handleClick}>Send invitation</div>
+  if (props.isInactive) {
+
+    return (
+      <div class="list-entry flex-container-list">
+        <div class="col1 flex-items-list">{props.obj.username}</div>
+        <div class="col2 flex-items-list">{props.obj.score}</div>
+        <div class="col3 flex-items-list">
+          <div class="btn-inactive" id={props.obj.id}>Send invitation</div>
+        </div>
       </div>
-    </div>
-  );
+    );
+
+  } else {
+
+    return (
+      <div class="list-entry flex-container-list">
+        <div class="col1 flex-items-list">{props.obj.username}</div>
+        <div class="col2 flex-items-list">{props.obj.score}</div>
+        <div class="col3 flex-items-list">
+          <div class="btn btn-green" id={props.obj.id} onClick={props.handleClick}>Send invitation</div>
+        </div>
+      </div>
+    );
+  }
+
 }
 
 

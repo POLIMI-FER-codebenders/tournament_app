@@ -19,7 +19,8 @@ class ManageTeams extends Component {
       isUserLoaded: false,
       isTeamLoaded: false,
       isMembersOk: false,
-      isPlayersLoaded: false
+      isPlayersLoaded: false,
+      invitNotSend: []
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
@@ -45,6 +46,7 @@ class ManageTeams extends Component {
             })
           } else {
             this.setState({
+              isUserLoaded: false,
               errorMessage: "Empty response",
               badResponse: 'No player has been found for the current user in the database'
             })
@@ -52,6 +54,7 @@ class ManageTeams extends Component {
         }
         else {
           this.setState({
+            isUserLoaded: false,
             errorMessage: "the server encountered an error",
             badResponse: response.message
           })
@@ -71,13 +74,15 @@ class ManageTeams extends Component {
               team: response.result
             })
           } else {
-            this.setState({ 
+            this.setState({
+              isTeamLoaded: false,
               errorMessage: "You are not in any team.",
             })
           }
         }
         else {
           this.setState({
+            isTeamLoaded: false,
             errorMessage: "the server encountered an error",
             badResponse: response.message
           })
@@ -96,8 +101,16 @@ class ManageTeams extends Component {
               isPlayersLoaded: true,
               players: response.result
             })
+
+            let invitNotSend = [];
+            response.result.forEach(p => {
+              invitNotSend.push(p.id);
+            });
+            this.setState({ invitNotSend: invitNotSend })
+
           } else {
             this.setState({
+              isPlayersLoaded: false,
               errorMessage: "Empty response",
               badResponse: 'No players found in the database'
             })
@@ -105,6 +118,7 @@ class ManageTeams extends Component {
         }
         else {
           this.setState({
+            isPlayersLoaded: false,
             errorMessage: "the server encountered an error",
             badResponse: response.message
           })
@@ -123,6 +137,9 @@ class ManageTeams extends Component {
       .then((response) => {
         if (response.status === 200) {
           alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          this.initUser();
+          this.initTeam();
+          this.initPlayers();
         }
         else {
           this.setState({
@@ -140,6 +157,8 @@ class ManageTeams extends Component {
       .then((response) => {
         if (response.status === 200) {
           alert(`The player ${this.state.players.find(p => p.id = event.target.id).username} has been kicked from the team ${this.state.team.name}`);
+          this.initTeam();
+          this.initPlayers();
         }
         else {
           this.setState({
@@ -151,22 +170,6 @@ class ManageTeams extends Component {
       });
   }
 
-  handleSendInvite(event) {
-    let url_invit = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/invit/"
-    let data = { id: event.target.id };
-    postData(url_invit, data)
-      .then((response) => {
-        if (response.status === 200) {
-          alert(`An invitation has been send to the player ${event.target.id} to join the team`);
-        }
-        else {
-          this.setState({
-            errorMessage: "the server encountered an error",
-            badResponse: response.message
-          })
-        }
-      });
-  }
 
   renderErrorMessage() {
     if (this.state.errorMessage == null) return;
@@ -299,8 +302,9 @@ class ManageTeams extends Component {
             players={this.state.players
               .filter(user => !this.state.team.teamMembers.find(p => p === user.username))
             }
-            handleClick={event => this.handleSendInvite(event)}
-            btnName="invite" />
+            teamId={this.state.team.id}
+            invitNotSend={this.state.invitNotSend}
+          />
         </div>
       )
     }
