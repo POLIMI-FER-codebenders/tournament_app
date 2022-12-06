@@ -69,7 +69,7 @@ public abstract class Tournament {
     @Column(name = "current_round")
     protected Integer currentRound = 0;
 
-    protected Date nextRoundStartTime = Date.from(Instant.now()); //TODO remove the default when we have scheduling
+    protected Date nextRoundStartTime = new Date(); //TODO remove the default when we have scheduling
 
     @OneToMany(mappedBy = "tournament")
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
