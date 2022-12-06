@@ -186,7 +186,7 @@ public class TournamentService {
         return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
     }
 
-    public void postRoundChoice(ClassChoiceRequest classChoiceRequest, Player loggedPlayer) {
+    public RoundClassChoice postRoundChoice(ClassChoiceRequest classChoiceRequest, Player loggedPlayer) {
         Tournament tournament = tournamentRepository.findById(classChoiceRequest.getClassId()).orElseThrow(() -> new BadRequestException("Tournament doesn't exist."));
         if(!tournament.getCreator().equals(loggedPlayer)){
             throw new BadRequestException("Only the creator of the tournament can upload class choices.");
@@ -202,5 +202,6 @@ public class TournamentService {
         tournament.addRoundClassChoice(roundClassChoice);
         roundClassChoiceRepository.save(roundClassChoice);
         tournamentRepository.save(tournament);
+        return roundClassChoice;
     }
 }

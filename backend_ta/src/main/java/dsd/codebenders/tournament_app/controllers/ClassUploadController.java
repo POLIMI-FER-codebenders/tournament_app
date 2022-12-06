@@ -2,6 +2,7 @@ package dsd.codebenders.tournament_app.controllers;
 
 import dsd.codebenders.tournament_app.entities.GameClass;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.RoundClassChoice;
 import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
 import dsd.codebenders.tournament_app.services.ClassService;
 import dsd.codebenders.tournament_app.services.PlayerService;
@@ -28,9 +29,9 @@ public class ClassUploadController {
     }
 
     @PostMapping("/upload")
-    public void uploadFile(@RequestParam("file") MultipartFile file) {
+    public GameClass uploadClass(@RequestParam("file") MultipartFile file) {
         Player author = playerService.getSelf();
-        classService.uploadFile(file, author);
+        return classService.uploadClass(file, author);
     }
 
     @GetMapping("/get-all")
@@ -39,9 +40,9 @@ public class ClassUploadController {
     }
 
     @PostMapping("/post-choices")
-    public void postChoice(@RequestBody ClassChoiceRequest classChoiceRequest){
+    public RoundClassChoice postChoice(@RequestBody ClassChoiceRequest classChoiceRequest){
         Player loggedPlayer = playerService.getSelf();
-        tournamentService.postRoundChoice(classChoiceRequest, loggedPlayer);
+        return tournamentService.postRoundChoice(classChoiceRequest, loggedPlayer);
     }
 
 }

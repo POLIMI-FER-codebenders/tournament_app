@@ -22,7 +22,7 @@ public class ClassService {
     }
 
 
-    public void uploadFile(MultipartFile file, Player author) {
+    public GameClass uploadClass(MultipartFile file, Player author) {
         String filename = file.getOriginalFilename();
 
         if(gameClassRepository.existsByFilename(filename)){
@@ -41,6 +41,7 @@ public class ClassService {
         }
 
         gameClassRepository.save(gameClass);
+        return gameClass;
     }
 
     public List<GameClass> getAllClasses() {
