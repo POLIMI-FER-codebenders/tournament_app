@@ -19,8 +19,4 @@ public interface TournamentRepository extends JpaRepository<Tournament, Long> {
 
     Optional<Tournament> findByNameIgnoreCaseAndStatusNot(String name, TournamentStatus status);
 
-    @Query("SELECT COUNT(m) FROM Tournament t JOIN t.matches m " +
-            "WHERE t = ?1 AND t.currentRound = m.roundNumber AND m.status <> 'ENDED'")
-    int countNotEndedMatchesByCurrentRound(Tournament tournament);
-
 }

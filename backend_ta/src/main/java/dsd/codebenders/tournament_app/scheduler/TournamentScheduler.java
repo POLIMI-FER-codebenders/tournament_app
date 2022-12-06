@@ -31,11 +31,11 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
         List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
         Date roundStart = addMinutes(new Date(), 60);
         for(Match m: matches) {
-            matchService.serStartDate(m, roundStart);
+            matchService.setStartDate(m, roundStart);
             schedule(new CreateAndStartMatchesTask(matchService, m), roundStart);
             schedule(new DisableTestsAndMutantsTask(matchService, m), addMinutes(roundStart, 120));
             schedule(new DisableEquivalenceClaimsTask(matchService, m), addMinutes(roundStart, 150));
-            schedule(new EndMatchTask(this, tournamentService, matchService, m), addMinutes(roundStart, 180));
+            schedule(new EndMatchTask(this, matchService, m), addMinutes(roundStart, 180));
         }
     }
 

@@ -18,6 +18,7 @@ import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 
 @Service
@@ -124,9 +125,18 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public void serStartDate(Match match, Date date) {
+    public void setStartDate(Match match, Date date) {
         match.setStartDate(date);
         matchRepository.save(match);
+    }
+
+    @Transactional
+    public boolean endMatchAndCheckRoundEnding(Match match) {
+        setEndedMatch(match);
+        long notEndedMatchesNumber =
+                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber())
+                        .stream().filter(m -> m.getStatus() != MatchStatus.ENDED).count();
+        return notEndedMatchesNumber == 0;
     }
 
 }

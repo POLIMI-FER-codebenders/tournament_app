@@ -192,12 +192,4 @@ public class TournamentService {
         return tournament.getMatches().stream().filter(m -> Objects.equals(m.getRoundNumber(), tournament.getCurrentRound())).toList();
     }
 
-    @Transactional
-    public boolean endMatchAndCheckRoundEnding(Match match) {
-        matchService.setEndedMatch(match);
-        Tournament tournament = match.getTournament();
-        long notEndedMatchesNumber = tournamentRepository.countNotEndedMatchesByCurrentRound(tournament);
-        return notEndedMatchesNumber == 0;
-    }
-
 }
