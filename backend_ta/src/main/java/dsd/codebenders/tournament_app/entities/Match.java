@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
@@ -18,6 +19,7 @@ import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
 
 @Entity
 @Table(name = "game")
+@JsonIgnoreProperties(value = {"server"}, allowSetters = true)
 public class Match {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
