@@ -1,5 +1,6 @@
 package dsd.codebenders.tournament_app.services;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,11 @@ public class MatchService {
 
     public void setFailedMatch(Match match) {
         match.setStatus(MatchStatus.FAILED);
+        matchRepository.save(match);
+    }
+
+    public void serStartDate(Match match, Date date) {
+        match.setStartDate(date);
         matchRepository.save(match);
     }
 

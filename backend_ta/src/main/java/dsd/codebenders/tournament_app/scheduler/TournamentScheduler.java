@@ -29,8 +29,9 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
     public void prepareRoundAndStartMatches(Tournament tournament) {
         // TODO: schedule the round
         List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
-        Date roundStart = addMinutes(new Date(), 60); //TODO: get current date and time
+        Date roundStart = addMinutes(new Date(), 60);
         for(Match m: matches) {
+            matchService.serStartDate(m, roundStart);
             schedule(new CreateAndStartMatchesTask(matchService, m), roundStart);
             schedule(new DisableTestsAndMutantsTask(matchService, m), addMinutes(roundStart, 120));
             schedule(new DisableEquivalenceClaimsTask(matchService, m), addMinutes(roundStart, 150));
