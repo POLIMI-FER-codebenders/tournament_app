@@ -3,10 +3,16 @@ package dsd.codebenders.tournament_app.services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
-import dsd.codebenders.tournament_app.entities.*;
+import dsd.codebenders.tournament_app.entities.CDPlayer;
+import dsd.codebenders.tournament_app.entities.Match;
+import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.Server;
+import dsd.codebenders.tournament_app.entities.Team;
+import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
@@ -107,5 +113,9 @@ public class MatchService {
 
     List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
         return matchRepository.findByTournamentAndRoundNumber(tournament, round);
+    }
+
+    public Optional<Match> findById(Long id) {
+        return matchRepository.findById(id);
     }
 }
