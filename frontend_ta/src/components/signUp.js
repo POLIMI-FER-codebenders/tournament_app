@@ -66,7 +66,7 @@ class SignUp extends React.Component {
     postData(url, data).then((response) => {
       if (response.status === 200) {
         console.log(response.result.result);
-        if (response.result.result == "Registered") {
+        if (response.result.result === "Registered") {
           
           this.setState({view:"SignIn",registered:true})
         }
