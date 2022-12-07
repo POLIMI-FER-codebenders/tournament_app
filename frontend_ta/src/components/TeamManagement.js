@@ -16,51 +16,20 @@ class ManageTeams extends Component {
       errorMessage: "",
       badResponse: "",
       display_invite: false,
-      isUserLoaded: false,
       isTeamLoaded: false,
-      isMembersOk: false,
       isPlayersLoaded: false,
       invitNotSend: []
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
+    this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
 
   }
 
   componentDidMount() {
-    this.initUser();
     this.initTeam();
     this.initPlayers();
-  }
-
-  initUser() {
-    let url_player = process.env.REACT_APP_BACKEND_ADDRESS + "/api/player/get"
-    getData(url_player)
-      .then((response) => {
-        if (response.status === 200) {
-          if (response.result) {
-            this.setState({
-              isUserLoaded: true,
-              user: response.result
-            })
-          } else {
-            this.setState({
-              isUserLoaded: false,
-              errorMessage: "Empty response",
-              badResponse: 'No player has been found for the current user in the database'
-            })
-          }
-        }
-        else {
-          this.setState({
-            isUserLoaded: false,
-            errorMessage: "the server encountered an error",
-            badResponse: response.message
-          })
-        }
-      });
-    this.setState({})
   }
 
   initTeam() {
@@ -99,7 +68,8 @@ class ManageTeams extends Component {
           if (response.result) {
             this.setState({
               isPlayersLoaded: true,
-              players: response.result
+              players: response.result,
+              user: response.result.find(p => p.username === sessionStorage.getItem("username"))
             })
 
             let invitNotSend = [];
@@ -137,7 +107,6 @@ class ManageTeams extends Component {
       .then((response) => {
         if (response.status === 200) {
           alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
-          this.initUser();
           this.initTeam();
           this.initPlayers();
         }
@@ -156,7 +125,7 @@ class ManageTeams extends Component {
     postData(url_kick, data)
       .then((response) => {
         if (response.status === 200) {
-          alert(`The player ${this.state.players.find(p => p.id = event.target.id).username} has been kicked from the team ${this.state.team.name}`);
+          alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
           this.initTeam();
           this.initPlayers();
         }
@@ -170,6 +139,25 @@ class ManageTeams extends Component {
       });
   }
 
+  handleClickPromote(event) {
+    let url_promote = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/members/promote-leader/"
+    let data = { idPlayer: event.target.id };
+    postData(url_promote, data)
+      .then((response) => {
+        if (response.status === 200) {
+          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          this.initTeam();
+          this.initPlayers();
+        }
+        else {
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
+        };
+
+      });
+  }
 
   renderErrorMessage() {
     if (this.state.errorMessage == null) return;
@@ -212,7 +200,7 @@ class ManageTeams extends Component {
               <div className="flex-container-info">
                 <span className="flex-items-info name-entry">Date of creation:</span>
                 <span className="flex-items-info">
-                  {this.state.team.dateOfCreation.join('/')}
+                  {this.state.team.dateOfCreation}
                 </span>
               </div>
             </div>
@@ -225,28 +213,7 @@ class ManageTeams extends Component {
   }
 
   displayTeamMember() {
-    // to erase after fix pb teamMember back
-    if (this.state.isTeamLoaded && !this.state.isMembersOk) {
-
-      let teamMember = []
-      this.state.team.teamMembers.forEach(element => {
-        if (element.username === undefined) {
-          teamMember.push(element);
-        } else {
-          teamMember.push(element.username)
-        }
-
-      });
-      let newteam = this.state.team;
-      newteam.teamMembers = teamMember;
-      this.setState({ team: newteam })
-      this.setState({
-        isMembersOk: true
-      })
-
-    }
-
-    if (this.state.isPlayersLoaded) {
+     if (this.state.isTeamLoaded && this.state.isPlayersLoaded) {
       return (
         <table>
           <thead>
@@ -258,12 +225,12 @@ class ManageTeams extends Component {
           </thead>
           <tbody>
             <tr></tr>
-            {this.state.team.teamMembers.map(player =>
-              <tr key={player} id={this.state.players.find(p => p.username == player).id}>
-                <td>{player}</td>
-                <td>{this.state.players.find(p => p.username == player).role}</td>
+            {this.state.team.teamMembers.map((player, i) =>
+              <tr key={i} id={player.id}>
+                <td>{player.username}</td>
+                <td>{player.role}</td>
                 <td>
-                  {this.actionPlayer(this.state.players.find(p => p.username == player).id)}
+                  {this.actionPlayer(player.id)}
                 </td>
               </tr>
             )}
@@ -274,17 +241,22 @@ class ManageTeams extends Component {
   }
 
   actionPlayer(idPlayer) {
-    if (this.state.isUserLoaded) {
+    if (this.state.isPlayersLoaded) {
       if (idPlayer === this.state.user.id && this.state.user.role !== "LEADER") {
         return (<div class="btn btn-red" name="leave" id={idPlayer} onClick={this.handleClickLeave} >Leave</div>);
       } else if (idPlayer !== this.state.user.id && this.state.user.role === "LEADER") {
-        return (<div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleClickKick} >Kick from the team</div>);
+        return (
+          <div className="btn-container">
+            <div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleClickKick}>Kick from the team</div>
+            <div class="btn btn-blue" name="promote" id={idPlayer} onClick={this.handleClickPromote}>Promote to leader</div>
+          </div>
+        );
       } else return;
     }
   }
 
   actionInvite() {
-    if (this.state.isUserLoaded) {
+    if (this.state.isPlayersLoaded) {
       if (this.state.user.role === "LEADER") {
         return (
           <div class="btn btn-yellow flex-items-btn" name="display_invite" onClick={this.handleClickInvite}>Invite players</div>
@@ -294,13 +266,13 @@ class ManageTeams extends Component {
   }
 
   invitations() {
-    if (this.state.display_invite && this.state.isPlayersLoaded) {
+    if (this.state.display_invite && this.state.isPlayersLoaded && this.state.user.role === 'LEADER') {
       return (
         <div className="flex-items-main">
           <h3>Send invitation to join the team</h3>
           <ListPlayers
             players={this.state.players
-              .filter(user => !this.state.team.teamMembers.find(p => p === user.username))
+              .filter(user => !this.state.team.teamMembers.find(p => p.id === user.id))
             }
             teamId={this.state.team.id}
             invitNotSend={this.state.invitNotSend}
