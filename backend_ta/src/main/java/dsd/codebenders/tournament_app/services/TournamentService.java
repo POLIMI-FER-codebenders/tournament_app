@@ -1,8 +1,6 @@
 package dsd.codebenders.tournament_app.services;
 
-import dsd.codebenders.tournament_app.dao.TeamRepository;
-import dsd.codebenders.tournament_app.dao.TournamentRepository;
-import dsd.codebenders.tournament_app.dao.TournamentScoreRepository;
+import dsd.codebenders.tournament_app.dao.*;
 import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
