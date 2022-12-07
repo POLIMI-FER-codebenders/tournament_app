@@ -162,6 +162,10 @@ public class MatchService {
         return activeMatches == 0;
     }
 
+    public void setWinner(Match match, Team winner) {
+        match.setWinningTeam(winner);
+        matchRepository.save(match);
+    }
 
     public Optional<Match> findById(Long id) {
         return matchRepository.findById(id);
