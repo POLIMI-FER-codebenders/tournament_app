@@ -1,6 +1,7 @@
 package dsd.codebenders.tournament_app.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.entities.Tournament;
@@ -15,5 +16,7 @@ public interface TournamentScoreRepository extends JpaRepository<TournamentScore
     List<TournamentScore> findByTournament_ID(Long ID);
 
     long deleteByTeamID(Long teamID);
+
+    Optional<TournamentScore> findByTeamAndTournament(Team team, Tournament tournament);
 
 }

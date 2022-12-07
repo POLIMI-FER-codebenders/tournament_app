@@ -21,6 +21,7 @@ public class StartMatchTask implements Runnable {
         try {
             matchService.startMatchOnCD(match);
         } catch (MatchCreationException e) {
+            System.err.println("ERROR: Match " + match.getID() + " failed while starting");
             if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
                 tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
             }

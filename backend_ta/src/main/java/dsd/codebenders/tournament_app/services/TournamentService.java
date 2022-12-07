@@ -1,18 +1,9 @@
 package dsd.codebenders.tournament_app.services;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import dsd.codebenders.tournament_app.dao.TeamRepository;
 import dsd.codebenders.tournament_app.dao.TournamentRepository;
 import dsd.codebenders.tournament_app.dao.TournamentScoreRepository;
-import dsd.codebenders.tournament_app.entities.Match;
-import dsd.codebenders.tournament_app.entities.Player;
-import dsd.codebenders.tournament_app.entities.Team;
-import dsd.codebenders.tournament_app.entities.Tournament;
-import dsd.codebenders.tournament_app.entities.TournamentScore;
+import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
@@ -25,17 +16,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class TournamentService {
 
-    @Value("${tournament-app.tournament-delay.round-start:15}")
+    @Value("${tournament-app.tournament-delay.round-start:10}")
     private int roundStartDelay;
+    @Value("${tournament-app.tournament-delay.phase-two:10}")
+    private int phaseTwoDelay;
+    @Value("${tournament-app.tournament-delay.phase-three:20}")
+    private int phaseThreeDelay;
+    @Value("${tournament-app.tournament-delay.match-ending:30}")
+    private int matchEndingDelay;
     private final Logger logger = LoggerFactory.getLogger(TournamentService.class);
     private final TournamentRepository tournamentRepository;
     private final TournamentScoreRepository tournamentScoreRepository;
     private final TeamRepository teamRepository;
     private final MatchService matchService;
-    private final TournamentScheduler tournamentScheduler;
+    private TournamentScheduler tournamentScheduler;
 
     @Autowired
     public TournamentService(TeamRepository teamRepository, TournamentRepository tournamentRepository, TournamentScoreRepository tournamentScoreRepository,
@@ -44,7 +46,13 @@ public class TournamentService {
         this.tournamentScoreRepository = tournamentScoreRepository;
         this.teamRepository = teamRepository;
         this.matchService = matchService;
-        this.tournamentScheduler = new TournamentScheduler(this, matchService);
+    }
+
+    @PostConstruct
+    public void init() {
+        this.tournamentScheduler = new TournamentScheduler(phaseTwoDelay, phaseThreeDelay, matchEndingDelay, this, matchService);
+        this.tournamentScheduler.setPoolSize(10);
+        this.tournamentScheduler.initialize();
     }
 
     public Tournament findById(Long ID) {
@@ -168,7 +176,7 @@ public class TournamentService {
     }
 
     public Optional<TournamentScore> getScoreForTeam(Tournament tournament, Team team) {
-        return tournament.getTournamentScores().stream().filter(ts -> ts.getTeam().equals(team)).findFirst();
+        return tournamentScoreRepository.findByTeamAndTournament(team, tournament);
     }
 
     public List<Team> getTeams(Tournament tournament) {
@@ -201,10 +209,6 @@ public class TournamentService {
 
     public List<Team> getTournamentTeams(Tournament tournament) {
         return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
-    }
-
-    public List<Match> getMatchesInCurrentRound(Tournament tournament) {
-        return tournament.getMatches().stream().filter(m -> Objects.equals(m.getRoundNumber(), tournament.getCurrentRound())).toList();
     }
 
 }

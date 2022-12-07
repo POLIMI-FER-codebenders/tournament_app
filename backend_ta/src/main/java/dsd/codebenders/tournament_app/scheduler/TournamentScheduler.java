@@ -8,43 +8,39 @@ import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.TournamentService;
 import dsd.codebenders.tournament_app.utils.DateUtility;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
 public class TournamentScheduler extends ThreadPoolTaskScheduler {
 
-    @Value("${tournament-app.tournament-delay.phase-two:15}")
-    private int phaseTwoDelay;
-    @Value("${tournament-app.tournament-delay.phase-three:15}")
-    private int phaseThreeDelay;
-    @Value("${tournament-app.tournament-delay.match-ending:15}")
-    private int matchEndingDelay;
-
+    private final int phaseTwoDelay;
+    private final int phaseThreeDelay;
+    private final int matchEndingDelay;
     private final TournamentService tournamentService;
     private final MatchService matchService;
 
-    public TournamentScheduler(TournamentService tournamentService, MatchService matchService) {
+    public TournamentScheduler(int phaseTwoDelay, int phaseThreeDelay, int matchEndingDelay, TournamentService tournamentService, MatchService matchService) {
+        this.phaseTwoDelay = phaseTwoDelay;
+        this.phaseThreeDelay = phaseThreeDelay;
+        this.matchEndingDelay = matchEndingDelay;
         this.tournamentService = tournamentService;
         this.matchService = matchService;
     }
-    
+
     public Tournament prepareRoundAndStartMatches(Tournament tournament) {
         try {
             tournament = tournamentService.tryAdvance(tournament);
         } catch (MatchCreationException e) {
+            System.err.println("ERROR: Tournament " + tournament.getID() + " failed while creating matches");
             tournament = tournamentService.forceTournamentEnd(tournament);
             return tournament;
         }
         if(tournament.getStatus() != TournamentStatus.IN_PROGRESS) {
             return tournament;
         }
-        List<Match> matches = tournamentService.getMatchesInCurrentRound(tournament);
+        List<Match> matches = matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound());
         for(Match m: matches) {
             if(m.getStatus() == MatchStatus.CREATED) {
                 Date roundStart = m.getStartDate();

@@ -6,6 +6,7 @@ import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
+import dsd.codebenders.tournament_app.requests.GameIdRequest;
 import dsd.codebenders.tournament_app.requests.GameRequest;
 import dsd.codebenders.tournament_app.requests.GameSettingsRequest;
 import dsd.codebenders.tournament_app.requests.TeamRequest;
@@ -23,6 +24,7 @@ import java.util.Map;
 @Service
 public class MatchService {
 
+    private final PlayerService playerService;
     private final CDPlayerService cdPlayerservice;
     private final ServerService serverService;
     private final MatchRepository matchRepository;
@@ -30,7 +32,8 @@ public class MatchService {
     private int classId;
 
     @Autowired
-    public MatchService(CDPlayerService cdPlayerservice, ServerService serverService, MatchRepository matchRepository) {
+    public MatchService(PlayerService playerService, CDPlayerService cdPlayerservice, ServerService serverService, MatchRepository matchRepository) {
+        this.playerService = playerService;
         this.cdPlayerservice = cdPlayerservice;
         this.serverService = serverService;
         this.matchRepository = matchRepository;
@@ -65,8 +68,9 @@ public class MatchService {
     public void startMatchOnCD(Match match) throws MatchCreationException {
         Server server = match.getServer();
         try {
-            HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/start", match, void.class);
+            HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/start", new GameIdRequest(match), void.class);
         } catch (RestClientException | JsonProcessingException e) {
+            e.printStackTrace();
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
         goToNextPhase(match);
@@ -82,7 +86,8 @@ public class MatchService {
 
     private void createCDPlayers(Team team, Server server) {
         Map<String, String> queryParameters = new HashMap<>();
-        for (Player p : team.getTeamMembers()) {
+        List<Player> teamMembers = playerService.getPlayersByTeam(team);
+        for (Player p : teamMembers) {
             CDPlayer cdPlayer = cdPlayerservice.getCDPlayerByServer(p, server);
             if (cdPlayer == null) {
                 queryParameters.put("name", p.getUsername());
@@ -115,7 +120,7 @@ public class MatchService {
         return matchRepository.findByTournamentAndRoundNumber(tournament, roundNumber).stream().map(Match::getWinningTeam).toList();
     }
 
-    List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
+    public List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
         return matchRepository.findByTournamentAndRoundNumber(tournament, round);
     }
 
