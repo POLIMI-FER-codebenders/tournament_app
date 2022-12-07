@@ -24,14 +24,14 @@ import java.util.Optional;
 @Service
 public class TournamentService {
 
-    @Value("${tournament-app.tournament-delay.round-start:10}")
-    private int roundStartDelay;
-    @Value("${tournament-app.tournament-delay.phase-two:10}")
-    private int phaseTwoDelay;
-    @Value("${tournament-app.tournament-delay.phase-three:20}")
-    private int phaseThreeDelay;
-    @Value("${tournament-app.tournament-delay.match-ending:30}")
-    private int matchEndingDelay;
+    @Value("${tournament-app.tournament-match.break-time-duration:10}")
+    private int breakTimeDuration;
+    @Value("${tournament-app.tournament-match.phase-one-duration:10}")
+    private int phaseOneDuration;
+    @Value("${tournament-app.tournament-match.phase-two-duration:10}")
+    private int phaseTwoDuration;
+    @Value("${tournament-app.tournament-match.phase-three-duration:10}")
+    private int phaseThreeDuration;
     private final Logger logger = LoggerFactory.getLogger(TournamentService.class);
     private final TournamentRepository tournamentRepository;
     private final TournamentScoreRepository tournamentScoreRepository;
@@ -50,7 +50,8 @@ public class TournamentService {
 
     @PostConstruct
     public void init() {
-        this.tournamentScheduler = new TournamentScheduler(phaseTwoDelay, phaseThreeDelay, matchEndingDelay, this, matchService);
+        this.tournamentScheduler = new TournamentScheduler(phaseOneDuration, phaseOneDuration + phaseTwoDuration,
+                phaseOneDuration + phaseTwoDuration + phaseThreeDuration, this, matchService);
         this.tournamentScheduler.setPoolSize(10);
         this.tournamentScheduler.initialize();
     }
@@ -139,7 +140,7 @@ public class TournamentService {
         logger.error(IDs.toString());
         List<List<Team>> nextMatches = IDs.stream().map(ids -> ids.stream().map(id -> teamRepository.findById(id).get()).toList()).toList();
         boolean oneValid = false;
-        Date roundStart = DateUtility.addSeconds(new Date(), roundStartDelay);
+        Date roundStart = DateUtility.addSeconds(new Date(), breakTimeDuration);
         for (List<Team> teams : nextMatches) {
             int swap = (int) Math.round(Math.random()); //Randomly assign attacker and defender role
             logger.info("scheduleNextRound: " + teams.get(swap).getID() + " VS " + teams.get(1 - swap).getID());
