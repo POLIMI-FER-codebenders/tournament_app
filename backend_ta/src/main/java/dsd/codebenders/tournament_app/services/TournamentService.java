@@ -7,7 +7,9 @@ import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
+import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
+import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
 import dsd.codebenders.tournament_app.scheduler.TournamentScheduler;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.slf4j.Logger;
@@ -38,14 +40,18 @@ public class TournamentService {
     private final TeamRepository teamRepository;
     private final MatchService matchService;
     private TournamentScheduler tournamentScheduler;
+    private final GameClassRepository gameClassRepository;
+    private final RoundClassChoiceRepository roundClassChoiceRepository;
 
     @Autowired
     public TournamentService(TeamRepository teamRepository, TournamentRepository tournamentRepository, TournamentScoreRepository tournamentScoreRepository,
-                             MatchService matchService) {
+                             MatchService matchService, GameClassRepository gameClassRepository, RoundClassChoiceRepository roundClassChoiceRepository) {
         this.tournamentRepository = tournamentRepository;
         this.tournamentScoreRepository = tournamentScoreRepository;
         this.teamRepository = teamRepository;
         this.matchService = matchService;
+        this.gameClassRepository = gameClassRepository;
+        this.roundClassChoiceRepository = roundClassChoiceRepository;
     }
 
     @PostConstruct
@@ -212,4 +218,33 @@ public class TournamentService {
         return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
     }
 
+
+    public RoundClassChoice postRoundChoice(ClassChoiceRequest classChoiceRequest, Player loggedPlayer) {
+        Tournament tournament = tournamentRepository.findById(classChoiceRequest.getIdTournament()).orElseThrow(() -> new BadRequestException("Tournament doesn't exist."));
+        if(!tournament.getCreator().equals(loggedPlayer)){
+            throw new BadRequestException("Only the creator of the tournament can upload class choices.");
+        }
+        if(tournament.getStatus() != TournamentStatus.TEAMS_JOINING){
+            throw new BadRequestException("Class choices can be uploaded only during TEAMS_JOINING phase.");
+        }
+        if(classChoiceRequest.getRoundNumber() <= 0 || tournament.getNumberOfRounds() < classChoiceRequest.getRoundNumber()){
+            throw new BadRequestException("Invalid round number.");
+        }
+        GameClass gameClass = gameClassRepository.findById(classChoiceRequest.getClassId()).orElseThrow(() -> new BadRequestException("Class selected doesn't exist."));
+
+        RoundClassChoice roundClassChoice = roundClassChoiceRepository.findByTournamentAndRound(tournament, classChoiceRequest.getRoundNumber());
+
+        if(roundClassChoice != null) {
+            // A class for that round has been already chosen, then update the choice
+            roundClassChoice.setGameClass(gameClass);
+            roundClassChoiceRepository.save(roundClassChoice);
+        } else {
+            // First time the class for this round is being selected, then create the entry
+            roundClassChoice = new RoundClassChoice(tournament, classChoiceRequest.getRoundNumber(), gameClass);
+            tournament.addRoundClassChoice(roundClassChoice);
+            roundClassChoiceRepository.save(roundClassChoice);
+            tournamentRepository.save(tournament);
+        }
+        return roundClassChoice;
+    }
 }

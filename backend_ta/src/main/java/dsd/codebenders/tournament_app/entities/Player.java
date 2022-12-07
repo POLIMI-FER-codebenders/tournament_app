@@ -15,16 +15,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.entities.utils.TeamRole;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
+import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 
 @Entity
 @Table(name = "player")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "username")
 @JsonIgnoreProperties(value = {"password"}, allowSetters = true)
 public class Player {
     @Id
@@ -51,7 +50,7 @@ public class Player {
 
     @ManyToOne
     @JoinColumn(name = "ID_team")
-    @JsonIgnore
+    @JsonSerialize(using = TeamIDAndNameSerializer.class)
     private Team team;
 
     @Column(name = "role")
@@ -59,6 +58,7 @@ public class Player {
     private TeamRole role;
 
     @OneToMany(mappedBy = "realPlayer", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<CDPlayer> codeDefendersPlayers;
 
     public Player() {

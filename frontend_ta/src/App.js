@@ -32,7 +32,7 @@ function Header() {
 function MainPanel(props) {
   switch (props.view) {
     case 0:
-      return <DisplayTournament />;
+      return <DisplayTournament backHome ={props.backHome} index={1} />;
     case 1:
       return <SignIn backHome={props.backHome} index={0} />
     case 2:
@@ -48,16 +48,19 @@ function MainPanel(props) {
     if (sessionStorage.getItem("username") != null) return <CreateTournament />;
       else return <SignIn backHome={props.backHome} index={5} />
     default:
-      return <DisplayTournament />;
+      return <DisplayTournament backHome ={props.backHome} index={1} />;
   }
 }
 class Home extends React.Component {
 
   constructor(props) {
     super(props);
+    let buttontext ;
+    if(sessionStorage.getItem("username")!=null)buttontext="Logout"
+    else buttontext="SignIn"
     this.state = {
       view: 0,
-      buttontext:"SignIn",
+      buttontext: buttontext,
       error:false
     };
     this.backHome = this.backHome.bind(this);
@@ -113,7 +116,7 @@ class Home extends React.Component {
             </button>
           </div>
           <MainPanel view={this.state.view} backHome={this.backHome} />
-          <div class="item"></div>
+          
         </div>
       </div>
     );

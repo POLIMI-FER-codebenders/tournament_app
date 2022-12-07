@@ -1,8 +1,18 @@
 package dsd.codebenders.tournament_app.services;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
-import dsd.codebenders.tournament_app.entities.*;
+import dsd.codebenders.tournament_app.entities.CDPlayer;
+import dsd.codebenders.tournament_app.entities.Match;
+import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.Server;
+import dsd.codebenders.tournament_app.entities.Team;
+import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
@@ -16,10 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class MatchService {
@@ -70,7 +76,6 @@ public class MatchService {
         try {
             HTTPRequestsSender.sendPostRequest(server, "/admin/api/game/start", new GameIdRequest(match), void.class);
         } catch (RestClientException | JsonProcessingException e) {
-            e.printStackTrace();
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
         goToNextPhase(match);
@@ -157,4 +162,8 @@ public class MatchService {
         return activeMatches == 0;
     }
 
+
+    public Optional<Match> findById(Long id) {
+        return matchRepository.findById(id);
+    }
 }
