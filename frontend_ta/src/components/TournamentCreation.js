@@ -76,9 +76,9 @@ export function CreateTournament() {
 
       <form onSubmit={handleSubmit}>
             <div className="input-tour-container">
-            <label >
+            <label className="tourlabel" >
               Enter new tournament name:
-              <input
+              <input className="tourinput"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -86,22 +86,22 @@ export function CreateTournament() {
             </label>
             </div>
             <div className="input-tour-container">
-            <label htmlFor="typeselector">Select type of tournament:</label>
+            <label className="tourlabel" htmlFor="typeselector">Select type of tournament:</label>
             <select class="selector-tour" name="tourtype" id="typeselector" value={type} onChange={handleChange}>
               <option value="KNOCKOUT">Knockout</option>
               <option value="LEAGUE">League</option>
             </select>
             </div>
             <div className="input-tour-container">
-            <label htmlFor="gametypeselector">Select type of games:</label>
+            <label className="tourlabel" htmlFor="gametypeselector">Select type of games:</label>
             <select class="selector-tour" name="gametype" id="gametypeselector" value={gametype} onChange={handleChange}>
               <option value="MELEE">Melee</option>
               <option value="MULTIPLAYER">Multiplayer</option>
             </select>
             </div>
             <div className="input-tour-container">
-            <label htmlFor="teamsize-selector">Enter the size of teams (1-10):
-              <input
+            <label className="tourlabel" htmlFor="teamsize-selector">Enter the size of teams (1-10):
+              <input className="tourinput"
                 type="number" name="size" id="teamsize-selector"
                 value={size}
                 onChange={handleChange}
@@ -109,7 +109,7 @@ export function CreateTournament() {
             </label>
             </div>
             <div className="input-tour-container">
-            <label htmlFor="numberofteams-selector">{numberofteamstext}
+            <label className="tourlabel" htmlFor="numberofteams-selector">{numberofteamstext}
               <input
                 type="number" name="numberteams" id="numberofteams-selector"
                 value={numberofteams}
@@ -118,16 +118,16 @@ export function CreateTournament() {
             </label>
             </div>
             <div className="input-tour-container">
-            <label>Select the starting date
-              <input name="starting_date" type="date"
+            <label className="tourlabel">Select the starting date
+              <input className="tourinput" name="starting_date" type="date"
                 value={start_date}
-                className="form-control"
+                
                 onChange={handleChange}
               />
             </label>
           </div>
           <div className="button-tour-container">
-          <input type="submit" id="createtournamentbutton"  value="Create tournament"  />
+          <input className="tourinput" type="submit" id="createtournamentbutton"  value="Create tournament"  />
           </div>
           
         
@@ -139,7 +139,7 @@ export function CreateTournament() {
         <h3>Upload classes </h3>
         <form id="formclassupload" encType="multipart/form-data">
             <div class="input-group">
-                <label for="files" id="uploadclasslabel">Select classes to upload</label>
+                <label for="file" id="uploadclasslabel">Select classes to upload</label>
                 <input id="file" type="file" multiple />
             </div>
             <div className="button-tour-container">

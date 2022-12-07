@@ -27,12 +27,12 @@
     width: 257px;
     
 }
-label,input{
+.tourlabel,.tourinput{
     display:flex;
     flex-direction:column;
     align-items: center;
 }
-label{
+.tourlabel{
     padding-bottom:1px;
 }
 input[type="text"],
