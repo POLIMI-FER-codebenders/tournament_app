@@ -22,6 +22,7 @@ class ManageTeams extends Component {
       invitNotSend: []
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
+    this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
 
@@ -169,6 +170,26 @@ class ManageTeams extends Component {
       });
   }
 
+  handleClickPromote(event) {
+    let url_promote = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/members/promote-leader/"
+    let data = { idPlayer: event.target.id };
+    postData(url_promote, data)
+      .then((response) => {
+        if (response.status === 200) {
+          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          this.initUser();
+          this.initTeam();
+          this.initPlayers();
+        }
+        else {
+          this.setState({
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
+        };
+
+      });
+  }
 
   renderErrorMessage() {
     if (this.state.errorMessage == null) return;
@@ -256,7 +277,12 @@ class ManageTeams extends Component {
       if (idPlayer === this.state.user.id && this.state.user.role !== "LEADER") {
         return (<div class="btn btn-red" name="leave" id={idPlayer} onClick={this.handleClickLeave} >Leave</div>);
       } else if (idPlayer !== this.state.user.id && this.state.user.role === "LEADER") {
-        return (<div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleClickKick} >Kick from the team</div>);
+        return (
+          <div>
+            <div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleClickKick}>Kick from the team</div>
+            <div class="btn btn-blue" name="promote" id={idPlayer} onClick={this.handleClickPromote}>Promote to leader</div>
+          </div>
+        );
       } else return;
     }
   }
