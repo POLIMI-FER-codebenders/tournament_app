@@ -59,7 +59,7 @@ export function CreateTournament() {
     const formData = new FormData();
     for (const file of inputFile.files) {
         formData.append("file", file);
-        console.log(file);
+        
     }
     
 
@@ -111,7 +111,7 @@ export function CreateTournament() {
             <div className="input-tour-container">
             <label className="tourlabel" htmlFor="numberofteams-selector">{numberofteamstext}
               <input
-                type="number" name="numberteams" id="numberofteams-selector"
+                type="number" className="tourinput" name="numberteams" id="numberofteams-selector"
                 value={numberofteams}
                 onChange={handleChange}
               />

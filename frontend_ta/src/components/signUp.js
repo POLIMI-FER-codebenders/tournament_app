@@ -18,10 +18,11 @@ class SignUp extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.renderErrorMessage=this.renderErrorMessage.bind(this);
   }
 
   renderErrorMessage() {
-    if (this.state.errorMessage === null) return;
+    if (this.state.errorMessage == null) return;
     return (
       <p >{this.state.errorMessage}</p>
     );
@@ -65,12 +66,11 @@ class SignUp extends React.Component {
     let username = this.state.username;
     postData(url, data).then((response) => {
       if (response.status === 200) {
-        console.log(response.result.result);
         if (response.result.result === "Registered") {
-          
           this.setState({view:"SignIn",registered:true})
         }
         else if (response.result.result === "Email already taken") {
+  
           this.setState({ errorMessage: "email already taken" })
         }
         else if (response.result.result === "Username already taken") {

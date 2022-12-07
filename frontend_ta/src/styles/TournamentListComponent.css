@@ -126,6 +126,7 @@
 .labelclassupload{
     display:flex;
     flex-direction:column; 
+    font-size: 14px;
 }
 #roundid{
     height:13px;
@@ -138,7 +139,12 @@
     color: #fff;
     display:flex;
     flex-direction:column;
-    align-items: center;
-    
+    align-items: center; 
     
 }
+#classes{
+width:100px;
+}
+.button-class-container{
+    padding-top: 10px;
+  }
