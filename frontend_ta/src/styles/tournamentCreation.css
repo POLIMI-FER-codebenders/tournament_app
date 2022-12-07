@@ -81,7 +81,6 @@ input[type="text"],
  padding-bottom: 10px;
 }
 #uploadclassbutton{
-    
     cursor: pointer;
     font-size: 15px;
     background: #688bec;
@@ -89,3 +88,4 @@ input[type="text"],
     color: #fff;
     
 }
+

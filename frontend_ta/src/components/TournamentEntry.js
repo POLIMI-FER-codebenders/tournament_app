@@ -14,13 +14,13 @@ export class TournamentEntry extends React.Component {
             badResponse: null,
             playerteam: null,
             playertournaments: null,
-            classes:null
+            classes: null
         };
         this.DisplayTeamForm = this.DisplayTeamForm.bind(this);
         this.JoinButton = this.JoinButton.bind(this);
         this.DisplayTournamentInfo = this.DisplayTournamentInfo.bind(this);
         this.JoinTournament = this.JoinTournament.bind(this);
-        this.DisplayClassUploading= this.DisplayClassUploading.bind(this);
+        this.DisplayClassUploading = this.DisplayClassUploading.bind(this);
 
     }
     componentDidMount() {
@@ -49,8 +49,6 @@ export class TournamentEntry extends React.Component {
         }
     }
     render() {
-        console.log(this.state.playerteam);
-        console.log(this.props.record);
         let formtoshow;
         if (this.props.viewindex !== this.props.currentview) formtoshow = null;
         else formtoshow = this.state.tourcontent;
@@ -76,33 +74,32 @@ export class TournamentEntry extends React.Component {
             </div>
         );
     }
-    SelectClass(event){
+    SelectClass(event) {
 
     }
 
-    DisplayClassUploading(){
+    DisplayClassUploading() {
         console.log(this.props.record.creator.name);
         console.log(sessionStorage.getItem("username"));
-     if(this.props.record.creator.name===sessionStorage.getItem("username")){
-      let formtoreturn;
-      getData("/api/classes/get-all").then((response) => {
-        if (response.status === 200) {
-            this.setState({classes: response.result});
-            formtoreturn= 
-            <form onSubmit={this.SelectClass()}>
-                <label forhtml="roundid" >Select the round to which apply a class</label>
-                <input type="number" id="roundid" ></input>
-           <label forhtml="classes">Select a class for each round(not mandatory):</label>
-            <select id="classes" name="classes">
-              {this.state.classes.map(elem => <option value={elem.id} >{elem.filename}</option>)}
-            </select>
-            <input type="submit" value="Select class" />
-          </form>
+        if (this.props.record.creator.name === sessionStorage.getItem("username")) {
+            let formtoreturn;
+            console.log(this.props.classes);
+            formtoreturn =
+                <div id="displayclassupload">
+                    <form onSubmit={this.SelectClass()}>
+                        <label className="labelclassupload" forhtml="roundid" >Select the round to which apply a class</label>
+                        <input  type="number" id="roundid" ></input>
+                        <label className="labelclassupload" forhtml="classes">Select a class for each round(not mandatory):</label>
+                        <select id="classes" name="classes">
+                            {this.props.classes.map((elem, i) => <option value={elem.id} key={i}>{elem.filename}</option>)}
+                        </select>
+                        <input id="classbuttonupload" type="submit" value="Select class" />
+                    </form>
+                </div>
+
+            return formtoreturn;
         }
-        else console.log("error");
-    })
-     }
-     else return null;
+        else return null;
     }
 
     JoinButton(status) {
@@ -120,7 +117,7 @@ export class TournamentEntry extends React.Component {
         }
     }
     DisplayTournamentInfo() {
-        let classuploading=this.DisplayClassUploading();
+        let classuploading = this.DisplayClassUploading();
         let content;
         let winner;
         let teamstext = "the current joined teams are ";
@@ -136,7 +133,7 @@ export class TournamentEntry extends React.Component {
             //    else winner = null;
 
             content = (<div>
-                {classuploading}
+
                 {teams}
                 <p>Here is the list of scheduled matches</p>
                 <div class="list-matches">
@@ -156,7 +153,8 @@ export class TournamentEntry extends React.Component {
         }
         else { //the game is not started yet
             content =
-                <div>
+                <div id="classuploadinfo">
+                    {classuploading}
                     {teams}
                     <p> The tournament is a {this.props.record.numberOfTeams} teams tournament,there are still {this.props.record.numberOfTeams - teamsnames.length} slots </p>
                 </div>
@@ -169,7 +167,7 @@ export class TournamentEntry extends React.Component {
         let data = { idTournament: this.props.record.id };
         postData("/api/tournament/join", data).then((response) => {
             if (response.status === 200) {
-                this.setState({tourcontent: <p> successfully joined </p>})
+                this.setState({ tourcontent: <p> successfully joined </p> })
                 this.props.reloadPage();
             }
             else {
