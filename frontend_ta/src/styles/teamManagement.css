@@ -110,6 +110,10 @@ tr:nth-child(even) {
     color: #fff;
 }
 
+.btn-container div:not(:first-child) {
+    margin-top: 5px;
+}
+
 .btn {
     cursor: pointer;
     padding: 5px 10px;
@@ -148,11 +152,11 @@ tr:nth-child(even) {
 
 
 .btn-blue {
-    background: #1201d2;
-    border: 1px solid #1201d2;
+    background: #0193d2;
+    border: 1px solid #0193d2;
     color: #fff;
 }
 
 .btn-blue:hover {
-    background: #3d2de9;
+    background: #57b5dd;
 }

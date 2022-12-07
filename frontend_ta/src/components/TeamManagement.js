@@ -278,7 +278,7 @@ class ManageTeams extends Component {
         return (<div class="btn btn-red" name="leave" id={idPlayer} onClick={this.handleClickLeave} >Leave</div>);
       } else if (idPlayer !== this.state.user.id && this.state.user.role === "LEADER") {
         return (
-          <div>
+          <div className="btn-container">
             <div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleClickKick}>Kick from the team</div>
             <div class="btn btn-blue" name="promote" id={idPlayer} onClick={this.handleClickPromote}>Promote to leader</div>
           </div>
