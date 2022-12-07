@@ -5,18 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -81,6 +70,9 @@ public abstract class Tournament {
     @JoinColumn(name = "winning_team_id")
     @JsonSerialize(using = TeamIDAndNameSerializer.class)
     protected Team winningTeam;
+
+    @OneToMany(mappedBy = "tournament")
+    protected List<RoundClassChoice> roundClassChoiceList = new ArrayList<>();
 
     public Long getID() {
         return ID;
@@ -152,6 +144,14 @@ public abstract class Tournament {
 
     public Integer incrementCurrentRound() {
         return currentRound++;
+    }
+
+    public List<RoundClassChoice> getRoundClassChoiceList() {
+        return roundClassChoiceList;
+    }
+
+    public void addRoundClassChoice(RoundClassChoice roundClassChoice) {
+        this.roundClassChoiceList.add(roundClassChoice);
     }
 
     public abstract int getNumberOfRounds();

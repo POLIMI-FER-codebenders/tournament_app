@@ -116,7 +116,7 @@ class Home extends React.Component {
             </button>
           </div>
           <MainPanel view={this.state.view} backHome={this.backHome} />
-          <div class="item"></div>
+          
         </div>
       </div>
     );
