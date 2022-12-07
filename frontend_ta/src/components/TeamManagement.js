@@ -18,7 +18,6 @@ class ManageTeams extends Component {
       display_invite: false,
       isUserLoaded: false,
       isTeamLoaded: false,
-      isMembersOk: false,
       isPlayersLoaded: false,
       invitNotSend: []
     };
@@ -156,7 +155,7 @@ class ManageTeams extends Component {
     postData(url_kick, data)
       .then((response) => {
         if (response.status === 200) {
-          alert(`The player ${this.state.players.find(p => p.id = event.target.id).username} has been kicked from the team ${this.state.team.name}`);
+          alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
           this.initTeam();
           this.initPlayers();
         }
@@ -212,7 +211,7 @@ class ManageTeams extends Component {
               <div className="flex-container-info">
                 <span className="flex-items-info name-entry">Date of creation:</span>
                 <span className="flex-items-info">
-                  {this.state.team.dateOfCreation.join('/')}
+                  {this.state.team.dateOfCreation}
                 </span>
               </div>
             </div>
@@ -225,28 +224,7 @@ class ManageTeams extends Component {
   }
 
   displayTeamMember() {
-    // to erase after fix pb teamMember back
-    if (this.state.isTeamLoaded && !this.state.isMembersOk) {
-
-      let teamMember = []
-      this.state.team.teamMembers.forEach(element => {
-        if (element.username === undefined) {
-          teamMember.push(element);
-        } else {
-          teamMember.push(element.username)
-        }
-
-      });
-      let newteam = this.state.team;
-      newteam.teamMembers = teamMember;
-      this.setState({ team: newteam })
-      this.setState({
-        isMembersOk: true
-      })
-
-    }
-
-    if (this.state.isPlayersLoaded) {
+     if (this.state.isTeamLoaded && this.state.isPlayersLoaded) {
       return (
         <table>
           <thead>
@@ -258,12 +236,12 @@ class ManageTeams extends Component {
           </thead>
           <tbody>
             <tr></tr>
-            {this.state.team.teamMembers.map(player =>
-              <tr key={player} id={this.state.players.find(p => p.username == player).id}>
-                <td>{player}</td>
-                <td>{this.state.players.find(p => p.username == player).role}</td>
+            {this.state.team.teamMembers.map((player, i) =>
+              <tr key={i} id={player.id}>
+                <td>{player.username}</td>
+                <td>{player.role}</td>
                 <td>
-                  {this.actionPlayer(this.state.players.find(p => p.username == player).id)}
+                  {this.actionPlayer(player.id)}
                 </td>
               </tr>
             )}
@@ -300,7 +278,7 @@ class ManageTeams extends Component {
           <h3>Send invitation to join the team</h3>
           <ListPlayers
             players={this.state.players
-              .filter(user => !this.state.team.teamMembers.find(p => p === user.username))
+              .filter(user => !this.state.team.teamMembers.find(p => p.id === user.id))
             }
             teamId={this.state.team.id}
             invitNotSend={this.state.invitNotSend}
