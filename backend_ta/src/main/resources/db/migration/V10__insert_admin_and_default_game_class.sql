@@ -1,0 +1,1 @@
+INSERT INTO player VALUES (NULL,'admin','admin@mail.com','${admin.password}',NULL,NULL,1);

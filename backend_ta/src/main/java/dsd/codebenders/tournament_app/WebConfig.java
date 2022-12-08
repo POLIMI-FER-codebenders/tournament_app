@@ -37,7 +37,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return myFlyway -> {
-            System.out.println(encoder().encode(adminPassword));
+            String encodedPassword = encoder().encode(adminPassword);
+            System.setProperty("spring.flyway.placeholders.admin.password", encodedPassword);
             flyway.migrate();
         };
     }
