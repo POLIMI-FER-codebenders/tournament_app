@@ -33,7 +33,7 @@ public class Match {
     private Integer gameId;
     @Column(name = "round_number", nullable = false)
     private Integer roundNumber;
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Date startDate;
     @ManyToOne(optional = false)
     @JoinColumn(name = "tournament_id", nullable = false)
