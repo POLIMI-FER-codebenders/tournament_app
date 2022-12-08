@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class TournamentService {
@@ -91,6 +92,7 @@ public class TournamentService {
         switch (tournament.getStatus()) {
             case TEAMS_JOINING -> {
                 if (getTournamentTeams(tournament).size() == tournament.getNumberOfTeams()) {
+                    checkRoundClassChoiceCompleteness(tournament);
                     newStatus = TournamentStatus.SCHEDULING;
                 }
             }
@@ -113,6 +115,23 @@ public class TournamentService {
             tournament = handleStatus(tournament);
         }
         return tournamentRepository.save(tournament);
+    }
+
+    private void checkRoundClassChoiceCompleteness(Tournament tournament) {
+        List<GameClass> gameClassList = gameClassRepository.findAll();
+        for(int round = 1; round <= tournament.getNumberOfRounds(); round++) {
+            RoundClassChoice roundClassChoice = roundClassChoiceRepository.findByTournamentAndRound(tournament, round);
+            if(roundClassChoice == null) {
+                // no class has been chosen for that round, randomly choose one
+                logger.info("randomly choosing class for round " + round);
+                int randomNum = ThreadLocalRandom.current().nextInt(0, gameClassList.size());
+                roundClassChoice = new RoundClassChoice(tournament, round, gameClassList.get(randomNum));
+                logger.info("selected class " + roundClassChoice.getGameClass().getFilename() + " for round " + round);
+                tournament.addRoundClassChoice(roundClassChoice);
+                roundClassChoiceRepository.save(roundClassChoice);
+                tournamentRepository.save(tournament);
+            }
+        }
     }
 
     private Tournament handleStatus(Tournament tournament) throws MatchCreationException {
