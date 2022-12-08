@@ -38,6 +38,10 @@ public class InvitationService {
         Team team = teamRepository.findById(IDTeam).orElseThrow(() -> new ResourceNotFoundException("Invalid team"));
         if (!team.getCreator().equals(sender)) {
             throw new BadRequestException("You are not the creator of this team!");
+        } else if(invitationRepository.existsByInvitedPlayerAndTeamAndStatus(invitedPlayer, team, InvitationStatus.PENDING)) {
+            throw new BadRequestException("You have already invited this player to join this team!");
+        } else if(team.equals(invitedPlayer.getTeam())) {
+            throw new BadRequestException("The player is already in the team.");
         } else {
             Invitation invitation = new Invitation(invitedPlayer, team, InvitationStatus.PENDING);
             return invitationRepository.save(invitation);
