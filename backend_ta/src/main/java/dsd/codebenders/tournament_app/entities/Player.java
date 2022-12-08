@@ -35,7 +35,7 @@ public class Player {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(name = "is_admin", nullable = false, columnDefinition="Boolean default '0'")
+    @Column(name = "is_admin", nullable = false, columnDefinition="Boolean default false")
     private Boolean isAdmin;
 
     // The teams whose this player is the creator

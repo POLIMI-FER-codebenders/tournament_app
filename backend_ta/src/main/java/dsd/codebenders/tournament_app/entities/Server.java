@@ -17,7 +17,7 @@ public class Server {
     @Column(name = "admin_token", nullable = false)
     private String adminToken;
 
-    @Column(name = "is_active", nullable = false, columnDefinition="Boolean default '1'")
+    @Column(name = "is_active", nullable = false, columnDefinition = "Boolean default true")
     private Boolean isActive = false;
 
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
