@@ -1,8 +1,5 @@
 package dsd.codebenders.tournament_app.services;
 
-import java.util.List;
-import java.util.Optional;
-
 import dsd.codebenders.tournament_app.dao.*;
 import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
@@ -11,19 +8,37 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
+import dsd.codebenders.tournament_app.scheduler.TournamentScheduler;
+import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class TournamentService {
 
+    @Value("${tournament-app.tournament-match.break-time-duration:10}")
+    private int breakTimeDuration;
+    @Value("${tournament-app.tournament-match.phase-one-duration:10}")
+    private int phaseOneDuration;
+    @Value("${tournament-app.tournament-match.phase-two-duration:10}")
+    private int phaseTwoDuration;
+    @Value("${tournament-app.tournament-match.phase-three-duration:10}")
+    private int phaseThreeDuration;
     private final Logger logger = LoggerFactory.getLogger(TournamentService.class);
     private final TournamentRepository tournamentRepository;
     private final TournamentScoreRepository tournamentScoreRepository;
     private final TeamRepository teamRepository;
     private final MatchService matchService;
+    private TournamentScheduler tournamentScheduler;
     private final GameClassRepository gameClassRepository;
     private final RoundClassChoiceRepository roundClassChoiceRepository;
 
@@ -38,6 +53,14 @@ public class TournamentService {
         this.roundClassChoiceRepository = roundClassChoiceRepository;
     }
 
+    @PostConstruct
+    public void init() {
+        this.tournamentScheduler = new TournamentScheduler(phaseOneDuration, phaseOneDuration + phaseTwoDuration,
+                phaseOneDuration + phaseTwoDuration + phaseThreeDuration, this, matchService);
+        this.tournamentScheduler.setPoolSize(10);
+        this.tournamentScheduler.initialize();
+    }
+
     public Tournament findById(Long ID) {
         return tournamentRepository.findById(ID).orElse(null);
     }
@@ -47,12 +70,12 @@ public class TournamentService {
         return tournamentRepository.save(tournament);
     }
 
-    public Tournament addTeam(Tournament tournament, Team team) throws MatchCreationException {
+    public Tournament addTeam(Tournament tournament, Team team) {
         TournamentScore tournamentScore = new TournamentScore(tournament, team);
         tournamentScoreRepository.save(tournamentScore);
         team.setInTournament(true);
         teamRepository.save(team);
-        return tryAdvance(getTournamentByID(tournament.getID()).get());
+        return tournamentScheduler.prepareRoundAndStartMatches(getTournamentByID(tournament.getID()).get());
     }
 
     public Tournament removeTeam(Tournament tournament, Team team) {
@@ -69,17 +92,20 @@ public class TournamentService {
         switch (tournament.getStatus()) {
             case TEAMS_JOINING -> {
                 if (getTournamentTeams(tournament).size() == tournament.getNumberOfTeams()) {
+                    checkRoundClassChoiceCompleteness(tournament);
                     newStatus = TournamentStatus.SCHEDULING;
                 }
             }
             case IN_PROGRESS -> {
-                if (matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound()).stream()
-                        .allMatch(match -> match.getStatus() == MatchStatus.ENDED)) {
+                List<Match> roundMatches = matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound());
+                if (roundMatches.stream().allMatch(match -> match.getStatus() == MatchStatus.ENDED)) {
                     if (tournament.getCurrentRound() >= tournament.getNumberOfRounds()) {
                         newStatus = TournamentStatus.ENDED;
                     } else {
                         newStatus = TournamentStatus.SCHEDULING;
                     }
+                } else if (roundMatches.stream().anyMatch(match -> match.getStatus() == MatchStatus.FAILED)) {
+                    tournament = forceTournamentEnd(tournament);
                 }
             }
         }
@@ -89,6 +115,23 @@ public class TournamentService {
             tournament = handleStatus(tournament);
         }
         return tournamentRepository.save(tournament);
+    }
+
+    private void checkRoundClassChoiceCompleteness(Tournament tournament) {
+        List<GameClass> gameClassList = gameClassRepository.findAll();
+        for(int round = 1; round <= tournament.getNumberOfRounds(); round++) {
+            RoundClassChoice roundClassChoice = roundClassChoiceRepository.findByTournamentAndRound(tournament, round);
+            if(roundClassChoice == null) {
+                // no class has been chosen for that round, randomly choose one
+                logger.info("randomly choosing class for round " + round);
+                int randomNum = ThreadLocalRandom.current().nextInt(0, gameClassList.size());
+                roundClassChoice = new RoundClassChoice(tournament, round, gameClassList.get(randomNum));
+                logger.info("selected class " + roundClassChoice.getGameClass().getFilename() + " for round " + round);
+                tournament.addRoundClassChoice(roundClassChoice);
+                roundClassChoiceRepository.save(roundClassChoice);
+                tournamentRepository.save(tournament);
+            }
+        }
     }
 
     private Tournament handleStatus(Tournament tournament) throws MatchCreationException {
@@ -119,11 +162,12 @@ public class TournamentService {
         List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().map(Team::getID).toList(), winners.stream().map(Team::getID).toList());
         logger.error(IDs.toString());
         List<List<Team>> nextMatches = IDs.stream().map(ids -> ids.stream().map(id -> teamRepository.findById(id).get()).toList()).toList();
-        Boolean oneValid = false;
+        boolean oneValid = false;
+        Date roundStart = DateUtility.addSeconds(new Date(), breakTimeDuration);
         for (List<Team> teams : nextMatches) {
             int swap = (int) Math.round(Math.random()); //Randomly assign attacker and defender role
             logger.info("scheduleNextRound: " + teams.get(swap).getID() + " VS " + teams.get(1 - swap).getID());
-            Match newMatch = new Match(teams.get(swap), teams.get(1 - swap), tournament.getCurrentRound(), tournament);
+            Match newMatch = new Match(teams.get(swap), teams.get(1 - swap), tournament.getCurrentRound(), tournament, roundStart);
             if (getScoreForTeam(tournament, teams.get(0)).get().hasForfeited()) {
                 logger.info("scheduleNextRound: first team forfeited");
                 newMatch.setWinningTeam(teams.get(1));
@@ -137,7 +181,7 @@ public class TournamentService {
             } else {
                 logger.info("scheduleNextRound: valid, creating");
                 matchService.addMatch(newMatch);
-                matchService.createAndStartMatch(newMatch);
+                matchService.createMatchOnCD(newMatch);
                 logger.info("scheduleNextRound: done");
                 oneValid = true;
             }
@@ -150,8 +194,13 @@ public class TournamentService {
         return tournament;
     }
 
+    public Tournament forceTournamentEnd(Tournament tournament) {
+        tournament.setStatus(TournamentStatus.ENDED);
+        return tournamentRepository.save(tournament);
+    }
+
     public Optional<TournamentScore> getScoreForTeam(Tournament tournament, Team team) {
-        return tournament.getTournamentScores().stream().filter(ts -> ts.getTeam().equals(team)).findFirst();
+        return tournamentScoreRepository.findByTeamAndTournament(team, tournament);
     }
 
     public List<Team> getTeams(Tournament tournament) {
@@ -185,6 +234,7 @@ public class TournamentService {
     public List<Team> getTournamentTeams(Tournament tournament) {
         return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
     }
+
 
     public RoundClassChoice postRoundChoice(ClassChoiceRequest classChoiceRequest, Player loggedPlayer) {
         Tournament tournament = tournamentRepository.findById(classChoiceRequest.getIdTournament()).orElseThrow(() -> new BadRequestException("Tournament doesn't exist."));
