@@ -1,22 +1,16 @@
 package dsd.codebenders.tournament_app.controllers;
 
-import dsd.codebenders.tournament_app.entities.CDPlayer;
-import dsd.codebenders.tournament_app.entities.GameStatus;
-import dsd.codebenders.tournament_app.entities.Match;
-import dsd.codebenders.tournament_app.entities.Player;
-import dsd.codebenders.tournament_app.entities.Server;
+import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.score.MeleeScoreboard;
 import dsd.codebenders.tournament_app.entities.score.MultiplayerScoreboard;
 import dsd.codebenders.tournament_app.entities.score.Score;
 import dsd.codebenders.tournament_app.entities.score.Scoreboard;
 import dsd.codebenders.tournament_app.entities.utils.MatchType;
-import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.InternalServerException;
 import dsd.codebenders.tournament_app.errors.ResourceNotFoundException;
 import dsd.codebenders.tournament_app.services.CDPlayerService;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.PlayerService;
-import dsd.codebenders.tournament_app.services.ServerService;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,14 +27,12 @@ public class MatchController {
     private final PlayerService playerService;
     private final CDPlayerService cdPlayerService;
     private final MatchService matchService;
-    private ServerService serverService;
 
     @Autowired
-    public MatchController(MatchService matchService, PlayerService playerService, CDPlayerService cdPlayerService, ServerService serverService){
+    public MatchController(MatchService matchService, PlayerService playerService, CDPlayerService cdPlayerService){
         this.playerService = playerService;
         this.matchService = matchService;
         this.cdPlayerService = cdPlayerService;
-        this.serverService = serverService;
     }
 
     @GetMapping(value = "/current_match")
@@ -60,9 +52,9 @@ public class MatchController {
         return map;
     }
     @GetMapping(value = "/info")
-    public Object getGameStatus(@RequestParam Long gameId) throws CDServerUnreachableException, InternalServerException {
+    public Object getGameStatus(@RequestParam Long gameId) throws InternalServerException {
         Match match = matchService.findById(gameId).orElseThrow(() -> new ResourceNotFoundException("Game not found"));
-        Server server = serverService.getCDServer();
+        Server server = match.getServer();
         GameStatus out = HTTPRequestsSender.sendGetRequest(server, "/api/game", Map.of("gameId", match.getGameId().toString()), GameStatus.class);
         Scoreboard scoreboard = out.getScoreboard();
         if (match.getTournament().getMatchType() == MatchType.MELEE) {

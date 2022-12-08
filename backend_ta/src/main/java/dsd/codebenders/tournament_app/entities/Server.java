@@ -24,6 +24,9 @@ public class Server {
     private List<CDPlayer> cdPlayers;
 
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
+    private List<CDGameClass> cdGameClasses;
+
+    @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
     private List<Match> matches;
 
     public Server() {
@@ -58,6 +61,10 @@ public class Server {
 
     public List<CDPlayer> getCdPlayers() {
         return cdPlayers;
+    }
+
+    public List<CDGameClass> getCdGameClasses() {
+        return cdGameClasses;
     }
 
     public List<Match> getMatches() {

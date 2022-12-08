@@ -11,6 +11,7 @@ import dsd.codebenders.tournament_app.errors.ResourceNotFoundException;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import dsd.codebenders.tournament_app.responses.TeamResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class TeamService {
 
+    @Value("${tournament-app.team.max-number-of-players-per-team:10}")
+    private int maxNumberOfPlayersInATeam;
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
 
@@ -40,6 +43,9 @@ public class TeamService {
     public Team createTeam(Team team, Player creator) {
         if(creator.getTeam() != null){
             throw new BadRequestException("You are already in a team, you can't create a new one.");
+        }
+        if(team.getMaxNumberOfPlayers() > maxNumberOfPlayersInATeam){
+            throw new BadRequestException("Maximum size of the team created goes beyond the maximum limit, set to " + maxNumberOfPlayersInATeam + ".");
         }
         if(teamRepository.existsTeamByName(team.getName())){
             throw new BadRequestException("A team with the name chosen already exists. Choose another one.");

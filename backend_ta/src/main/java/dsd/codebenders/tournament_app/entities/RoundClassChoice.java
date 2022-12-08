@@ -55,6 +55,10 @@ public class RoundClassChoice {
         return id;
     }
 
+    public GameClass getGameClass() {
+        return gameClass;
+    }
+
     public void setGameClass(GameClass gameClass) {
         this.gameClass = gameClass;
     }
