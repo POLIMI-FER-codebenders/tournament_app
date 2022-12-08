@@ -71,7 +71,7 @@ export function CreateTournament() {
 
   return (
     <div id="maintourcreationdiv">
-    <div className="creation-form ">
+    <div className="creation-form">
       <h2>Tournament creation</h2>
 
       <form onSubmit={handleSubmit}>
