@@ -63,10 +63,16 @@ export function CreateTournament() {
     }
     
 
-    fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/api/classes/upload", {
+     fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/api/classes/upload", {
         method: "post",
         body: formData,
-    }).catch((error) => ("Something went wrong!", error));
+    }).then((response) => {
+      if (response.status === 200) {
+      }
+      else {let errortext = response.text();
+      errortext.then(result=>console.log(result))
+      }
+     })
 };
 
   return (

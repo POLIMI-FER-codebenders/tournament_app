@@ -97,6 +97,7 @@ class ManageTeams extends Component {
   }
 
   handleClickInvite() {
+    console.log(this.state.team);
     const previous_value = this.state.display_invite
     this.setState({ display_invite: !previous_value })
   }

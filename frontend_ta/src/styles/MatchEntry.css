@@ -42,6 +42,9 @@
 .col8-matches {
     min-width: 100px;
 }
+.col9-matches {
+    min-width: 100px;
+}
 .btn-matches {
     cursor: pointer;
     padding: 5px 10px;
@@ -54,4 +57,12 @@
     background: #d2b301;
     border: 1px solid #d2b301;
     color: #fff;
+}
+.col9-matches .btn-matches {
+    background: #29c05b;
+    border: 1px solid #29c05b;
+    color: #fff;
+}
+.col9-matches .btn-matches:hover {
+    background: #096432;    
 }
