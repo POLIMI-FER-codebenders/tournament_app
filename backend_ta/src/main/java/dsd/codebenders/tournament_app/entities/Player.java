@@ -64,6 +64,12 @@ public class Player {
     public Player() {
     }
 
+    public Player(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
 
     // TODO create meaningful score (or delete if not necessary)
     public TeamMemberResponse serialize() {
