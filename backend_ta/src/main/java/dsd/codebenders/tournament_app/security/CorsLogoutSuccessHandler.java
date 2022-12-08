@@ -17,6 +17,10 @@ public class CorsLogoutSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String origin = request.getHeader("Origin");
+        if(origin == null) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
         if(origin.equals("http://localhost") && webServerAddress.equals("http://localhost:80")) {
             response.setHeader("Access-Control-Allow-Origin", "http://localhost");
         } else {
