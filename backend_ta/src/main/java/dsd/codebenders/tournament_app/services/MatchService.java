@@ -86,11 +86,15 @@ public class MatchService {
     }
 
     public Match getOngoingMatchByPlayer(Player player) {
-        Match match = matchRepository.findStartedMatchByPlayer(player);
-        if(match == null || match.getStatus() == MatchStatus.FAILED) {
-            return null;
+        Match match = matchRepository.findCreatedMatchByAttacker(player);
+        if(match != null && match.getStatus() != MatchStatus.FAILED) {
+            return match;
         }
-        return match;
+        match = matchRepository.findCreatedMatchByDefender(player);
+        if(match != null && match.getStatus() != MatchStatus.FAILED) {
+            return match;
+        }
+        return null;
     }
 
     private void createCDPlayers(Team team, Server server) throws MatchCreationException {
