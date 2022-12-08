@@ -36,7 +36,7 @@ public class MatchController {
     }
 
     @GetMapping(value = "/current_match")
-    public Map<String, String> createTeam(){
+    public Map<String, String> getCurrentMatch(){
         Map<String, String> map = new HashMap<>();
         Player player = playerService.getSelf();
         Match match = matchService.getOngoingMatchByPlayer(player);
