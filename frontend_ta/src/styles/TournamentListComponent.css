@@ -109,3 +109,42 @@
 .col6 .btn:hover {
     background: #cf4540;    
 }
+
+#classuploadinfo{
+    display:flex;
+    flex-direction:column;
+    align-items: left;
+    justify-content: left;
+}
+.displayclassupload{
+    display:flex;
+    flex-direction:column;
+    padding-bottom:1px;
+    align-items: left;
+    justify-content: left;
+}
+.labelclassupload{
+    display:flex;
+    flex-direction:column; 
+    font-size: 14px;
+}
+#roundid{
+    height:13px;
+    width:40px;
+}
+#classbuttonupload{
+    cursor: pointer;
+    background: #688bec;
+    border: 1px solid #688bec;
+    color: #fff;
+    display:flex;
+    flex-direction:column;
+    align-items: center; 
+    
+}
+#classes{
+width:100px;
+}
+.button-class-container{
+    padding-top: 10px;
+  }
