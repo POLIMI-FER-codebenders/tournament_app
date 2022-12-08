@@ -27,6 +27,7 @@ export class TournamentEntry extends React.Component {
     }
     componentDidMount() {
         if (sessionStorage.getItem("username") != null) {
+             
             getData("/api/team/get-mine").then((response) => {
                 if (response.status === 200) {
                     this.setState({ playerteam: response.result });
@@ -110,9 +111,9 @@ export class TournamentEntry extends React.Component {
             formtoreturn =
                 <div id="displayclassupload">
                     <form onSubmit={this.SelectClass}>
-                        <label className="labelclassupload" forhtml="roundid" >Select the round to which apply a class</label>
+                        <label className="labelclassupload" htmlFor="roundid" >Select the round to which apply a class</label>
                         <input type="number" id="roundid" required min="1" max={maxround}  ></input>
-                        <label className="labelclassupload" forhtml="classes">Select a class for the selected round:</label>
+                        <label className="labelclassupload" htmlFor="classes">Select a class for the selected round:</label>
                         <select id="classes" name="classes" required>
                             {this.props.classes.map((elem, i) => <option value={elem.id} key={i}>{elem.filename}</option>)}
                         </select>
@@ -224,7 +225,7 @@ export class TournamentEntry extends React.Component {
             formtodisplay = (
                 <div>
                     <form onSubmit={this.JoinTournament}>
-                        <label forhtml="teamtojointour">Join with your team: {this.state.playerteam.name}</label>
+                        <label htmlFor="teamtojointour">Join with your team: {this.state.playerteam.name}</label>
                         <input type="submit" value="Join Tournament" />
                     </form>
 

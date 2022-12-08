@@ -22,7 +22,7 @@ class SignUp extends React.Component {
   }
 
   renderErrorMessage() {
-    if (this.state.errorMessage == null) return;
+    if (this.state.errorMessage === null) return;
     return (
       <p >{this.state.errorMessage}</p>
     );
@@ -92,7 +92,7 @@ class SignUp extends React.Component {
 
   render() {
     if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.view == "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} registered={this.state.registered} />);
+    if (this.state.view === "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} registered={this.state.registered} />);
     else if (this.state.view === "SignUp") return (
       <div className="app" class="main-panel">
         <div className="login-form">
