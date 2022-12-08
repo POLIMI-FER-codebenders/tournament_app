@@ -29,7 +29,7 @@ class TeamCreation extends Component {
     event.preventDefault();
     let maxnumberofplayers=document.getElementById("cteamsize-selector").value;
     if(this.state.name.length>255) this.setState({messageError:"the name must be 255 char maximum"});
-    else if(maxnumberofplayers>127 || maxnumberofplayers<1)this.setState({messageError:"team size must be from 1 to 127"})
+    else if(maxnumberofplayers>10 || maxnumberofplayers<1)this.setState({messageError:"team size must be from 1 to 127"})
     let data={name:this.state.name,maxNumberOfPlayers:maxnumberofplayers,policy:this.state.type}
       postData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/create",data).then((response)=> {
         if (response.status === 200) {
@@ -63,7 +63,7 @@ class TeamCreation extends Component {
             <div class="input-createteam-container">
             <label className="createTeamLabel" htmlFor="cteamsize-selector">Enter the size of teams:
               <input
-                type="number" className="inputcreateteam" name="size" id="cteamsize-selector" required min="1" max="127"
+                type="number" className="inputcreateteam" name="size" id="cteamsize-selector" required min="1" max="10"
                 />
             </label>
             </div>
