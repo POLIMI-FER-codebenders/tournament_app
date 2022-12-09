@@ -1,4 +1,4 @@
-package dsd.codebenders.tournament_app.utils;
+package dsd.codebenders.tournament_app.testUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.module.SimpleModule;
