@@ -88,7 +88,7 @@ export class TournamentEntry extends React.Component {
           this.setState({tourcontent: <p>please insert a valid round number from 1 to {this.props.record.numberOfRounds}</p>});
           return;
         }
-        postData("/api/classes/post-choices",data).then((response) => {
+        postData("/api/classes/post-choices", data).then((response) => {
             if (response.status === 200) {
                 this.setState({ tourcontent: <p>class successfully selected </p> })
                 this.props.reloadPage();

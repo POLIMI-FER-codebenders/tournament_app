@@ -33,8 +33,7 @@ class ManageTeams extends Component {
   }
 
   initTeam() {
-    let url_team = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/get-mine"
-    getData(url_team)
+    getData("/api/team/get-mine")
       .then((response) => {
         if (response.status === 200) {
           if (response.result) {
@@ -61,8 +60,7 @@ class ManageTeams extends Component {
   }
 
   initPlayers() {
-    let url_player = process.env.REACT_APP_BACKEND_ADDRESS + "/api/player/get-all/"
-    getData(url_player)
+    getData("/api/player/get-all/")
       .then((response) => {
         if (response.status === 200) {
           if (response.result) {
@@ -102,8 +100,7 @@ class ManageTeams extends Component {
   }
 
   handleClickLeave() {
-    let url_leave = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/leave/"
-    postData(url_leave)
+    postData("/api/team/leave/")
       .then((response) => {
         if (response.status === 200) {
           alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
@@ -120,9 +117,8 @@ class ManageTeams extends Component {
   }
 
   handleClickKick(event) {
-    let url_kick = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/kick-member/"
     let data = { idKickedPlayer: event.target.id };
-    postData(url_kick, data)
+    postData("/api/team/kick-member/", data)
       .then((response) => {
         if (response.status === 200) {
           alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
@@ -140,9 +136,8 @@ class ManageTeams extends Component {
   }
 
   handleClickPromote(event) {
-    let url_promote = process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/members/promote-leader/"
     let data = { idPlayer: event.target.id };
-    postData(url_promote, data)
+    postData("/api/team/members/promote-leader/", data)
       .then((response) => {
         if (response.status === 200) {
           // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
