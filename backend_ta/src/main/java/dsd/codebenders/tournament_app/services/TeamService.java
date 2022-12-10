@@ -59,6 +59,7 @@ public class TeamService {
         team.setInTournament(false);
         team.setDateOfCreation(LocalDate.now());
 
+        creator.addTeamCreated(team);
         creator.setTeam(team);
         creator.setRole(TeamRole.LEADER);
         return teamRepository.save(team);
@@ -78,6 +79,7 @@ public class TeamService {
         if(team.getTeamMembers().contains(player)){
             throw new BadRequestException("You are already part of the team!");
         }
+        team.addTeamMember(player);
         player.setTeam(team);
         player.setRole(TeamRole.MEMBER);
         playerRepository.save(player);
@@ -99,6 +101,7 @@ public class TeamService {
         if(player.getRole() == TeamRole.LEADER){
             throw new BadRequestException("The leader can't leave the team");
         }
+        team.removeTeamMember(player);
         player.setTeam(null);
         player.setRole(null);
         playerRepository.save(player);

@@ -1,6 +1,8 @@
 package dsd.codebenders.tournament_app.entities;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,13 +37,13 @@ public class Player {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(name = "is_admin", nullable = false, columnDefinition="Boolean default false")
+    @Column(name = "is_admin", nullable = false, columnDefinition = "Boolean default false")
     private Boolean isAdmin;
 
     // The teams whose this player is the creator
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Team> teamsCreated;
+    private List<Team> teamsCreated = new ArrayList<>();
 
     // The list of invitations received by this player
     @OneToMany(mappedBy = "invitedPlayer", fetch = FetchType.LAZY)
@@ -120,6 +122,10 @@ public class Player {
         this.role = role;
     }
 
+    public void addTeamCreated(Team team) {
+        this.teamsCreated.add(team);
+    }
+
     public List<Team> getTeamsCreated() {
         return teamsCreated;
     }
@@ -130,5 +136,22 @@ public class Player {
 
     public List<Invitation> getInvitations() {
         return invitations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Player player = (Player) o;
+        return Objects.equals(ID, player.ID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ID);
     }
 }
