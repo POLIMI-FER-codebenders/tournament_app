@@ -31,7 +31,7 @@ class TeamCreation extends Component {
     if(this.state.name.length>255) this.setState({messageError:"the name must be 255 char maximum"});
     else if(maxnumberofplayers>10 || maxnumberofplayers<1)this.setState({messageError:"team size must be from 1 to 127"})
     let data={name:this.state.name,maxNumberOfPlayers:maxnumberofplayers,policy:this.state.type}
-      postData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/create",data).then((response)=> {
+      postData("/api/team/create", data).then((response)=> {
         if (response.status === 200) {
          this.setState({messageError: "team successfully created"});    
         }

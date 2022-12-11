@@ -17,7 +17,7 @@ class ListPlayers extends Component {
   }
 
   handleSendInvite(event) {
-    let url_invit = process.env.REACT_APP_BACKEND_ADDRESS + "/api/invitation/create/"
+    let url_invit = "/api/invitation/create/";
     let data = { 
       idInvitedPlayer: event.target.id,
       idTeam: this.state.teamId

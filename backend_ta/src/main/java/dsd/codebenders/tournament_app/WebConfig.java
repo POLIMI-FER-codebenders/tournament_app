@@ -26,6 +26,8 @@ import java.util.Map;
 @EnableTransactionManagement
 public class WebConfig implements WebMvcConfigurer {
 
+    private static String hoppscotchChrome = "chrome-extension://amknoiejhlmhancpahfcfcfhllgkpbld/";
+    private static String hoppscotchFirefox = "moz-extension://5141c5d2-7d79-464c-be62-c6fdeb9aa105";
     @Value("${tournament-app.web-server.address:http://localhost:3000}")
     private String webServerAddress;
     @Value("${tournament-app.admin.password:admin}")
@@ -73,6 +75,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry
                 .addMapping("/**")
                 .allowCredentials(true)
-                .allowedOrigins("http://localhost", webServerAddress);
+                .allowedOrigins("http://localhost", webServerAddress, hoppscotchChrome, hoppscotchFirefox);
     }
 }
