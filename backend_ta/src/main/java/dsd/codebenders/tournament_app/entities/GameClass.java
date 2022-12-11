@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.serializers.PlayerIDAndNameSerializer;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "game_class")
@@ -22,6 +23,10 @@ public class GameClass {
     @JoinColumn(name = "author_id", nullable = false)
     @JsonSerialize(using = PlayerIDAndNameSerializer.class)
     private Player author;
+
+    @OneToMany(mappedBy = "realClass", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CDGameClass> cdGameClasses;
 
     @Basic(fetch = FetchType.LAZY)
     @Lob

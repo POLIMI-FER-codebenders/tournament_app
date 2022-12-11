@@ -17,6 +17,8 @@ import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 import dsd.codebenders.tournament_app.serializers.TournamentIDSerializer;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "game")
 @JsonIgnoreProperties(value = {"server"}, allowSetters = true)
@@ -31,6 +33,8 @@ public class Match {
     private Integer gameId;
     @Column(name = "round_number", nullable = false)
     private Integer roundNumber;
+    @Column(name = "start_date", nullable = false)
+    private Date startDate;
     @ManyToOne(optional = false)
     @JoinColumn(name = "tournament_id", nullable = false)
     @JsonSerialize(using = TournamentIDSerializer.class)
@@ -54,11 +58,12 @@ public class Match {
     public Match() {
     }
 
-    public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament) {
+    public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament, Date startDate) {
         this.attackersTeam = attackersTeam;
         this.defendersTeam = defendersTeam;
         this.roundNumber = roundNumber;
         this.tournament = tournament;
+        this.startDate = startDate;
     }
 
     public Long getID() {
@@ -91,6 +96,14 @@ public class Match {
 
     public Integer getRoundNumber() {
         return roundNumber;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Tournament getTournament() {

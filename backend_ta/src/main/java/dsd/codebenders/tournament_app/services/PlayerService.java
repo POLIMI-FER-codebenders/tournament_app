@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 
 import dsd.codebenders.tournament_app.dao.PlayerRepository;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.responses.TeamMemberResponse;
 import org.slf4j.Logger;
@@ -68,6 +69,10 @@ public class PlayerService {
         } else {
             return findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         }
+    }
+
+    public List<Player> getPlayersByTeam(Team team) {
+        return playerRepository.findPlayersByTeam(team);
     }
 
     public void spoofID(Long spoofedID) {

@@ -17,11 +17,14 @@ public class Server {
     @Column(name = "admin_token", nullable = false)
     private String adminToken;
 
-    @Column(name = "is_active", nullable = false, columnDefinition="Boolean default '1'")
+    @Column(name = "is_active", nullable = false, columnDefinition = "Boolean default true")
     private Boolean isActive = false;
 
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
     private List<CDPlayer> cdPlayers;
+
+    @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
+    private List<CDGameClass> cdGameClasses;
 
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY)
     private List<Match> matches;
@@ -58,6 +61,10 @@ public class Server {
 
     public List<CDPlayer> getCdPlayers() {
         return cdPlayers;
+    }
+
+    public List<CDGameClass> getCdGameClasses() {
+        return cdGameClasses;
     }
 
     public List<Match> getMatches() {

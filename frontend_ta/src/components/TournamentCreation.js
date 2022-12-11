@@ -40,12 +40,13 @@ export function CreateTournament() {
     event.preventDefault();
     console.log(!(numberofteams >= 2 && numberofteams <= 16));
     let data = { name: name, numberOfTeams: numberofteams, teamSize: size, type: type, matchType: gametype }
-    if (name.length > 255) setCreationMessage("tournament successfully created");
-    else if (!(size >= 1 && size <= 16)) setCreationMessage("team sizes must be from 1 to 16");
-    else if (type === "KNOCKOUT" && !(numberofteams >= 2 && numberofteams <= 16)) setCreationMessage("number of teams for knockout must be even  from 2 to 16 ");
-    else if (type === "LEAGUE" && !(numberofteams >= 2 && numberofteams <= 8)) setCreationMessage("number of teams for league must be even from 2 to 8 ");
-    else if (type === "KNOCKOUT" && !powerOfTwo(numberofteams)) setCreationMessage("number of teams for knockout must be a power of 2 from 2 to 16 ");
-    else postData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/tournament/create", data).then((response) => {
+    if(name.length>255) setCreationMessage("tournament successfully created");
+    else if(!(size>=1 && size<=16))setCreationMessage("team sizes must be from 1 to 16");
+    else if(type==="KNOCKOUT" && !(numberofteams>=2 && numberofteams<=16))setCreationMessage("number of teams for knockout must be even  from 2 to 16 ");
+    else if(type==="LEAGUE" && !(numberofteams>=2 && numberofteams<=8))setCreationMessage("number of teams for league must be even from 2 to 8 ");
+    else if(type==="KNOCKOUT" && !powerOfTwo(numberofteams))setCreationMessage("number of teams for knockout must be a power of 2 from 2 to 16 ");
+    else  postData("/api/tournament/create", data).then((response) => {
+
       if (response.status == 200) setCreationMessage("tournament successfully created")
       else {
         setCreationMessage(response.message);
