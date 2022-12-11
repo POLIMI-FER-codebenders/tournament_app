@@ -66,6 +66,7 @@ export function CreateTournament() {
     fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/api/classes/upload", {
         method: "post",
         body: formData,
+        credentials: 'include'
     }).catch((error) => ("Something went wrong!", error));
 };
 
