@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -143,6 +141,22 @@ public class TournamentService {
             }
             case ENDED -> {
                 //TODO
+                Team winningTeam;
+                switch (tournament.getType()) {
+                    case KNOCKOUT -> {
+                        // get the winner of the last round
+                        winningTeam = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound()).get(0);
+                    }
+                    case LEAGUE -> {
+                        // compute the team that has scored the highest
+                        // TODO manage tie
+                        List<TournamentScore> tournamentScoreList = tournament.getTournamentScores();
+                        tournamentScoreList.sort(Comparator.comparing(TournamentScore::getLeaguePoints).reversed());
+                        winningTeam = tournamentScoreList.get(0).getTeam();
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + tournament.getType());
+                }
+                tournament.setWinningTeam(winningTeam);
             }
         }
         return tryAdvance(tournament);
