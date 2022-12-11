@@ -12,6 +12,12 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
     private String dbPassword;
     @Value("${code-defenders.default-servers.token:}")
     private String defaultServersToken;
-
+    @Value("${code-defenders.default-game-class.file-name:SimpleExample.java}")
+    private String gameClassFileName;
 
     @Bean
     public PasswordEncoder encoder() {
@@ -43,8 +50,17 @@ public class WebConfig implements WebMvcConfigurer {
     public FlywayMigrationStrategy flywayMigrationStrategy() {
         return flyway -> {
             String encodedPassword = encoder().encode(adminPassword);
+            String gameClass = null;
+            URL resource = WebConfig.class.getResource("/game_classes/" + gameClassFileName);
+            try {
+                gameClass = Files.readString(Paths.get(resource.toURI()), StandardCharsets.UTF_8);
+            } catch (IOException | URISyntaxException | NullPointerException e) {
+                System.err.println("ERROR: Unable to read default game class");
+            }
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("admin.password", encodedPassword);
+            placeholders.put("game-class.file-name", gameClassFileName);
+            placeholders.put("game-class.data", gameClass);
             placeholders.put("default-servers.token", defaultServersToken);
             placeholders.put("default-servers.active", defaultServersToken.isEmpty() ? "0" : "1");
             Flyway myFlyway = Flyway.configure().dataSource(dbUrl, dbUsername, dbPassword).placeholders(placeholders).load();
