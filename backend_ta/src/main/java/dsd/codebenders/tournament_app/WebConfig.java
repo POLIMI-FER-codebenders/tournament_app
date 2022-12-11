@@ -1,7 +1,6 @@
 package dsd.codebenders.tournament_app;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +12,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
@@ -22,12 +24,15 @@ public class WebConfig implements WebMvcConfigurer {
     private String webServerAddress;
     @Value("${tournament-app.admin.password:admin}")
     private String adminPassword;
-    private final Flyway flyway;
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+    @Value("${spring.datasource.username}")
+    private String dbUsername;
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+    @Value("${code-defenders.default-servers.token:}")
+    private String defaultServersToken;
 
-    @Autowired
-    public WebConfig(Flyway flyway){
-        this.flyway = flyway;
-    }
 
     @Bean
     public PasswordEncoder encoder() {
@@ -36,10 +41,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
-        return myFlyway -> {
+        return flyway -> {
             String encodedPassword = encoder().encode(adminPassword);
-            System.setProperty("spring.flyway.placeholders.admin.password", encodedPassword);
-            flyway.migrate();
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("admin.password", encodedPassword);
+            placeholders.put("default-servers.token", defaultServersToken);
+            placeholders.put("default-servers.active", defaultServersToken.isEmpty() ? "0" : "1");
+            Flyway myFlyway = Flyway.configure().dataSource(dbUrl, dbUsername, dbPassword).placeholders(placeholders).load();
+            myFlyway.migrate();
         };
     }
 
