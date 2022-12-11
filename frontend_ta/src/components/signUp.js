@@ -18,20 +18,21 @@ class SignUp extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.renderErrorMessage=this.renderErrorMessage.bind(this);
   }
 
   renderErrorMessage() {
-    if (this.state.errorMessage == null) return;
+    if (this.state.errorMessage === null) return;
     return (
       <p >{this.state.errorMessage}</p>
     );
   }
 
   handleChange(event) {
-    if (event.target.name == "username") this.setState({ username: event.target.value });
-    else if (event.target.name == "password") this.setState({ password: event.target.value });
-    else if (event.target.name == "email") this.setState({ email: event.target.value });
-    else if (event.target.name == "confirmpassword") this.setState({ confirmpassword: event.target.value });
+    if (event.target.name === "username") this.setState({ username: event.target.value });
+    else if (event.target.name === "password") this.setState({ password: event.target.value });
+    else if (event.target.name === "email") this.setState({ email: event.target.value });
+    else if (event.target.name === "confirmpassword") this.setState({ confirmpassword: event.target.value });
 
   }
 
@@ -55,7 +56,7 @@ class SignUp extends React.Component {
     }
     
      
-    if (this.state.password != this.state.confirmpassword) {
+    if (this.state.password !== this.state.confirmpassword) {
       this.setState({ errorMessage: "confirm password is different from password!" })
       return;
     }
@@ -64,15 +65,15 @@ class SignUp extends React.Component {
     let url = process.env.REACT_APP_BACKEND_ADDRESS + "/authentication/register"
     let username = this.state.username;
     postData(url, data).then((response) => {
-      if (response.status == 200) {
-        if (response.result == "Registered") {
-          this.setState({ errorMessage: null })
+      if (response.status === 200) {
+        if (response.result.result === "Registered") {
           this.setState({view:"SignIn",registered:true})
         }
-        else if (response.result == "Email already taken") {
+        else if (response.result.result === "Email already taken") {
+  
           this.setState({ errorMessage: "email already taken" })
         }
-        else if (response.result == "Username already taken") {
+        else if (response.result.result === "Username already taken") {
           this.setState({ errorMessage: "username already taken" })
         }
       }
@@ -90,9 +91,9 @@ class SignUp extends React.Component {
 
 
   render() {
-    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.view == "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} registered={this.state.registered} />);
-    else if (this.state.view == "SignUp") return (
+    if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.view === "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} registered={this.state.registered} />);
+    else if (this.state.view === "SignUp") return (
       <div className="app" class="main-panel">
         <div className="login-form">
           <h2>Sign Up</h2>

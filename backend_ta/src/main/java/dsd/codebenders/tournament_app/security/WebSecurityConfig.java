@@ -8,7 +8,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -20,33 +19,30 @@ public class WebSecurityConfig {
     private final CorsAuthenticationFailureHandler corsAuthenticationFailureHandler;
     private final CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler;
     private final CorsLogoutSuccessHandler corsLogoutSuccessHandler;
+    private final PasswordEncoder passwordEncoder;
     @Value("${request-debug:false}")
     private Boolean debug;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsService userDetailsService, CorsAuthenticationFailureHandler corsAuthenticationFailureHandler, CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler, CorsLogoutSuccessHandler corsLogoutSuccessHandler) {
+    public WebSecurityConfig(UserDetailsService userDetailsService, CorsAuthenticationFailureHandler corsAuthenticationFailureHandler, CorsAuthenticationSuccessHandler corsAuthenticationSuccessHandler, CorsLogoutSuccessHandler corsLogoutSuccessHandler, PasswordEncoder passwordEncoder) {
         this.playerDetailsService = userDetailsService;
         this.corsAuthenticationFailureHandler = corsAuthenticationFailureHandler;
         this.corsAuthenticationSuccessHandler = corsAuthenticationSuccessHandler;
         this.corsLogoutSuccessHandler = corsLogoutSuccessHandler;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(playerDetailsService);
-        provider.setPasswordEncoder(encoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
         return playerDetailsService;
-    }
-
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

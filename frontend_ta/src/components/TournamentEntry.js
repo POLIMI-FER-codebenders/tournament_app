@@ -2,22 +2,62 @@ import "../styles/TournamentListComponent.css";
 import "../styles/MatchEntry.css";
 import React from 'react';
 import { MatchEntry } from "./MatchEntry";
-import {getData} from "../utils.js";
+import postData, { getData } from "../utils.js";
+import { GoToErrorPage } from "../utils.js";
 
 export class TournamentEntry extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            form: null
+            tourcontent: null,
+            joinreply: "",
+            badResponse: null,
+            playerteam: null,
+            playertournaments: null,
+            selectedround: null,
+            selectedclass: null
         };
-        this.DisplayTeamForm = this.DisplayTeamForm.bind(this)
+        this.DisplayTeamForm = this.DisplayTeamForm.bind(this);
         this.JoinButton = this.JoinButton.bind(this);
         this.DisplayTournamentInfo = this.DisplayTournamentInfo.bind(this);
+        this.JoinTournament = this.JoinTournament.bind(this);
+        this.DisplayClassUploading = this.DisplayClassUploading.bind(this);
+        this.SelectClass = this.SelectClass.bind(this);
+
+    }
+    componentDidMount() {
+        if (sessionStorage.getItem("username") != null) {
+             
+            getData("/api/team/get-mine").then((response) => {
+                if (response.status === 200) {
+                    this.setState({ playerteam: response.result });
+                    if (this.state.playerteam != null) {
+                        getData("/api/tournament/personal").then((response) => {
+                            if (response.status === 200) {
+                                this.setState({ playertournaments: response.result });
+
+                            }
+                            else console.log("error");
+                        })
+                    }
+                }
+                else console.log("error");
+            })
+
+        }
+        else {
+            this.setState({ playerteam: null });
+            this.setState({ playertournaments: null });
+
+        }
     }
     render() {
         let formtoshow;
-        if (this.props.viewindex != this.props.currentview) formtoshow = null;
-        else formtoshow = this.state.form;
+        if (this.props.viewindex !== this.props.currentview) formtoshow = null;
+        else formtoshow = this.state.tourcontent;
+        let joinreplytext;
+        if (this.state.joinreply === "OK") joinreplytext = <p>You have successfully joined the tournament!</p>
+        else if (this.state.joinreply === "KO") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
         return (
             <div>
                 <div className="list-entry flex-container" >
@@ -33,43 +73,96 @@ export class TournamentEntry extends React.Component {
                     </div>
                 </div>
                 {formtoshow}
+                {joinreplytext}
             </div>
         );
     }
+    SelectClass(event) {
+        event.preventDefault();
+        
+        let roundnumber = document.getElementById("roundid").value;
+
+        let classid = document.getElementById("classes").value;
+        let data = { idTournament: this.props.record.id, roundNumber: roundnumber, classId: classid };
+        if(roundnumber>this.props.record.numberOfRounds){
+          this.setState({tourcontent: <p>please insert a valid round number from 1 to {this.props.record.numberOfRounds}</p>});
+          return;
+        }
+        postData("/api/classes/post-choices",data).then((response) => {
+            if (response.status === 200) {
+                this.setState({ tourcontent: <p>class successfully selected </p> })
+                this.props.reloadPage();
+            }
+            else {
+                this.setState({ joinreply: "KO" });
+                this.setState({ badResponse: response.message });
+            }
+        }
+        );
+    }
+
+    DisplayClassUploading() {
+        
+       
+        if (this.props.record.creator.name === sessionStorage.getItem("username")) {
+            let formtoreturn;
+            console.log(this.props.classes);
+           let maxround=this.props.record.numberOfRounds.toString();
+            formtoreturn =
+                <div id="displayclassupload">
+                    <form onSubmit={this.SelectClass}>
+                        <label className="labelclassupload" htmlFor="roundid" >Select the round to which apply a class</label>
+                        <input type="number" id="roundid" required min="1" max={maxround}  ></input>
+                        <label className="labelclassupload" htmlFor="classes">Select a class for the selected round:</label>
+                        <select id="classes" name="classes" required>
+                            {this.props.classes.map((elem, i) => <option value={elem.id} key={i}>{elem.filename}</option>)}
+                        </select>
+                        <div className="button-class-container">
+                            <button id="classbuttonupload" type="submit">Select Class </button>
+                        </div>
+                    </form>
+                    
+                </div>
+
+            return formtoreturn;
+        }
+        else return null;
+    }
 
     JoinButton(status) {
-        if (status == "TEAMS_JOINING") {
+        let data = this.state.playerteam
+        let teamsintournament = this.props.record.tournamentScores.map(record => record.team.id);
+
+        if (data != null && teamsintournament.includes(data.id)) {
+            return <div className="joined" >Joined</div>
+        }
+        if (status === "TEAMS_JOINING") {
             return <div className="joinable" onClick={this.DisplayTeamForm}>Join</div>
         }
-        else if (status == "SCHEDULING"   || status == "IN PROGRESS"  || status=="ENDED") {
+        else if (status === "SCHEDULING" || status === "IN PROGRESS" || status === "ENDED") {
             return <div className="btn" >Join</div>
         }
     }
     DisplayTournamentInfo() {
-        const tourinfo = {
-            teams: [
-                { name: "team1" },
-                { name: "team2" },
-            ],
-            currentround: 1,
-            totalnumberofteams: 2,
-            currentnumberofteams: 2,
-            winner: "team1"
-        }
-
-        const datamatch = [
-            { "team1name": "hdhdh", "team2name": "ddd", "round": 1, "status": "ended", "scoreteam1": 34, "scoreteam2": 47, "type": "knockout", "knockround": 1, "knockwinner": "team2", "leagueresult": null },
-            { "team1name": "asdsa", "team2name": "dertfdf", "round": 2, "status": "started", "scoreteam1": 34, "scoreteam2": 47, "type": "knockout", "knockround": 1, "knockwinner": null, "leagueresult": null },
-
-        ];
-        //   Match(ID,tournamentid,team1id,team2id,scoreteam1,scoreteam2,status,type,knockround*,knockwinnerid*,leagueresult*)
+        let classuploading = this.DisplayClassUploading();
         let content;
         let winner;
-        if (this.props.record.status != "not-started") {
-            if (this.props.record.status == "ended") winner = <p> The tournament is ended, the winner is {tourinfo.winner}</p>
-            else winner = null;
-            content = <div>
-                {winner}
+        let teamstext = "the current joined teams are ";
+        let teamsnames = this.props.record.tournamentScores.map(elem => elem.team.name);
+        if (teamsnames.length > 0) {
+            teamsnames.forEach((teamtext) => teamstext += teamtext + ",");
+            teamstext = teamstext.replace(/.$/, '.');
+        }
+        else teamstext = "no team have joined yet"
+        let summarystatusteam= "The tournament is a " + this.props.record.numberOfTeams.toString() + " teams tournament,there are still " + (this.props.record.numberOfTeams - teamsnames.length).toString() + " slots "
+        let teams = <p>{teamstext}<br/> {summarystatusteam}</p>
+        if (this.props.record.status !== "TEAMS_JOINING") {
+            //  if (this.props.record.status == "ended") winner = <p> The tournament is ended, the winner is {tourinfo.winner}</p>
+            //    else winner = null;
+
+            content = (<div>
+
+                {teams}
                 <p>Here is the list of scheduled matches</p>
                 <div class="list-matches">
                     <div class="list-headers-matches flex-container">
@@ -82,45 +175,76 @@ export class TournamentEntry extends React.Component {
                         <div class="col7-matches flex-items-matches">Winner</div>
                     </div>
                 </div>
-                {datamatch.map((object, i) => <MatchEntry record={object} key={i} viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview} />)}
+                {this.props.record.matches.map((object, i) => <MatchEntry record={object} key={object.id} viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview} />)}
             </div>
+            );
         }
-        else { //the game is not started yet 
-         content= <p> The total number of teams for this tournament is {tourinfo.totalnumberofteams}, there are still {tourinfo.totalnumberofteams-tourinfo.currentnumberofteams} slots </p>
+        else { //the game is not started yet
+            content =
+                <div id="classuploadinfo">
+                    {classuploading}
+                    {teams}
+                    
+                </div>
         }
         this.props.refreshView(this.props.viewindex);
-        this.setState({ form: content })
+        this.setState({ tourcontent: content })
     }
-    DisplayTeamForm() {
-
-        getData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/get-mine").then((response)=> {
-            if (response.status == 200) {
-             let data= response.result
-             let formtodisplay;
-             if (data != null) {
-                formtodisplay = (
-                    <div>
-                        <form>
-                            <label forhtml="teamtojointour">Join with your team: {data.name}</label>
-                        </form>
-                        <input type="submit" value="Join Tournament" />
-                    </div>
-                )
+    JoinTournament(event) {
+        event.preventDefault();
+        let data = { idTournament: this.props.record.id };
+        postData("/api/tournament/join", data).then((response) => {
+            if (response.status === 200) {
+                this.setState({ tourcontent: <p> successfully joined </p> })
+                this.props.reloadPage();
             }
             else {
-                formtodisplay = (
-                    <div>
-                        <p>To join a tournament you must be owner of one team</p>
-                    </div>
-                )
+                this.setState({ joinreply: "KO" });
+                this.setState({ badResponse: response.message });
             }
-            this.props.refreshView(this.props.viewindex);
-            this.setState({ form: formtodisplay })
-            }
-            else console.log("error");
-           }
-        )
-        
-        
+        }
+        );
     }
+    DisplayTeamForm() {
+        if (sessionStorage.getItem("username") === null) {
+            this.props.backHome(this.props.index);
+            return;
+        };
+        let formtodisplay;
+        if(this.state.playerteam.creator.username!==sessionStorage.getItem("username")){
+            formtodisplay = <p>you are not the leader of your team. Please ask the leader to join this tournament</p>
+        }
+        else if (this.state.playertournaments !== null && this.state.playertournaments.filter(elem => elem.status !== "ENDED").length > 0) {
+            formtodisplay = <p>your team is already in a tournament.You can join only a tournament at a time</p>
+        }
+        else if (this.state.playerteam !== null && this.state.playerteam.teamMembers.length !== this.props.record.teamSize) {
+            formtodisplay = <p>your team must be of {this.props.record.teamSize} members to join this tournament</p>
+        }
+
+        else if (this.state.playerteam !== null) {
+            formtodisplay = (
+                <div>
+                    <form onSubmit={this.JoinTournament}>
+                        <label htmlFor="teamtojointour">Join with your team: {this.state.playerteam.name}</label>
+                        <input type="submit" value="Join Tournament" />
+                    </form>
+
+                </div>
+            )
+        }
+        else {
+            formtodisplay = (
+                <div>
+                    <p>To join a tournament you must be owner of one team</p>
+                </div>
+            )
+        }
+        this.props.refreshView(this.props.viewindex);
+        this.setState({ tourcontent: formtodisplay });
+
+    }
+
+
+
 }
+

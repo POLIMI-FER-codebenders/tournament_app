@@ -75,8 +75,19 @@
     padding: 5px 10px;
     text-align: center;
 }
+.joined {
+    cursor: pointer;
+    padding: 5px 10px;
+    text-align: center;
 
+}
 
+.col6 .joined{
+    border: 1px solid #07be44;
+    background: #07be44;
+    color: #fff;
+
+}
 
 .col6 .joinable {
     border: 1px solid #07be44;
@@ -98,3 +109,42 @@
 .col6 .btn:hover {
     background: #cf4540;    
 }
+
+#classuploadinfo{
+    display:flex;
+    flex-direction:column;
+    align-items: left;
+    justify-content: left;
+}
+.displayclassupload{
+    display:flex;
+    flex-direction:column;
+    padding-bottom:1px;
+    align-items: left;
+    justify-content: left;
+}
+.labelclassupload{
+    display:flex;
+    flex-direction:column; 
+    font-size: 14px;
+}
+#roundid{
+    height:13px;
+    width:40px;
+}
+#classbuttonupload{
+    cursor: pointer;
+    background: #688bec;
+    border: 1px solid #688bec;
+    color: #fff;
+    display:flex;
+    flex-direction:column;
+    align-items: center; 
+    
+}
+#classes{
+width:100px;
+}
+.button-class-container{
+    padding-top: 10px;
+  }

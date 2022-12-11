@@ -5,6 +5,7 @@
 .flex-container-main {
     display: flex;
     flex-direction: row;
+    width: fit-content;
 }
 
 @media (max-width: 1200px) {
@@ -14,7 +15,7 @@
 }
 
 .flex-items-main {
-    margin: auto 10px;
+    padding: 0px 10px;
 }
 
 .flex-container-info {
@@ -101,6 +102,18 @@ tr:nth-child(even) {
     min-width: 140px;
 }
 
+.btn-inactive {
+    padding: 5px 10px;
+    text-align: center;
+    background: #b0aeaea3;
+    border: 1px solid #b0aeaea3;
+    color: #fff;
+}
+
+.btn-container div:not(:first-child) {
+    margin-top: 5px;
+}
+
 .btn {
     cursor: pointer;
     padding: 5px 10px;
@@ -139,11 +152,11 @@ tr:nth-child(even) {
 
 
 .btn-blue {
-    background: #1201d2;
-    border: 1px solid #1201d2;
+    background: #0193d2;
+    border: 1px solid #0193d2;
     color: #fff;
 }
 
 .btn-blue:hover {
-    background: #3d2de9;
+    background: #57b5dd;
 }

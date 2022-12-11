@@ -10,10 +10,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "server"}))
+@Table(name = "cd_player", uniqueConstraints = @UniqueConstraint(columnNames = {"ID_player", "id_server"}))
+@JsonIgnoreProperties(value = {"token", "server"}, allowSetters = true)
 public class CDPlayer {
 
     @Id
@@ -22,8 +23,6 @@ public class CDPlayer {
     @Column(nullable = false)
     private String username;
     @Column(nullable = false)
-    private String server;
-    @JsonIgnore
     private String token;
     @Column(name = "user_ID", nullable = false)
     private int userId;
@@ -31,6 +30,10 @@ public class CDPlayer {
     @ManyToOne(optional = false)
     @JoinColumn(name = "ID_player", nullable = false)
     private Player realPlayer;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_server", nullable = false)
+    private Server server;
 
     public Long getID() {
         return ID;
@@ -40,11 +43,11 @@ public class CDPlayer {
         return username;
     }
 
-    public String getServer() {
+    public Server getServer() {
         return server;
     }
 
-    public void setServer(String server) {
+    public void setServer(Server server) {
         this.server = server;
     }
 

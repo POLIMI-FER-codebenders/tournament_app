@@ -27,7 +27,7 @@ class ListTournamentComponent extends React.Component {
           <div class="col6 flex-items"></div>
           </div>
         </div>
-        {this.props.tournaments.map((object, i) => <TournamentEntry record={object} key={i} viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview} />)}
+        {this.props.tournaments.map((object, i) => <TournamentEntry record={object} key={i} viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview} backHome={this.props.backHome} index={this.props.index} reloadPage={this.props.reloadPage} classes={this.props.classes} />)}
       </div>
     );
 
