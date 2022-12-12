@@ -71,9 +71,9 @@ class PlayerServiceTest {
 
     @Test
     void getAllPlayers() {
-        assertTrue(playerService.getAllPlayers().isEmpty());
+        int oldSize = playerService.getAllPlayers().size();
         playerRepository.save(player);
-        assertEquals(playerService.getAllPlayers().size(), 1);
+        assertEquals(playerService.getAllPlayers().size(), oldSize + 1);
     }
 
     @Test

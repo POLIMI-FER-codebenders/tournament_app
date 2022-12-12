@@ -107,8 +107,7 @@ public class TeamService {
         playerRepository.save(player);
     }
 
-    public void kickMember(String loggedPlayerUsername, Long playerToKickId) {
-        Player loggedPlayer = playerRepository.findByUsername(loggedPlayerUsername);
+    public void kickMember(Player loggedPlayer, Long playerToKickId) {
         Player playerToKick = playerRepository.findById(playerToKickId).orElseThrow(() -> new BadRequestException("Player doesn't exist."));
         Team team = loggedPlayer.getTeam();
 
@@ -121,6 +120,7 @@ public class TeamService {
         if(team.isInTournament()){
             throw new BadRequestException("You can't kick out players while the team is involved in a tournament.");
         }
+        team.removeTeamMember(playerToKick);
         playerToKick.setTeam(null);
         playerToKick.setRole(null);
         playerRepository.save(playerToKick);

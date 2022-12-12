@@ -3,12 +3,9 @@ package dsd.codebenders.tournament_app.services;
 import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 
 import dsd.codebenders.tournament_app.dao.PlayerRepository;
-import dsd.codebenders.tournament_app.dao.RoundClassChoiceRepository;
 import dsd.codebenders.tournament_app.dao.TeamRepository;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
@@ -82,6 +79,7 @@ class TeamServiceTest {
         assertTrue(team.getTeamMembers().contains(creator));
         assertEquals(creator.getTeam(), team);
         assertTrue(creator.getTeamsCreated().contains(team));
+        creator.setTeam(null);
         assertThrows(BadRequestException.class, () -> teamService.createTeam(team, creator));
     }
 
@@ -128,9 +126,9 @@ class TeamServiceTest {
         team.setCreator(creator);
         teamRepository.save(team);
         assertThrows(BadRequestException.class, () -> teamService.leaveTeam(player));
+        player.setTeam(team);
         player.setRole(TeamRole.LEADER);
         assertThrows(BadRequestException.class, () -> teamService.leaveTeam(player));
-        player.setTeam(team);
         player.setRole(TeamRole.MEMBER);
         team.setInTournament(true);
         assertThrows(BadRequestException.class, () -> teamService.leaveTeam(player));
@@ -151,14 +149,85 @@ class TeamServiceTest {
 
     @Test
     void kickMember() {
+        playerRepository.save(creator);
+        team.setCreator(creator);
+        teamRepository.save(team);
+        creator.setTeam(team);
+        team.addTeamMember(creator);
+
+        team.addTeamMember(player);
+        player.setTeam(team);
+        player.setRole(TeamRole.MEMBER);
+        playerRepository.saveAndFlush(player);
+        teamRepository.saveAndFlush(team);
+        assertThrows(BadRequestException.class, () -> teamService.kickMember(creator, player.getID()));
+        team.removeTeamMember(player);
+        player.setTeam(null);
+        player.setRole(null);
+        playerRepository.saveAndFlush(player);
+        teamRepository.saveAndFlush(team);
+
+        creator.setRole(TeamRole.LEADER);
+        assertThrows(BadRequestException.class, () -> teamService.kickMember(creator, player.getID()));
+
+        team.addTeamMember(player);
+        player.setTeam(team);
+        player.setRole(TeamRole.MEMBER);
+        team.setInTournament(true);
+        playerRepository.saveAndFlush(player);
+        teamRepository.saveAndFlush(team);
+        assertThrows(BadRequestException.class, () -> teamService.kickMember(creator, player.getID()));
+        team.setInTournament(false);
+        teamRepository.saveAndFlush(team);
+
+        assertThrows(BadRequestException.class, () -> teamService.kickMember(creator, 1000L));
+
+        assertTrue(team.getTeamMembers().contains(player));
+        teamService.kickMember(creator, player.getID());
+        playerRepository.flush();
+        assertFalse(team.getTeamMembers().contains(player));
+        assertNull(player.getTeam());
+        assertNull(player.getRole());
+        entityManager.refresh(team);
+        assertFalse(team.getTeamMembers().contains(player));
+        assertNull(player.getTeam());
+        assertNull(player.getRole());
     }
 
     @Test
     void findAll() {
+        playerRepository.save(creator);
+        team.setCreator(creator);
+        int oldSize = teamService.findAll().size();
+        teamRepository.saveAndFlush(team);
+        assertEquals(teamService.findAll().size(), oldSize + 1);
     }
 
     @Test
     void promoteToLeader() {
+        playerRepository.save(creator);
+        team.setCreator(creator);
+        teamRepository.save(team);
+        team.addTeamMember(creator);
+        creator.setTeam(team);
+        creator.setRole(TeamRole.LEADER);
+        team.addTeamMember(creator);
+        creator.setTeam(team);
+        assertThrows(BadRequestException.class, () -> teamService.promoteToLeader(creator, player));
+
+        player.setTeam(team);
+        player.setRole(TeamRole.MEMBER);
+        team.addTeamMember(player);
+        assertThrows(BadRequestException.class, () -> teamService.promoteToLeader(player, creator));
+
+        teamService.promoteToLeader(creator, player);
+        playerRepository.flush();
+        assertEquals(player.getRole(), TeamRole.LEADER);
+        assertEquals(creator.getRole(), TeamRole.MEMBER);
+        entityManager.refresh(player);
+        entityManager.refresh(creator);
+        assertEquals(player.getRole(), TeamRole.LEADER);
+        assertEquals(creator.getRole(), TeamRole.MEMBER);
     }
 
     @BeforeEach
