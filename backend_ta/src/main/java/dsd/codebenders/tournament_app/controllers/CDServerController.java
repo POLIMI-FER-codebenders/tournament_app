@@ -66,10 +66,10 @@ public class CDServerController {
             throw new UnauthorizedAuthenticationException("Admin rights required");
         }
         if(!isServerValid(server)) {
-            throw new BadAdminRequestException("Address or token is missing");
+            throw new BadAdminRequestException("Address or token are missing");
         }
         if (!serverService.isTokenValid(server)) {
-            throw new BadAdminRequestException("Token is invalid");
+            throw new BadAdminRequestException("Address or token are invalid");
         }
     }
 
