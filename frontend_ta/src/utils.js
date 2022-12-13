@@ -88,6 +88,13 @@ export function GoToErrorPage(props) {
   }
   );
 }
+export function  GoToPlayPage(props) {
+  let navigate = useNavigate();
+  useEffect(() => {
+    navigate("/play", { state: { info: props.info} });
+  }
+  );
+}
 
 export function checkPassword(password) {
   return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length >= 8 && password.length <= 20 && !/[^A-Za-z0-9]/.test()
