@@ -175,7 +175,7 @@ export class TournamentEntry extends React.Component {
                         <div class="col7-matches flex-items-matches">Winner</div>
                     </div>
                 </div>
-                {this.props.record.matches.map((object, i) => <MatchEntry record={object} key={object.id} viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview} />)}
+                {this.props.record.matches.map((object, i) => <MatchEntry record={object} key={object.id} viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview} player={this.state.playerteam} />)}
             </div>
             );
         }
@@ -211,7 +211,9 @@ export class TournamentEntry extends React.Component {
             return;
         };
         let formtodisplay;
-        if(this.state.playerteam.creator.username!==sessionStorage.getItem("username")){
+        if(this.state.playerteam==null) formtodisplay = <p>you are not inside any team, join a team to play a tournament</p>
+        else if(!(this.state.playerteam.teamMembers.find(elem=>elem.username=== sessionStorage.getItem("username")
+          && elem.role==="LEADER"))){
             formtodisplay = <p>you are not the leader of your team. Please ask the leader to join this tournament</p>
         }
         else if (this.state.playertournaments !== null && this.state.playertournaments.filter(elem => elem.status !== "ENDED").length > 0) {
