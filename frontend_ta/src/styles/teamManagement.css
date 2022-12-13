@@ -1,0 +1,162 @@
+.team-info {
+    width: fit-content;
+}
+
+.flex-container-main {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+}
+
+@media (max-width: 1200px) {
+    .flex-container-main {
+        flex-direction: column;
+    }
+}
+
+.flex-items-main {
+    padding: 0px 10px;
+}
+
+.flex-container-info {
+    display: flex;
+    width: fit-content;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.flex-container-btn {
+    display: flex;
+    width: inherit;
+    justify-content: space-between;
+}
+
+.flex-items-info {
+    margin: auto 5px;
+}
+
+.flex-items-btn {
+    margin-right: 10px;
+    height: fit-content;
+}
+
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 5px 10px;
+    text-align: left;
+    min-width: 150px;
+    height: 31px;
+}
+
+th {
+    background-color: #01d28e;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: lightgray;
+}
+
+
+.list-entry, .name-entry {
+    font-weight: bold;
+}
+
+.list-entry {
+    border-radius: 10px;
+    border: 2px solid lightgray;
+}
+
+.flex-container-list {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    min-width: fit-content;
+}
+
+.flex-items-list {
+    margin: auto 2px;
+}
+
+.long-text {
+    text-overflow: ellipsis;
+}
+
+.col1 {
+    width: 250px;
+
+}
+
+.col2 {
+    width: 100px;
+}
+
+.col3 {
+    min-width: 140px;
+}
+
+.btn-inactive {
+    padding: 5px 10px;
+    text-align: center;
+    background: #b0aeaea3;
+    border: 1px solid #b0aeaea3;
+    color: #fff;
+}
+
+.btn-container div:not(:first-child) {
+    margin-top: 5px;
+}
+
+.btn {
+    cursor: pointer;
+    padding: 5px 10px;
+    text-align: center;
+}
+
+.btn-yellow {
+    background: #d2b301;
+    border: 1px solid #d2b301;
+    color: #fff;
+}
+
+.btn-yellow:hover {
+    background: #ddc01b;
+}
+
+.btn-red {
+    background: #d20801;
+    border: 1px solid #d20801;
+    color: #fff;
+}
+
+.btn-red:hover {
+    background: #cf4540;
+}
+
+.btn-green {
+    background: #01d205;
+    border: 1px solid #01d205;
+    color: #fff;
+}
+
+.btn-green:hover {
+    background: #1ce21f;
+}
+
+
+.btn-blue {
+    background: #0193d2;
+    border: 1px solid #0193d2;
+    color: #fff;
+}
+
+.btn-blue:hover {
+    background: #57b5dd;
+}

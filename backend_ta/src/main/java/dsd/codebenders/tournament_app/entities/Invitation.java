@@ -1,6 +1,5 @@
 package dsd.codebenders.tournament_app.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dsd.codebenders.tournament_app.entities.utils.InvitationStatus;
 
 import javax.persistence.*;
@@ -12,17 +11,15 @@ public class Invitation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_invited_player")
-    @JsonManagedReference
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_invited_player", nullable = false)
     private Player invitedPlayer;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_team")
-    @JsonManagedReference
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ID_team", nullable = false)
     private Team team;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private InvitationStatus status;
 
@@ -45,5 +42,13 @@ public class Invitation {
 
     public Team getTeam() {
         return team;
+    }
+
+    public InvitationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(InvitationStatus status) {
+        this.status = status;
     }
 }
