@@ -69,6 +69,7 @@ export function CreateTournament() {
     fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/api/classes/upload", {
       method: "post",
       body: formData,
+      credentials: 'include'
     }).then((response) => {
       if (response.status === 200) {
         setuploadclassmessage(<p>class successfully uploaded</p>)

@@ -11,6 +11,8 @@ services:
       MYSQL_DATABASE: ${DB_SCHEMA:-tournamentdb}
     volumes:
       - dbvolume:/var/lib/mysql
+    networks:
+      - net
     healthcheck:
       test: mysql ${DB_SCHEMA:-tournamentdb} --user=${DB_USERNAME:-user} --password=${DB_PASSWORD:-user} --execute "SELECT 1;"
       interval: 10s
@@ -26,17 +28,19 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/${DB_SCHEMA:-tournamentdb}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-user}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-user}
-      CODE-DEFENDERS_TOKEN: SDUzl14p2gmoAWFNcEPleWP9uZekwSDC
-      CODE-DEFENDERS_ADDRESS: http://codedef1.duckdns.org:8080/
-      CODE-DEFENDERS_TEST-CLASS-ID: 100
+      TOURNAMENT-APP_TOURNAMENT-MATCH_BREAK-TIME-DURATION: ${BREAK_TIME_DURATION:-3600}
+      TOURNAMENT-APP_TOURNAMENT-MATCH_PHASE-ONE-DURATION: ${PHASE_ONE_DURATION:-3600}
+      TOURNAMENT-APP_TOURNAMENT-MATCH_PHASE-TWO-DURATION: ${PHASE_TWO_DURATION:-1800}
+      TOURNAMENT-APP_TOURNAMENT-MATCH_PHASE-THREE-DURATION: ${PHASE_THREE_DURATION:-1800}
+      TOURNAMENT-APP_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
       TOURNAMENT-APP_WEB-SERVER_ADDRESS: http://localhost:${TA_FRONTEND_PORT:-80}
     ports:
       - "${TA_BACKEND_PORT:-8080}:8080"
     depends_on:
       database:
         condition: service_healthy
-    links:
-      - database
+    networks:
+      - net
   frontend:
     build:
       context: ./
@@ -49,6 +53,9 @@ services:
       - "${TA_FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
-
+      
+networks:
+  net:
+    driver: bridge
 volumes:
   dbvolume:

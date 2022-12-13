@@ -39,7 +39,7 @@ class SignIn extends React.Component {
     let data = new FormData();
     data.append("username", this.state.username);
     data.append("password", this.state.password);
-    let url = process.env.REACT_APP_BACKEND_ADDRESS + "/authentication/login";
+    let url = "/authentication/login";
     let username = this.state.username;
 
     postForm(url, data)
