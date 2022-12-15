@@ -89,36 +89,34 @@ class SignUp extends React.Component {
     if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     if (this.state.view === "SignIn") return (<SignIn backHome={this.props.backHome} index={this.props.index} registered={this.state.registered} />);
     else if (this.state.view === "SignUp") return (
-      <div className="app" class="main-panel">
-        <div className="login-form">
-          <h2>Sign Up</h2>
-          <div className="form">
-            <form onSubmit={this.handleSubmit}>
-              <div className="input-container">
-                <label htmlFor="usernameregister">Username </label>
-                <input type="text" name="username" id="usernameregister" value={this.state.username} onChange={this.handleChange} required />
-              </div>
-              <div className="input-container">
-                <label htmlFor="emailregister">Email </label>
-                <input type="text" name="email" id="emailregister" value={this.state.email} onChange={this.handleChange} required />
-              </div>
-              <div className="input-container">
-                <label htmlFor="passwordregister">Password </label>
-                <input type="password" name="password" id="passwordregister" value={this.state.password} onChange={this.handleChange} required />
-              </div>
-              <div className="input-container">
-                <label htmlFor="confirmpasswordregister">Confirm Password </label>
-                <input type="password" name="confirmpassword" id="confirmpasswordregister" value={this.state.confirmpassword} onChange={this.handleChange} required />
-              </div>
-              <div className="button-container">
-                <input type="submit" value="Sign up" />
-              </div>
-            </form>
-            
-            <button className="formbutton" onClick={() => this.setState({ view: "SignIn" })}> Sign in if you already have an account </button>
-          </div>
-          {this.renderErrorMessage()}
+      <div className="main-panel">
+        <h2>Sign Up</h2>
+        <div className="form">
+          <form onSubmit={this.handleSubmit}>
+            <div className="input-container">
+              <label htmlFor="usernameregister">Username </label>
+              <input type="text" name="username" id="usernameregister" value={this.state.username} onChange={this.handleChange} required />
+            </div>
+            <div className="input-container">
+              <label htmlFor="emailregister">Email </label>
+              <input type="text" name="email" id="emailregister" value={this.state.email} onChange={this.handleChange} required />
+            </div>
+            <div className="input-container">
+              <label htmlFor="passwordregister">Password </label>
+              <input type="password" name="password" id="passwordregister" value={this.state.password} onChange={this.handleChange} required />
+            </div>
+            <div className="input-container">
+              <label htmlFor="confirmpasswordregister">Confirm Password </label>
+              <input type="password" name="confirmpassword" id="confirmpasswordregister" value={this.state.confirmpassword} onChange={this.handleChange} required />
+            </div>
+            <div className="button-container">
+              <input type="submit" value="Sign up" />
+            </div>
+          </form>
+          
+          <button className="formbutton" onClick={() => this.setState({ view: "SignIn" })}> Sign in if you already have an account </button>
         </div>
+        {this.renderErrorMessage()}
       </div>
     );
   }

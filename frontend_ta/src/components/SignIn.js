@@ -48,7 +48,7 @@ class SignIn extends React.Component {
           if (response.result) {
             this.setState({ errorMessage: null })
             sessionStorage.setItem("username", username);
-            this.props.backHome(this.props.index,true);
+            this.props.backHome(this.props.index, true);
           }
           else {
             this.setState({ errorMessage: "invalid credentials" })
@@ -67,30 +67,28 @@ class SignIn extends React.Component {
     if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     if (this.state.view == "SignUp") nextcomponent = (<SignUp backHome={this.props.backHome} index={this.props.index} />);
     let registrationmessage;
-    if(this.props.registered) registrationmessage=<p>Registration successfull, please login</p>
+    if (this.props.registered) registrationmessage = <p>Registration successfull, please login</p>
     if (this.state.view == "SignIn") nextcomponent = (
-      <div className="app" class="main-panel">
-        <div className="login-form">
-          {registrationmessage}
-          <h2>Sign In</h2>
-          <div className="form">
-            <form onSubmit={this.handleSubmit}>
-              <div className="input-container">
-                <label htmlFor="usernamelogin">Username </label>
-                <input type="text" name="username" id="usernamelogin" value={this.state.username} onChange={this.handleChange} required />
-              </div>
-              <div className="input-container">
-                <label htmlFor="passwordlogin">Password </label>
-                <input type="password" name="password" id="passwordlogin" value={this.state.password} onChange={this.handleChange} required />
+      <div className="main-panel">
+        {registrationmessage}
+        <h2>Sign In</h2>
+        <div className="form">
+          <form onSubmit={this.handleSubmit}>
+            <div className="input-container">
+              <label htmlFor="usernamelogin">Username </label>
+              <input type="text" name="username" id="usernamelogin" value={this.state.username} onChange={this.handleChange} required />
+            </div>
+            <div className="input-container">
+              <label htmlFor="passwordlogin">Password </label>
+              <input type="password" name="password" id="passwordlogin" value={this.state.password} onChange={this.handleChange} required />
 
-              </div>
-              <div className="button-container">
-                <input type="submit" value="Sign in" />
-              </div>
-            </form>
-            {this.renderErrorMessage()}
-            <button className="formbutton" onClick={() => this.setState({ view: "SignUp" })}> Create Account </button>
-          </div>
+            </div>
+            <div className="button-container">
+              <input type="submit" value="Sign in" />
+            </div>
+          </form>
+          {this.renderErrorMessage()}
+          <button className="formbutton" onClick={() => this.setState({ view: "SignUp" })}> Create Account </button>
         </div>
       </div>
     );

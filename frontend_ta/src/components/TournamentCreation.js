@@ -82,7 +82,7 @@ export function CreateTournament() {
   };
 
   return (
-    <div id="maintourcreationdiv">
+    <div className="main-panel" id="maintourcreationdiv">
       <div className="creation-form">
         <h2>Tournament creation</h2>
 

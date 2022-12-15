@@ -58,9 +58,7 @@
     
 }
 #maintourcreationdiv{
-    display: flex;
   flex-direction: row;
-  flex-grow:8
 }
 
 #uploadclasses{

@@ -24,15 +24,6 @@
     justify-content: center;
   }
   
-  .login-form {
-    background-color: white;
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-  
   .error {
     color: red;
     font-size: 12px;

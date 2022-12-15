@@ -45,7 +45,7 @@ class TeamCreation extends Component {
 
   render() {
     return (
-      <div id="createteam-maindiv">
+      <div className="main-panel">
         <h2>Team creation</h2>
 
         <form onSubmit={this.handleSubmit}>
