@@ -145,10 +145,12 @@ public class TournamentService {
                 Team winningTeam;
                 switch (tournament.getType()) {
                     case KNOCKOUT -> {
+                        logger.info("Computing winning team for tournament " + tournament.getID() + " of type KNOCKOUT");
                         // get the winner of the last round
                         winningTeam = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound()).get(0);
                     }
                     case LEAGUE -> {
+                        logger.info("Computing winning team for tournament " + tournament.getID() + " of type LEAGUE");
                         // compute the team that has scored the highest
                         List<TournamentScore> tournamentScoreList = tournament.getTournamentScores();
                         tournamentScoreList.sort(Comparator.comparing(TournamentScore::getLeaguePoints).reversed());
@@ -172,8 +174,13 @@ public class TournamentService {
                     default -> throw new IllegalStateException("Unexpected value: " + tournament.getType());
                 }
                 tournament.setWinningTeam(winningTeam);
-                winningTeam.setInTournament(false);
-                teamRepository.save(winningTeam);
+                logger.info("The winning team of tournament " + tournament.getID() + " is " + winningTeam.getName());
+                // clear inTournament variable for each team in the tournament
+                for(Team team : tournament.getTournamentScores().stream().map(TournamentScore::getTeam).collect(Collectors.toList())) {
+                    logger.info("Clearing variable inTournament for team " + team.getName());
+                    team.setInTournament(false);
+                    teamRepository.save(team);
+                }
                 return tournament;
             }
         }
