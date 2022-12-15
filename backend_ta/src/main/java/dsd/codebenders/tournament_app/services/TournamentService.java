@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentService {
@@ -149,14 +150,31 @@ public class TournamentService {
                     }
                     case LEAGUE -> {
                         // compute the team that has scored the highest
-                        // TODO manage tie
                         List<TournamentScore> tournamentScoreList = tournament.getTournamentScores();
                         tournamentScoreList.sort(Comparator.comparing(TournamentScore::getLeaguePoints).reversed());
-                        winningTeam = tournamentScoreList.get(0).getTeam();
+                        if(tournamentScoreList.size() > 1) {
+                            if(tournamentScoreList.get(0).getScore().equals(tournamentScoreList.get(1).getScore())) {
+                                // tie case
+                                Integer highestScore = tournamentScoreList.get(0).getScore();
+                                List<TournamentScore> winningCandidates = tournamentScoreList.stream().filter(x -> x.getScore().equals(highestScore)).collect(Collectors.toList());
+                                // elect a random winner among the teams having the highest score
+                                int randomNum = ThreadLocalRandom.current().nextInt(0, winningCandidates.size());
+                                winningTeam = winningCandidates.get(randomNum).getTeam();
+                            } else {
+                                // in the normal case, the winner is the team with the highest score
+                                winningTeam = tournamentScoreList.get(0).getTeam();
+                            }
+                        } else {
+                            // there is only one team left, thus it is the automatic winner
+                            winningTeam = tournamentScoreList.get(0).getTeam();
+                        }
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + tournament.getType());
                 }
                 tournament.setWinningTeam(winningTeam);
+                winningTeam.setInTournament(false);
+                teamRepository.save(winningTeam);
+                return tournament;
             }
         }
         return tryAdvance(tournament);
