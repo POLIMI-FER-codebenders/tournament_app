@@ -14,6 +14,8 @@ import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.*;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class MatchService {
     private final ServerService serverService;
     private final RoundClassChoiceService roundClassChoiceService;
     private final MatchRepository matchRepository;
+    private final Logger logger = LoggerFactory.getLogger(MatchService.class);
     @Value("${tournament-app.tournament-match.mutant-validator-level:moderate}")
     private String mutantValidatorLevel;
     @Value("${tournament-app.tournament-match.max-assertions-per-test:2}")
@@ -82,6 +85,7 @@ public class MatchService {
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
+        logger.info("Starting match " + match.getID());
         goToNextPhase(match);
     }
 

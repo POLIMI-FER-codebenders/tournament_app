@@ -196,10 +196,10 @@ public class TournamentService {
         } else {
             winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound());
         }
-        logger.error(getTournamentTeams(tournament).stream().map(Team::getID).toList().toString());
-        logger.error(winners.stream().map(Team::getID).toList().toString());
+        logger.info(getTournamentTeams(tournament).stream().map(Team::getID).toList().toString());
+        logger.info(winners.stream().map(Team::getID).toList().toString());
         List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().map(Team::getID).toList(), winners.stream().map(Team::getID).toList());
-        logger.error(IDs.toString());
+        logger.info(IDs.toString());
         List<List<Team>> nextMatches = IDs.stream().map(ids -> ids.stream().map(id -> teamRepository.findById(id).get()).toList()).toList();
         boolean oneValid = false;
         Date roundStart = DateUtility.addSeconds(new Date(), breakTimeDuration);

@@ -10,7 +10,10 @@ import dsd.codebenders.tournament_app.entities.score.Scoreboard;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.requests.GameIdRequest;
 import dsd.codebenders.tournament_app.services.MatchService;
+import dsd.codebenders.tournament_app.services.TournamentService;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
@@ -21,6 +24,7 @@ public class EndMatchTask implements Runnable {
     private final Match match;
     private final MatchService matchService;
     private final TournamentScheduler tournamentScheduler;
+    private final Logger logger = LoggerFactory.getLogger(EndMatchTask.class);
 
     public EndMatchTask(Match match, MatchService matchService, TournamentScheduler tournamentScheduler) {
         this.match = match;
@@ -53,6 +57,7 @@ public class EndMatchTask implements Runnable {
                     return;
                 }
                 Team winner = computeWinner(gameStatus.getScoreboard());
+                logger.info("Match " + match.getID() + " ended, winner: " + winner.getName());
                 matchService.setWinner(match, winner);
                 tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
             }
@@ -64,10 +69,13 @@ public class EndMatchTask implements Runnable {
         int attackersTotal = multiplayerScoreboard.getAttackersTotal().getPoints();
         int defendersTotal = multiplayerScoreboard.getDefendersTotal().getPoints();
         if(attackersTotal > defendersTotal) {
+            logger.info("Attacker team won.");
             return match.getAttackersTeam();
         } else if(attackersTotal < defendersTotal) {
+            logger.info("Defender team won.");
             return match.getDefendersTeam();
         } else {
+            logger.info("Tie randomly picking a winner.");
             Random random = new Random();
             return random.nextInt(2) == 0 ? match.getAttackersTeam() : match.getDefendersTeam();
         }
