@@ -8,7 +8,6 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
-import dsd.codebenders.tournament_app.scheduler.TournamentScheduler;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ public class TournamentService {
     private final TournamentScoreRepository tournamentScoreRepository;
     private final TeamRepository teamRepository;
     private final MatchService matchService;
-    private TournamentScheduler tournamentScheduler;
+    private TournamentSchedulerService tournamentSchedulerService;
     private final GameClassRepository gameClassRepository;
     private final RoundClassChoiceRepository roundClassChoiceRepository;
 
@@ -55,10 +54,10 @@ public class TournamentService {
 
     @PostConstruct
     public void init() {
-        this.tournamentScheduler = new TournamentScheduler(phaseOneDuration, phaseOneDuration + phaseTwoDuration,
+        this.tournamentSchedulerService = new TournamentSchedulerService(phaseOneDuration, phaseOneDuration + phaseTwoDuration,
                 phaseOneDuration + phaseTwoDuration + phaseThreeDuration, this, matchService);
-        this.tournamentScheduler.setPoolSize(10);
-        this.tournamentScheduler.initialize();
+        this.tournamentSchedulerService.setPoolSize(10);
+        this.tournamentSchedulerService.initialize();
     }
 
     public Tournament findById(Long ID) {
@@ -75,7 +74,7 @@ public class TournamentService {
         tournamentScoreRepository.save(tournamentScore);
         team.setInTournament(true);
         teamRepository.save(team);
-        return tournamentScheduler.prepareRoundAndStartMatches(getTournamentByID(tournament.getID()).get());
+        return tournamentSchedulerService.prepareRoundAndStartMatches(getTournamentByID(tournament.getID()).get());
     }
 
     public Tournament removeTeam(Tournament tournament, Team team) {

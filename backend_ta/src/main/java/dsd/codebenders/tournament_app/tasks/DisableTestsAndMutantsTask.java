@@ -1,4 +1,4 @@
-package dsd.codebenders.tournament_app.scheduler;
+package dsd.codebenders.tournament_app.tasks;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.entities.Match;
@@ -6,6 +6,7 @@ import dsd.codebenders.tournament_app.entities.Server;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.requests.GameIdRequest;
 import dsd.codebenders.tournament_app.services.MatchService;
+import dsd.codebenders.tournament_app.services.TournamentSchedulerService;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.web.client.RestClientException;
 
@@ -13,12 +14,12 @@ public class DisableTestsAndMutantsTask implements Runnable {
 
     private final Match match;
     private final MatchService matchService;
-    private final TournamentScheduler tournamentScheduler;
+    private final TournamentSchedulerService tournamentSchedulerService;
 
-    public DisableTestsAndMutantsTask(Match match, MatchService matchService, TournamentScheduler tournamentScheduler) {
+    public DisableTestsAndMutantsTask(Match match, MatchService matchService, TournamentSchedulerService tournamentSchedulerService) {
         this.match = match;
         this.matchService = matchService;
-        this.tournamentScheduler = tournamentScheduler;
+        this.tournamentSchedulerService = tournamentSchedulerService;
     }
 
     @Override
@@ -31,7 +32,7 @@ public class DisableTestsAndMutantsTask implements Runnable {
             } catch (RestClientException | JsonProcessingException e) {
                 System.err.println("ERROR: Match " + match.getID() + " failed while disabling tests and mutants");
                 if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
-                    tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
+                    tournamentSchedulerService.prepareRoundAndStartMatches(match.getTournament());
                 }
             }
         }
