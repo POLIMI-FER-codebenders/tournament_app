@@ -57,7 +57,7 @@ export class  ListTeams extends React.Component {
   }
   componentDidMount() {
     
-    getData(process.env.REACT_APP_BACKEND_ADDRESS + "/api/team/get-all").then((response)=> {
+    getData("/api/team/get-all").then((response)=> {
      if (response.status === 200) {
       this.setState({data: response.result});
      }

@@ -9,6 +9,7 @@ import ManageTeams from './components/TeamManagement';
 import { CreateTournament } from './components/TournamentCreation';
 import TeamCreation from './components/TeamCreation';
 import JoinTeam from './components/JoinTeam';
+import { CDFrame } from './components/CDFrame';
 
 import ErrorPage from "./Error.js";
 import React from "react";
@@ -137,6 +138,10 @@ class App extends Component {
     {
       path: "/error",
       element: <ErrorPage />
+    },
+    {
+      path: "/play",
+      element:<CDFrame />
     }
 
   ]
