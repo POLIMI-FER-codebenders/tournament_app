@@ -42,8 +42,6 @@ class TeamControllerTest {
 
     @Test
     void getTeam() throws Exception {
-        testRunner.testGet("/api/team/get", Map.of("id", ""), List.of(status().isBadRequest()));
-        testRunner.testGet("/api/team/get", Map.of("id", "1"));
     }
 
     @Test
