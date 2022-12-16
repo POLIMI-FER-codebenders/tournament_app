@@ -61,6 +61,7 @@ pipeline {
             }
             steps {
                 dir("frontend_ta"){
+                    sh 'npm install react-router-dom'
                     sh 'npm install'
                     sh 'npm run build'
                 }
