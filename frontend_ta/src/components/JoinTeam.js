@@ -15,27 +15,32 @@ function TeamEntry(props) {
       
       {open && (
         <div class="item container">
-          <p>Date of creation: {props.team.date}</p>
-          <p>Members:
+          <p>Date of creation: 
+            <span className="flex-items-info">
+              {props.team.dateOfCreation[2]}.{props.team.dateOfCreation[1]}.{props.team.dateOfCreation[0]}.
+            </span>
+          </p>
+          <p>Members ({props.team.members.length}) of maximum size ({props.team.maxNumberOfPlayers}) :
             {props.team.members.map((m) => 
               <div class="item-member">
-                {m} 
+                <span>{m.username}</span> {m.role === "LEADER" && (<span> (leader)</span>)}
               </div>)} 
           </p>
-          <p>The team is {props.team.type} to new players 
-            {props.team.type === "open" && (
+          <p>The team is {props.team.policy} to new players. <br/>
+            {props.team.members.length === props.team.maxNumberOfPlayers && (<span>Can't join, currently full.</span>)}
+            {props.team.policy === "OPEN" && props.team.members.length < props.team.maxNumberOfPlayers && (
               <button class="item button-container btn-join"
-                onClick={()=> postData("api/team/join", props.team.id)
-                              .then((response) => {
-                                if (response.status === 200) {
-                                  alert(`You have joined team ${props.team.name}`);
-                                  //this.initTeam();
-                                }
-                                else {
-                                  JoinTeam.setState({
-                                    errorMessage: "the server encountered an error",
-                                    badResponse: response.message});
-                                }})}>
+                onClick={()=> postData("/api/team/join", {"idTeam" : props.team.id})
+                                .then((response) => {
+                                  if (response.status === 200) {
+                                    alert(`You have joined team ${props.team.name}`);
+                                    // TODO: refresh
+                                  }
+                                  else {
+                                    JoinTeam.setState({
+                                      errorMessage: "the server encountered an error",
+                                      badResponse: response.message});
+                                  }})}>
                 Join this team
               </button>
             )}
@@ -44,18 +49,18 @@ function TeamEntry(props) {
       )}
     </div>
   );
-};
+}
 
 function InvitationEntry(props){
   return(
     <div class="invitation-entry">
-      <p class="inv-team">Invitation from {props.invitation.team}</p> 
+      <p class="inv-team">Invitation from {props.invitation.team.name}</p> 
       <button class="item button-container btn-accept"
-       onClick={()=> postData("api/invitation/accept", props.invitation.id)
-                              .then((response) => {
+       onClick={()=> postData("/api/invitation/accept", {"idInvitation" : props.invitation.id})
+                              .then((response) => { 
                                 if (response.status === 200) {
-                                  alert(`You have joined team ${props.invitation.team}`);
-                                  //this.initTeam();
+                                  alert(`You have joined team ${props.invitation.team.name}`);
+                                  //TODO refresh
                                 }
                                 else {
                                   JoinTeam.setState({
@@ -65,17 +70,17 @@ function InvitationEntry(props){
         Accept
       </button>
       <button class="item button-container btn-decline"
-        onClick={()=> postData("api/invitation/decline", props.invitation.id)
-                              .then((response) => {
-                                if (response.status === 200) {
-                                  alert(`You have rejected invitation to team ${props.invitation.team}`);
-                                  //this.initTeam();
-                                }
-                                else {
-                                  JoinTeam.setState({
-                                    errorMessage: "the server encountered an error",
-                                    badResponse: response.message});
-                                }})}>
+        onClick={()=> postData("/api/invitation/reject", {"idInvitation" : props.invitation.id})
+                          .then((response) => {
+                            if (response.status === 200) {
+                              alert(`You have rejected invitation to team ${props.invitation.team.name}`);
+                              //TODO: refresh
+                            } 
+                            else {
+                              JoinTeam.setState({
+                              errorMessage: "the server encountered an error",
+                              badResponse: response.message});
+                            }})}>
         Decline
       </button>
     </div>
@@ -88,8 +93,8 @@ class JoinTeam extends Component{
     this.state = {
       user: {},
       teams: {},
-      invitations: [{"team":"Tithonus"}, {"team":"GoldenBoys"}],
-      data : [{"name":"team1", "type":"open", "members":["Amy", "Ric"], "size":2},{"name":"team2", "type":"closed", "members":["Lenny", "Benny", "Fanny"], "size":3}],
+      invitations: [],
+      data : [],
       view_inv: "Check"
     };
   }
@@ -102,32 +107,31 @@ class JoinTeam extends Component{
         console.log("error");
     });
 
-    // TODO API: get all invitations for given player's id (all info of the invitation)
-    // e: [{"id":1, "team":"TeamD", "date":<datereceived>}, {"id":2, "Team":"CoolTeam", ...}] // list of invitation objects
-    getData("/api/invitations/get-player-id").then((response)=> {
+    getData("/api/invitation/pending").then((response)=> {
       if (response.status === 200) 
-        this.setState({data: response.result});
+        this.setState({invitations: response.result});
       else 
         console.log("error");
     });
   }
 
   render(){
-      return (
-        <div class="main-panel">
-          <button class="item button-container"
-            onClick={() => {let b = this.state.view_inv;
-                            b === "Check" ? this.setState({view_inv : "Close"}) : this.setState({view_inv : "Check"})}}
-                            >{this.state.view_inv} Invitations ({this.state.invitations.length})
-          </button>
-          {this.state.view_inv === "Close" &&
-          <div>
+    return (
+      <div class="main-panel">
+        <button class="item button-container"
+          onClick={() => { let b = this.state.view_inv;
+                            b === "Check" ? this.setState({view_inv : "Close"}) : this.setState({view_inv : "Check"})
+                  }}>
+          {this.state.view_inv} Invitations ({this.state.invitations.length})
+        </button>
+        {this.state.view_inv === "Close" &&
+        <div>
           {this.state.invitations.map((object, i) => <InvitationEntry invitation={object} key={i} />)}
-          </div>}
+        </div>}
 
-          <h2>Teams</h2>
-          {this.state.data.map((object, i) => <TeamEntry team={object} key={i} />)}
-        </div>
+        <h2>Teams</h2>
+        {this.state.data.map((object, i) => <TeamEntry team={object} key={i} />)}
+      </div>
     );
   }
 }
