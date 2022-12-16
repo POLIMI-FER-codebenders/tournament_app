@@ -88,7 +88,10 @@ pipeline {
                 }
             }
             agent {
-                docker { image '3.8.6-openjdk-18' }
+                docker { 
+                    image 'maven:3.8.6-eclipse-temurin-17' 
+                    args '-v $HOME/.m2:/root/.m2'
+                }
             }
             /*agent {
                 // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
