@@ -12,7 +12,7 @@ export function CreateTournament() {
   const [start_date, setDate] = useState("");
   const [gametype, setgameType] = useState("MULTIPLAYER");
   const [creationMessage, setCreationMessage] = useState("")
-  const [numberofteamstext, setnumberofteamstext] = useState("Enter the number of teams (2-16):")
+  const [numberofteamstext, setnumberofteamstext] = useState("Number of teams (2-16):")
   const [uploadclassmessage, setuploadclassmessage] = useState(null)
   const handleChange = (event) => {
 
@@ -27,8 +27,8 @@ export function CreateTournament() {
       setgameType(event.target.value);
     }
     else if (eventsource === "tourtype") {
-      if (event.target.value === "KNOCKOUT") setnumberofteamstext("Enter the number of teams(must be a power of 2)  (2-16):");
-      else setnumberofteamstext("Enter the number of teams (2-8):");
+      if (event.target.value === "KNOCKOUT") setnumberofteamstext("Number of teams (must be a power of 2) (2-16):");
+      else setnumberofteamstext("Number of teams (2-8):");
       setType(event.target.value);
 
     }
@@ -87,76 +87,71 @@ export function CreateTournament() {
         <h2>Tournament creation</h2>
 
         <form onSubmit={handleSubmit}>
-          <div className="input-tour-container">
-            <label className="tourlabel" >
-              Enter new tournament name:
-              <input className="tourinput"
+          <div className="input-container">
+            <label htmlFor="tourname" >Name</label>
+              <input id="tourname"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-            </label>
           </div>
-          <div className="input-tour-container">
-            <label className="tourlabel" htmlFor="typeselector">Select type of tournament:</label>
-            <select class="selector-tour" name="tourtype" id="typeselector" value={type} onChange={handleChange}>
+          <div className="input-container">
+            <label htmlFor="typeselector">Type of tournament</label>
+            <select className="selector" name="tourtype" id="typeselector" value={type} onChange={handleChange}>
               <option value="KNOCKOUT">Knockout</option>
               <option value="LEAGUE">League</option>
             </select>
           </div>
-          <div className="input-tour-container">
-            <label className="tourlabel" htmlFor="gametypeselector">Select type of games:</label>
-            <select class="selector-tour" name="gametype" id="gametypeselector" value={gametype} onChange={handleChange}>
+          <div className="input-container">
+            <label htmlFor="gametypeselector">Type of game</label>
+            <select class="selector" name="gametype" id="gametypeselector" value={gametype} onChange={handleChange}>
               <option value="MELEE">Melee</option>
               <option value="MULTIPLAYER">Multiplayer</option>
             </select>
           </div>
-          <div className="input-tour-container">
-            <label className="tourlabel" htmlFor="teamsize-selector">Enter the size of teams (1-10):
-              <input className="tourinput"
+          <div className="input-container">
+            <label htmlFor="teamsize-selector">Size of teams (1-10)</label>
+              <input
                 type="number" name="size" id="teamsize-selector"
                 value={size}
                 onChange={handleChange}
               />
-            </label>
           </div>
-          <div className="input-tour-container">
-            <label className="tourlabel" htmlFor="numberofteams-selector">{numberofteamstext}
+          <div className="input-container">
+            <label htmlFor="numberofteams-selector">{numberofteamstext}</label>
               <input
-                type="number" className="tourinput" name="numberteams" id="numberofteams-selector"
+                type="number" name="numberteams" id="numberofteams-selector"
                 value={numberofteams}
                 onChange={handleChange}
               />
-            </label>
           </div>
-          <div className="input-tour-container">
-            <label className="tourlabel">Select the starting date
-              <input className="tourinput" name="starting_date" type="date"
+          <div className="input-container">
+            <label htmlFor="tourdate">Starting date</label>
+              <input id="tourdate" name="starting_date" type="date"
                 value={start_date}
 
                 onChange={handleChange}
               />
-            </label>
           </div>
-          <div className="button-tour-container">
-            <input className="tourinput" type="submit" id="createtournamentbutton" value="Create tournament" />
+          <div className="button-container">
+            <input type="submit" value="Create tournament" />
           </div>
         </form>
 
-        {creationMessage}
+        <p className='error'>{creationMessage}</p>
       </div>
       <div id="uploadclasses">
         <h3>Upload classes </h3>
-        <form id="formclassupload" encType="multipart/form-data">
-          <div class="input-group">
+        <form id="formclassupload" encType="multipart/form-data" onSubmit={handleClassSubmit}>
+          <div class="input-container">
             <label for="file" id="uploadclasslabel">Select classes to upload</label>
             <input id="file" type="file" multiple />
           </div>
-          <div className="button-tour-container">
-            <button id="uploadclassbutton" type="submit" onClick={handleClassSubmit}>Upload</button>
+          <div className="button-container uploadclassbutton">
+            <input type="submit" value="Upload"/>
           </div>
         </form>
-        {uploadclassmessage}
+        <p className='error'>{uploadclassmessage}</p>
       </div>
     </div>
   );

@@ -1,46 +1,65 @@
 import { Component } from "react";
 import postData from "../utils";
 import '../styles/createTeam.css';
+import '../styles/App.css';
 class TeamCreation extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "",
       type: "OPEN",
-      messageError:null
+      messageError: null
     };
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);  
-    this.renderErrorMessage=this.renderErrorMessage.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.renderErrorMessage = this.renderErrorMessage.bind(this);
   }
 
   renderErrorMessage() {
     if (this.state.messageError === null) return;
     return (
-      <p >{this.state.messageError}</p>
+      <p className='error'>{this.state.messageError}</p>
     );
   }
 
   handleChange(event) {
-    this.setState({type: event.target.value});
+    this.setState({ type: event.target.value });
   };
 
   handleSubmit(event) {
     event.preventDefault();
-    let maxnumberofplayers=document.getElementById("cteamsize-selector").value;
-    if(this.state.name.length>255) this.setState({messageError:"the name must be 255 char maximum"});
-    else if(maxnumberofplayers>10 || maxnumberofplayers<1)this.setState({messageError:"team size must be from 1 to 127"})
-    let data={name:this.state.name,maxNumberOfPlayers:maxnumberofplayers,policy:this.state.type}
-      postData("/api/team/create", data).then((response)=> {
-        if (response.status === 200) {
-         this.setState({messageError: "team successfully created"});    
-        }
-        else {
-          this.setState({messageError:response.message});
-       }
+    let maxnumberofplayers = document.getElementById("sizeteam").value;
+    if (this.state.name.length > 255) this.setState({ messageError: "the name must be 255 char maximum" });
+    else if (maxnumberofplayers > 10 || maxnumberofplayers < 1) this.setState({ messageError: "team size must be from 1 to 127" })
+    let data = { name: this.state.name, maxNumberOfPlayers: maxnumberofplayers, policy: this.state.type }
+    postData("/api/team/create", data).then((response) => {
+      if (response.status === 200) {
+        this.setState({ messageError: "team successfully created" });
       }
-       );
+      else {
+        this.setState({ messageError: response.message });
+      }
+    }
+    );
   };
+
+  displayDescPolicy() {
+    if (this.state.type === "OPEN") {
+      return (
+        <div className="descInput" id="expPolicy">
+          Players can join the team themselves.
+        </div>
+
+      )
+    } else if (this.state.type === "CLOSED") {
+      return (
+        <div className="descInput" id="expPolicy">
+          Players must be invited to join the team.
+        </div>
+
+      )
+    }
+  }
 
 
   render() {
@@ -49,34 +68,34 @@ class TeamCreation extends Component {
         <h2>Team creation</h2>
 
         <form onSubmit={this.handleSubmit}>
-          
-            <div class="input-createteam-container">
-              <label htmlFor="createteamnameinput" className="createTeamLabel">
-                Enter new team name:
-                <input className="inputcreateteam"
-                  type="text" id="createteamnameinput"
-                  value={this.state.name}
-                  onChange={(e) => this.setState({ name: e.target.value })}
-                />
-              </label>
-            </div>
-            <div class="input-createteam-container">
-            <label className="createTeamLabel" htmlFor="cteamsize-selector">Enter the size of teams:
-              <input
-                type="number" className="inputcreateteam" name="size" id="cteamsize-selector" required min="1" max="10"
-                />
+
+          <div className="input-container">
+            <label htmlFor="nameteam">Name</label>
+            <input
+              type="text" id="nameteam"
+              value={this.state.name}
+              onChange={(e) => this.setState({ name: e.target.value })}
+            />
+          </div>
+          <div className="input-container">
+            <label htmlFor="sizeteam">Size</label>
+            <input
+              type="number" name="size" id="sizeteam" required min="1" max="10"
+              placeholder="Number of team members"
+            />
+          </div>
+          <div className="input-container">
+            <label htmlFor="policyteam">Policy
             </label>
-            </div>
-            <div class="input-createteam-container">
-              <label className="createTeamLabel" htmlFor="createteamselector">Please select whether your team will be open or closed to new members:</label>
-              <select  id="createteamselector" value={this.state.type} onChange={this.handleChange}>
-                <option value="OPEN">OPEN</option>
-                <option value="CLOSED">CLOSED</option>
-              </select>
-            </div>
-            <div id="button-createteam-container">
-            <input type="submit" id="createteambutton"  value="Create team"/>
-            </div>
+            <select className="selector" id="policyteam" value={this.state.type} onChange={this.handleChange} aria-describedby="expPolicy">
+              <option value="OPEN">OPEN</option>
+              <option value="CLOSED">CLOSED</option>
+            </select>
+            {this.displayDescPolicy()}
+          </div>
+          <div className="button-container">
+            <input type="submit" value="Create team" />
+          </div>
         </form>
         {this.renderErrorMessage()}
       </div>

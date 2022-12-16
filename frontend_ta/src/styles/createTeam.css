@@ -1,4 +1,4 @@
-.inputcreateteam[type="text"],
+/* .inputcreateteam[type="text"],
   .inputcreateteam[type="number"]
     {
     height: 25px;
@@ -15,14 +15,10 @@
     padding-bottom: 10px;
   }
 
-  #createteamselector{
-    height: 30px;
-    width: 200px;
-  }
   #button-createteam-container{
     display:flex;
     flex-direction:column;
     align-items: center;
     justify-content: center;
     padding-bottom: 10px;
-  }
+  } */

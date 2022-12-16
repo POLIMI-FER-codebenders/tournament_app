@@ -25,7 +25,7 @@ class SignIn extends React.Component {
   renderErrorMessage() {
     if (this.state.errorMessage == null) return;
     return (
-      <p>{this.state.errorMessage}</p>
+      <p className='error'>{this.state.errorMessage}</p>
     );
   }
 

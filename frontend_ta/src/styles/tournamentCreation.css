@@ -77,11 +77,12 @@
 #uploadclasslabel{
  padding-bottom: 10px;
 }
-#uploadclassbutton{
-    cursor: pointer;
-    font-size: 15px;
-    background: #688bec;
-    border: 1px solid #688bec;
-    color: #fff;  
+
+.uploadclassbutton input[type="submit"] {
+  background: #688bec;
+  border: 1px solid #688bec;
 }
 
+.uploadclassbutton input[type="submit"]:hover {
+  background: #97abe3;
+}
