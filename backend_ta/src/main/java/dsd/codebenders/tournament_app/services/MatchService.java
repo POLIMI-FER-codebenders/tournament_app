@@ -165,6 +165,10 @@ public class MatchService {
                 .getRoundClassChoiceByTournamentAndRound(match.getTournament(), match.getRoundNumber()).getGameClass();
     }
 
+    public List<Match> getOngoingMatches() {
+        return matchRepository.findOngoingMatches();
+    }
+
     public void setFailedMatch(Match match) {
         match.setStatus(MatchStatus.FAILED);
         matchRepository.save(match);

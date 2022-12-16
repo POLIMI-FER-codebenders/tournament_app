@@ -18,4 +18,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     Match findCreatedMatchByDefender(Player player);
 
     List<Match> findByTournamentAndRoundNumber(Tournament tournament, Integer roundNumber);
+
+    @Query("SELECT m FROM Match m WHERE m.status = 'IN_PHASE_ONE' OR m.status = 'IN_PHASE_TWO' OR m.status = 'IN_PHASE_THREE'")
+    List<Match> findOngoingMatches();
 }
