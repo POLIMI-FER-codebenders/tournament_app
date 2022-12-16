@@ -107,39 +107,19 @@ pipeline {
                 }
             }
             post{
-                unsuccessful {
+                successful {
                     discordSend (
-                        description: "Hey ${env.CHANGE_AUTHOR}, job is not successful on branch ${env.GIT_BRANCH}", 
-                        footer: currentBuild.currentResult, 
+                        description: "Hey ${env.CHANGE_AUTHOR}, everything checks out on ${env.GIT_BRANCH} :D", 
+                        //footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
                         webhookURL: DISCORD_WEBHOOK
                     )
                 }
-            }
-        }
-        stage('Discord notify checks passed') {
-            when {
-                anyOf{
-                    branch pattern: "PR-\\d+", comparator: "REGEXP"
-                }
-            }
-            agent any
-            steps {
-                discordSend (
-                        description: "Hey ${env.CHANGE_AUTHOR}, job is successful on branch ${env.GIT_BRANCH} :D", 
-                        //footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
-                        link: env.BUILD_URL, 
-                        result: currentBuild.currentResult, 
-                        title: JOB_NAME, 
-                        webhookURL: DISCORD_WEBHOOK
-                )
-            }
-            post{
                 unsuccessful {
                     discordSend (
-                        description: "Hey ${env.CHANGE_AUTHOR}, call plumber :(", 
+                        description: "Hey ${env.CHANGE_AUTHOR}, job is not successful on branch ${env.GIT_BRANCH}", 
                         footer: currentBuild.currentResult, 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
@@ -179,7 +159,7 @@ pipeline {
                 success{
                     discordSend (
                         description: "Hey team, job is successful on branch ${env.GIT_BRANCH} :D", 
-                        //footer: "New development image: codebenders/codedefenders:dev, also codebenders/codedefenders:${env.GIT_COMMIT}", 
+                        footer: "New development images: codebenders/tournament_app_backend:dev, codebenders/tournament_app_backend:${env.GIT_COMMIT}\ncodebenders/tournament_app_frontend:dev and codebenders/tournament_app_frontend:${env.GIT_COMMIT}", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
@@ -228,7 +208,7 @@ pipeline {
                 success {
                     discordSend (
                         description: "Hey team, job is successful on branch ${env.GIT_BRANCH} :D", 
-                        //footer: "Latest release image: codebenders/codedefenders:latest, also codebenders/codedefenders:${env.GIT_COMMIT}", 
+                        footer: "New release images: codebenders/tournament_app_backend:latest, codebenders/tournament_app_backend:${env.GIT_COMMIT}\ncodebenders/tournament_app_frontend:latest and codebenders/tournament_app_frontend:${env.GIT_COMMIT}", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
