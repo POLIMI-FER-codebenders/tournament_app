@@ -39,8 +39,6 @@ class RegisterTest {
     @Order(1)
     void registerSuccessTest()  {
 
-        playerRepository.deleteAll();
-
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode user = mapper.createObjectNode();
 
@@ -105,6 +103,7 @@ class RegisterTest {
 
         assertEquals(expectedRegistrationFailure, registrationFailure.getBody());
 
+        System.out.println(playerRepository.findAll());
 
     }
 
