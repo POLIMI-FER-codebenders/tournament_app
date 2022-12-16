@@ -11,6 +11,7 @@ import dsd.codebenders.tournament_app.errors.ResourceNotFoundException;
 import dsd.codebenders.tournament_app.services.CDPlayerService;
 import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.PlayerService;
+import dsd.codebenders.tournament_app.services.TournamentService;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,15 +25,19 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "api/match")
 public class MatchController {
+
+
     private final PlayerService playerService;
     private final CDPlayerService cdPlayerService;
     private final MatchService matchService;
+    private final TournamentService tournamentService;
 
     @Autowired
-    public MatchController(MatchService matchService, PlayerService playerService, CDPlayerService cdPlayerService){
+    public MatchController(MatchService matchService, PlayerService playerService, CDPlayerService cdPlayerService, TournamentService tournamentService){
         this.playerService = playerService;
         this.matchService = matchService;
         this.cdPlayerService = cdPlayerService;
+        this.tournamentService = tournamentService;
     }
 
     @GetMapping(value = "/current_match")
@@ -47,8 +52,12 @@ public class MatchController {
         Server server = match.getServer();
         CDPlayer cdPlayer = cdPlayerService.getCDPlayerByServer(player, server);
         map.put("result", "ongoing match found");
+        map.put("id", match.getID().toString());
         map.put("server", server.getAddress());
         map.put("token", cdPlayer.getToken());
+        map.put("phaseOneDuration", tournamentService.getPhaseOneDuration().toString());
+        map.put("phaseTwoDuration", tournamentService.getPhaseTwoDuration().toString());
+        map.put("phaseThreeDuration", tournamentService.getPhaseThreeDuration().toString());
         return map;
     }
     @GetMapping(value = "/info")
