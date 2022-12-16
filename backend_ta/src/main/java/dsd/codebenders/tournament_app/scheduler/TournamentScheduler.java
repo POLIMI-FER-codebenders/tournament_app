@@ -1,5 +1,6 @@
 package dsd.codebenders.tournament_app.scheduler;
 
+import dsd.codebenders.tournament_app.dao.TournamentScoreRepository;
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
@@ -47,7 +48,7 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
                 schedule(new StartMatchTask(m, matchService, this), roundStart);
                 schedule(new DisableTestsAndMutantsTask(m, matchService, this), DateUtility.addSeconds(roundStart, phaseTwoDelay));
                 schedule(new DisableEquivalenceClaimsTask(m, matchService, this), DateUtility.addSeconds(roundStart, phaseThreeDelay));
-                schedule(new EndMatchTask(m, matchService, this), DateUtility.addSeconds(roundStart, matchEndingDelay));
+                schedule(new EndMatchTask(m, matchService, tournamentService, this), DateUtility.addSeconds(roundStart, matchEndingDelay));
             }
         }
         return tournament;

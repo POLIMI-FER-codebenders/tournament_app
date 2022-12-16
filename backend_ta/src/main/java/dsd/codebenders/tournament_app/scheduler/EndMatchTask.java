@@ -1,10 +1,8 @@
 package dsd.codebenders.tournament_app.scheduler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dsd.codebenders.tournament_app.entities.GameStatus;
-import dsd.codebenders.tournament_app.entities.Match;
-import dsd.codebenders.tournament_app.entities.Server;
-import dsd.codebenders.tournament_app.entities.Team;
+import dsd.codebenders.tournament_app.dao.TournamentScoreRepository;
+import dsd.codebenders.tournament_app.entities.*;
 import dsd.codebenders.tournament_app.entities.score.MultiplayerScoreboard;
 import dsd.codebenders.tournament_app.entities.score.Scoreboard;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
@@ -16,19 +14,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClientException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class EndMatchTask implements Runnable {
 
     private final Match match;
     private final MatchService matchService;
+    private final TournamentService tournamentService;
     private final TournamentScheduler tournamentScheduler;
     private final Logger logger = LoggerFactory.getLogger(EndMatchTask.class);
 
-    public EndMatchTask(Match match, MatchService matchService, TournamentScheduler tournamentScheduler) {
+    public EndMatchTask(Match match, MatchService matchService, TournamentService tournamentService, TournamentScheduler tournamentScheduler) {
         this.match = match;
         this.matchService = matchService;
+        this.tournamentService = tournamentService;
         this.tournamentScheduler = tournamentScheduler;
     }
 
@@ -45,20 +47,23 @@ public class EndMatchTask implements Runnable {
                 }
                 return;
             }
-            if (matchService.endMatchAndCheckRoundEnding(match)) {
-                GameStatus gameStatus;
-                try {
-                    gameStatus = HTTPRequestsSender.sendGetRequest(server, "/api/game", Map.of("gameId", match.getGameId().toString()), GameStatus.class);
-                } catch (RestClientException e) {
-                    System.err.println("ERROR: Match " + match.getID() + " failed while setting winner");
-                    if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
-                        tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
-                    }
-                    return;
+            boolean roundEnded = matchService.endMatchAndCheckRoundEnding(match);
+            GameStatus gameStatus;
+            try {
+                gameStatus = HTTPRequestsSender.sendGetRequest(server, "/api/game", Map.of("gameId", match.getGameId().toString()), GameStatus.class);
+            } catch (RestClientException e) {
+                System.err.println("ERROR: Match " + match.getID() + " failed while setting winner");
+                if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
+                    tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
                 }
-                Team winner = computeWinner(gameStatus.getScoreboard());
-                logger.info("Match " + match.getID() + " ended, winner: " + winner.getName());
-                matchService.setWinner(match, winner);
+                return;
+            }
+            Team winner = computeWinner(gameStatus.getScoreboard());
+            // add one point to the winner
+            tournamentService.givePointsForWin(match.getTournament(), winner);
+            logger.info("Match " + match.getID() + " ended, winner: " + winner.getName());
+            matchService.setWinner(match, winner);
+            if(roundEnded) {
                 tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
             }
         }

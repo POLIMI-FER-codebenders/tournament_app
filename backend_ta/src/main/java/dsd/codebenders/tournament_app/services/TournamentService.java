@@ -108,8 +108,8 @@ public class TournamentService {
                 }
             }
         }
-        logger.info("tryAdvance: to " + newStatus);
         if (newStatus != null) {
+            logger.info("tryAdvance: to " + newStatus);
             tournament.setStatus(newStatus);
             tournament = handleStatus(tournament);
         }
@@ -152,18 +152,19 @@ public class TournamentService {
                     case LEAGUE -> {
                         logger.info("Computing winning team for tournament " + tournament.getID() + " of type LEAGUE");
                         // compute the team that has scored the highest
-                        List<TournamentScore> tournamentScoreList = tournament.getTournamentScores();
+                        List<TournamentScore> tournamentScoreList = tournamentScoreRepository.findByTournament_ID(tournament.getID());
                         tournamentScoreList.sort(Comparator.comparing(TournamentScore::getLeaguePoints).reversed());
                         if(tournamentScoreList.size() > 1) {
-                            if(tournamentScoreList.get(0).getScore().equals(tournamentScoreList.get(1).getScore())) {
+                            if(tournamentScoreList.get(0).getLeaguePoints().equals(tournamentScoreList.get(1).getLeaguePoints())) {
                                 // tie case
-                                Integer highestScore = tournamentScoreList.get(0).getScore();
-                                List<TournamentScore> winningCandidates = tournamentScoreList.stream().filter(x -> x.getScore().equals(highestScore)).collect(Collectors.toList());
+                                Integer highestScore = tournamentScoreList.get(0).getLeaguePoints();
+                                List<TournamentScore> winningCandidates = tournamentScoreList.stream().filter(x -> x.getLeaguePoints().equals(highestScore)).collect(Collectors.toList());
                                 // elect a random winner among the teams having the highest score
+                                logger.info("Tournament " + tournament.getID() + " ended with a tie between two or more teams, randomly picking the winner");
                                 int randomNum = ThreadLocalRandom.current().nextInt(0, winningCandidates.size());
                                 winningTeam = winningCandidates.get(randomNum).getTeam();
                             } else {
-                                // in the normal case, the winner is the team with the highest score
+                                // in the normal case, the winner is the team with the highest number of league points
                                 winningTeam = tournamentScoreList.get(0).getTeam();
                             }
                         } else {
@@ -176,7 +177,9 @@ public class TournamentService {
                 tournament.setWinningTeam(winningTeam);
                 logger.info("The winning team of tournament " + tournament.getID() + " is " + winningTeam.getName());
                 // clear inTournament variable for each team in the tournament
-                for(Team team : tournament.getTournamentScores().stream().map(TournamentScore::getTeam).collect(Collectors.toList())) {
+                List<Team> teams = tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).collect(Collectors.toList());
+                logger.info("Number of teams: " + teams.size());
+                for(Team team : teams) {
                     logger.info("Clearing variable inTournament for team " + team.getName());
                     team.setInTournament(false);
                     teamRepository.save(team);
@@ -194,11 +197,11 @@ public class TournamentService {
         if (tournament.getCurrentRound() == 1) {
             winners = getTournamentTeams(tournament);
         } else {
-            winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound());
+            winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound()-1);
         }
-        logger.info(getTournamentTeams(tournament).stream().map(Team::getID).toList().toString());
-        logger.info(winners.stream().map(Team::getID).toList().toString());
-        List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().map(Team::getID).toList(), winners.stream().map(Team::getID).toList());
+        logger.info(getTournamentTeams(tournament).stream().map(Team::getID).collect(Collectors.toList()).toString());
+        logger.info(winners.stream().map(Team::getID).collect(Collectors.toList()).toString());
+        List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().map(Team::getID).collect(Collectors.toList()), winners.stream().map(Team::getID).collect(Collectors.toList()));
         logger.info(IDs.toString());
         List<List<Team>> nextMatches = IDs.stream().map(ids -> ids.stream().map(id -> teamRepository.findById(id).get()).toList()).toList();
         boolean oneValid = false;
@@ -271,7 +274,8 @@ public class TournamentService {
     }
 
     public List<Team> getTournamentTeams(Tournament tournament) {
-        return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
+         List<TournamentScore> tournamentScoreList = tournamentScoreRepository.findByTournament_ID(tournament.getID());
+         return tournamentScoreList.stream().map(TournamentScore::getTeam).collect(Collectors.toList());
     }
 
 
@@ -302,5 +306,13 @@ public class TournamentService {
             tournamentRepository.save(tournament);
         }
         return roundClassChoice;
+    }
+
+    public void givePointsForWin(Tournament tournament, Team winner) {
+        TournamentScore score = tournamentScoreRepository.findByTeamAndTournament(winner, tournament)
+                .orElseThrow(IllegalStateException::new);
+        // add one point to the league points for the winner team
+        score.setLeaguePoints(score.getLeaguePoints() + 1);
+        tournamentScoreRepository.saveAndFlush(score);
     }
 }

@@ -1,10 +1,8 @@
 package dsd.codebenders.tournament_app.services;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
@@ -181,30 +179,37 @@ public class MatchService {
             case IN_PHASE_TWO -> match.setStatus(MatchStatus.IN_PHASE_THREE);
             case IN_PHASE_THREE -> match.setStatus(MatchStatus.ENDED);
         }
-        return matchRepository.save(match);
+        return matchRepository.saveAndFlush(match);
     }
 
-    @Transactional
     public boolean setFailedMatchAndCheckRoundEnding(Match match) {
-        setFailedMatch(match);
-        long activeMatches =
-                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
-                        .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
-        return activeMatches == 0;
+        synchronized (match.getTournament()) {
+            setFailedMatch(match);
+            long activeMatches =
+                    getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
+                            .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
+            return activeMatches == 0;
+        }
     }
 
-    @Transactional
     public boolean endMatchAndCheckRoundEnding(Match match) {
-        match = goToNextPhase(match);
-        long activeMatches =
-                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
-                        .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
-        return activeMatches == 0;
+        synchronized (match.getTournament()) {
+            match = goToNextPhase(match);
+            logger.info("Ended match " + match.getID());
+            List<Match> concurrentMatches = new ArrayList<>(getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()));
+            logger.info("Concurrent matches:");
+            for(Match m : concurrentMatches) {
+                logger.info("Match " + m.getID() + " " + m.getStatus().toString());
+            }
+            long activeMatches = concurrentMatches.stream().filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
+            logger.info("Number of matches still active " + activeMatches);
+            return activeMatches == 0;
+        }
     }
 
     public void setWinner(Match match, Team winner) {
         match.setWinningTeam(winner);
-        matchRepository.save(match);
+        matchRepository.saveAndFlush(match);
     }
 
     public Optional<Match> findById(Long id) {

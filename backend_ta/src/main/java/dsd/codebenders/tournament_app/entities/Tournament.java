@@ -58,7 +58,7 @@ public abstract class Tournament {
 
     protected Date nextRoundStartTime = new Date(); //TODO remove the default when we have scheduling
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", fetch = FetchType.EAGER)
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament")
