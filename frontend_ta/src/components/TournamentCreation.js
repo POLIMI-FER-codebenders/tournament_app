@@ -12,7 +12,7 @@ export function CreateTournament() {
   const [start_date, setDate] = useState("");
   const [gametype, setgameType] = useState("MULTIPLAYER");
   const [creationMessage, setCreationMessage] = useState("")
-  const [numberofteamstext, setnumberofteamstext] = useState("Number of teams (2-16):")
+  const [numberofteamstext, setnumberofteamstext] = useState("Must be a power of 2 between 2 and 16")
   const [uploadclassmessage, setuploadclassmessage] = useState(null)
   const handleChange = (event) => {
 
@@ -27,8 +27,8 @@ export function CreateTournament() {
       setgameType(event.target.value);
     }
     else if (eventsource === "tourtype") {
-      if (event.target.value === "KNOCKOUT") setnumberofteamstext("Number of teams (must be a power of 2) (2-16):");
-      else setnumberofteamstext("Number of teams (2-8):");
+      if (event.target.value === "KNOCKOUT") setnumberofteamstext("Must be a power of 2 between 2 and 16");
+      else setnumberofteamstext("Must be between 2 and 8");
       setType(event.target.value);
 
     }
@@ -40,12 +40,12 @@ export function CreateTournament() {
     event.preventDefault();
     console.log(!(numberofteams >= 2 && numberofteams <= 16));
     let data = { name: name, numberOfTeams: numberofteams, teamSize: size, type: type, matchType: gametype }
-    if(name.length>255) setCreationMessage("tournament successfully created");
-    else if(!(size>=1 && size<=16))setCreationMessage("team sizes must be from 1 to 16");
-    else if(type==="KNOCKOUT" && !(numberofteams>=2 && numberofteams<=16))setCreationMessage("number of teams for knockout must be even  from 2 to 16 ");
-    else if(type==="LEAGUE" && !(numberofteams>=2 && numberofteams<=8))setCreationMessage("number of teams for league must be even from 2 to 8 ");
-    else if(type==="KNOCKOUT" && !powerOfTwo(numberofteams))setCreationMessage("number of teams for knockout must be a power of 2 from 2 to 16 ");
-    else  postData("/api/tournament/create", data).then((response) => {
+    if (name.length > 255) setCreationMessage("tournament successfully created");
+    else if (!(size >= 1 && size <= 16)) setCreationMessage("team sizes must be from 1 to 16");
+    else if (type === "KNOCKOUT" && !(numberofteams >= 2 && numberofteams <= 16)) setCreationMessage("number of teams for knockout must be even  from 2 to 16 ");
+    else if (type === "LEAGUE" && !(numberofteams >= 2 && numberofteams <= 8)) setCreationMessage("number of teams for league must be even from 2 to 8 ");
+    else if (type === "KNOCKOUT" && !powerOfTwo(numberofteams)) setCreationMessage("number of teams for knockout must be a power of 2 from 2 to 16 ");
+    else postData("/api/tournament/create", data).then((response) => {
 
       if (response.status == 200) setCreationMessage("tournament successfully created")
       else {
@@ -89,11 +89,11 @@ export function CreateTournament() {
         <form onSubmit={handleSubmit}>
           <div className="input-container">
             <label htmlFor="tourname" >Name</label>
-              <input id="tourname"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+            <input id="tourname"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="input-container">
             <label htmlFor="typeselector">Type of tournament</label>
@@ -111,27 +111,32 @@ export function CreateTournament() {
           </div>
           <div className="input-container">
             <label htmlFor="teamsize-selector">Size of teams (1-10)</label>
-              <input
-                type="number" name="size" id="teamsize-selector"
-                value={size}
-                onChange={handleChange}
-              />
+            <input
+              type="number" name="size" id="teamsize-selector"
+              value={size}
+              onChange={handleChange}
+            />
           </div>
           <div className="input-container">
-            <label htmlFor="numberofteams-selector">{numberofteamstext}</label>
-              <input
-                type="number" name="numberteams" id="numberofteams-selector"
-                value={numberofteams}
-                onChange={handleChange}
-              />
+            <label htmlFor="numberofteams-selector">Number of teams
+            <div className="descInput" id="expPolicy">
+            {numberofteamstext}
+            </div>
+            </label>
+            <input
+              type="number" name="numberteams" id="numberofteams-selector"
+              value={numberofteams}
+              onChange={handleChange}
+            />
+
           </div>
           <div className="input-container">
             <label htmlFor="tourdate">Starting date</label>
-              <input id="tourdate" name="starting_date" type="date"
-                value={start_date}
+            <input id="tourdate" name="starting_date" type="date"
+              value={start_date}
 
-                onChange={handleChange}
-              />
+              onChange={handleChange}
+            />
           </div>
           <div className="button-container">
             <input type="submit" value="Create tournament" />
@@ -148,7 +153,7 @@ export function CreateTournament() {
             <input id="file" type="file" multiple />
           </div>
           <div className="button-container uploadclassbutton">
-            <input type="submit" value="Upload"/>
+            <input type="submit" value="Upload" />
           </div>
         </form>
         <p className='error'>{uploadclassmessage}</p>

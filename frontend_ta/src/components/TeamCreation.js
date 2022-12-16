@@ -1,7 +1,7 @@
 import { Component } from "react";
 import postData from "../utils";
-import '../styles/createTeam.css';
 import '../styles/App.css';
+import '../styles/forms.css';
 class TeamCreation extends Component {
   constructor(props) {
     super(props);
