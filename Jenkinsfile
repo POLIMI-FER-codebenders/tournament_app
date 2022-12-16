@@ -8,7 +8,7 @@ pipeline {
     }
     
     stages {
-        stage('Discord notify'){
+        stage('Discord notify start'){
             when {
                 anyOf{
                     branch 'master'
@@ -119,36 +119,27 @@ pipeline {
                 }
             }
         }
-        /*stage('Docker build PR') {
+        stage('Discord notify checks passed') {
             when {
                 anyOf{
                     branch pattern: "PR-\\d+", comparator: "REGEXP"
                 }
             }
             agent any
-            environment {
-		        DOCKERHUB_CREDENTIALS = credentials('dockerhub_access')
-	        }
             steps {
-                echo 'here we will build pr docker image(s)'
-                //sh "docker build --file ./docker/Dockerfile.deploy --tag codebenders/codedefenders:${env.GIT_COMMIT} ."
-                //sh "docker push codebenders/codedefenders:${env.GIT_COMMIT}"
-                
-            }
-            post{
-                success{
-                    discordSend (
+                discordSend (
                         description: "Hey ${env.CHANGE_AUTHOR}, job is successful on branch ${env.GIT_BRANCH} :D", 
                         //footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
                         webhookURL: DISCORD_WEBHOOK
-                    )
-                }
+                )
+            }
+            post{
                 unsuccessful {
                     discordSend (
-                        description: "Hey ${env.CHANGE_AUTHOR}, job is not successful on branch ${env.GIT_BRANCH} :(", 
+                        description: "Hey ${env.CHANGE_AUTHOR}, call plumber :(", 
                         footer: currentBuild.currentResult, 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
@@ -157,7 +148,7 @@ pipeline {
                     )
                 }
             }
-        }*/
+        }
         stage('Docker build dev') {
             when {
                 anyOf{
