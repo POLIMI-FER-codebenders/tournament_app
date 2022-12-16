@@ -27,6 +27,16 @@
   border: 1px solid #01d28e;
 }
 
+.btn-active{
+  background: #01d28e;
+  border: 1px solid #01d28e;
+}
+
+.btn-inactive{
+  background: #bdbdbd;
+  border: 1px solid #000000;
+}
+
 .btn-decline{
   background-color: #faa6a6;
   border: 1px solid red
