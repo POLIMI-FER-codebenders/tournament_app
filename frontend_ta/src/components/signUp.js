@@ -62,7 +62,6 @@ class SignUp extends React.Component {
     }
 
     let data = { username: this.state.username, password: this.state.password, email: this.state.email };
-    let username = this.state.username;
     postData("/authentication/register", data).then((response) => {
       if (response.status === 200) {
         if (response.result.result === "Registered") {

@@ -23,15 +23,15 @@ class SignIn extends React.Component {
   }
 
   renderErrorMessage() {
-    if (this.state.errorMessage == null) return;
+    if (this.state.errorMessage === null) return;
     return (
       <p className='error'>{this.state.errorMessage}</p>
     );
   }
 
   handleChange(event) {
-    if (event.target.name == "username") this.setState({ username: event.target.value });
-    else if (event.target.name == "password") this.setState({ password: event.target.value });
+    if (event.target.name === "username") this.setState({ username: event.target.value });
+    else if (event.target.name === "password") this.setState({ password: event.target.value });
   }
 
   handleSubmit(event) {
@@ -44,7 +44,7 @@ class SignIn extends React.Component {
 
     postForm(url, data)
       .then((response) => {
-        if (response.status == 200) {
+        if (response.status === 200) {
           if (response.result) {
             this.setState({ errorMessage: null })
             sessionStorage.setItem("username", username);
@@ -64,11 +64,11 @@ class SignIn extends React.Component {
 
   render() {
     let nextcomponent;
-    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.view == "SignUp") nextcomponent = (<SignUp backHome={this.props.backHome} index={this.props.index} />);
+    if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.view === "SignUp") nextcomponent = (<SignUp backHome={this.props.backHome} index={this.props.index} />);
     let registrationmessage;
     if (this.props.registered) registrationmessage = <p>Registration successfull, please login</p>
-    if (this.state.view == "SignIn") nextcomponent = (
+    if (this.state.view === "SignIn") nextcomponent = (
       <div className="main-panel">
         {registrationmessage}
         <h2>Sign In</h2>

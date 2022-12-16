@@ -1,4 +1,4 @@
-import { Component, useState } from "react";
+import { useState } from "react";
 import postData from "../utils";
 import '../styles/tournamentCreation.css';
 import '../styles/App.css';
@@ -47,7 +47,7 @@ export function CreateTournament() {
     else if (type === "KNOCKOUT" && !powerOfTwo(numberofteams)) setCreationMessage("number of teams for knockout must be a power of 2 from 2 to 16 ");
     else postData("/api/tournament/create", data).then((response) => {
 
-      if (response.status == 200) setCreationMessage("tournament successfully created")
+      if (response.status === 200) setCreationMessage("tournament successfully created")
       else {
         setCreationMessage(response.message);
       }
