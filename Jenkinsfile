@@ -102,7 +102,7 @@ pipeline {
                 }
             }
         }
-        stage('Discord notify start'){
+        stage('Discord notify PR checks'){
             when {
                 anyOf{
                     branch pattern: "PR-\\d+", comparator: "REGEXP"
