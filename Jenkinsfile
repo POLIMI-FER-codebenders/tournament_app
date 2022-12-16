@@ -88,7 +88,7 @@ pipeline {
                 }
             }
             agent {
-                docker { image 'maven:3.8-openjdk-11' }
+                docker { image '3.8.6-openjdk-18' }
             }
             /*agent {
                 // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
