@@ -1,4 +1,3 @@
-def image_tag = ""
 
 pipeline {
     agent any
@@ -48,14 +47,6 @@ pipeline {
                     branch pattern: "PR-\\d+", comparator: "REGEXP"
                 }
             }
-            /*agent {
-                // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
-                dockerfile {
-                    filename './docker/Dockerfile.frontend.test'
-                    //dir 'build'
-                    //args '-v /root/.m2:/root/.m2'
-                }
-            }*/
             agent {
                 docker { image 'node:16.17.1-alpine3.15' }
             }
@@ -93,30 +84,12 @@ pipeline {
                     args '-v $HOME/.m2:/root/.m2'
                 }
             }
-            /*agent {
-                // Equivalent to "docker build -f Dockerfile.build --build-arg version=1.0.2 ./build/
-                dockerfile {
-                    filename './docker/Dockerfile.backend.test'
-                    //dir 'build'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }*/
             steps {
                 dir("backend_ta"){
                     sh 'mvn clean test'
                 }
             }
             post{
-                success {
-                    discordSend (
-                        description: "Hey ${env.CHANGE_AUTHOR}, everything checks out on ${env.GIT_BRANCH} :D", 
-                        //footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
-                        link: env.BUILD_URL, 
-                        result: currentBuild.currentResult, 
-                        title: JOB_NAME, 
-                        webhookURL: DISCORD_WEBHOOK
-                    )
-                }
                 unsuccessful {
                     discordSend (
                         description: "Hey ${env.CHANGE_AUTHOR}, job is not successful on branch ${env.GIT_BRANCH}", 
@@ -127,6 +100,24 @@ pipeline {
                         webhookURL: DISCORD_WEBHOOK
                     )
                 }
+            }
+        }
+        stage('Discord notify start'){
+            when {
+                anyOf{
+                    branch pattern: "PR-\\d+", comparator: "REGEXP"
+                }
+            }
+            agent any
+            steps {
+                discordSend (
+                        description: "Hey ${env.CHANGE_AUTHOR}, everything checks out on ${env.GIT_BRANCH} :D", 
+                        //footer: "Your image: codebenders/codedefenders:${env.GIT_COMMIT}", 
+                        link: env.BUILD_URL, 
+                        result: currentBuild.currentResult, 
+                        title: JOB_NAME, 
+                        webhookURL: DISCORD_WEBHOOK
+                )
             }
         }
         stage('Docker build dev') {
@@ -159,7 +150,7 @@ pipeline {
                 success{
                     discordSend (
                         description: "Hey team, job is successful on branch ${env.GIT_BRANCH} :D", 
-                        footer: "New development images: codebenders/tournament_app_backend:dev, codebenders/tournament_app_backend:${env.GIT_COMMIT}\ncodebenders/tournament_app_frontend:dev and codebenders/tournament_app_frontend:${env.GIT_COMMIT}", 
+                        footer: "New development images:\n codebenders/tournament_app_backend:dev \ncodebenders/tournament_app_frontend:dev \ncodebenders/tournament_app_backend:${env.GIT_COMMIT} \ncodebenders/tournament_app_frontend:${env.GIT_COMMIT}", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
@@ -208,7 +199,7 @@ pipeline {
                 success {
                     discordSend (
                         description: "Hey team, job is successful on branch ${env.GIT_BRANCH} :D", 
-                        footer: "New release images: codebenders/tournament_app_backend:latest, codebenders/tournament_app_backend:${env.GIT_COMMIT}\ncodebenders/tournament_app_frontend:latest and codebenders/tournament_app_frontend:${env.GIT_COMMIT}", 
+                        footer: "New release images: codebenders/tournament_app_backend:latest \ncodebenders/tournament_app_frontend:latest \ncodebenders/tournament_app_backend:${env.GIT_COMMIT} \ncodebenders/tournament_app_frontend:${env.GIT_COMMIT}", 
                         link: env.BUILD_URL, 
                         result: currentBuild.currentResult, 
                         title: JOB_NAME, 
