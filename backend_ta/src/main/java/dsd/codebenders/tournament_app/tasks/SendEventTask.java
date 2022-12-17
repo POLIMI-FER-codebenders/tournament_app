@@ -20,7 +20,8 @@ public class SendEventTask implements Runnable {
     @Override
     public void run() {
         String queueName = "/live/" + match.getID();
-        simpMessagingTemplate.convertAndSend(queueName, event);
+        System.out.println("send to " + queueName);
+        simpMessagingTemplate.convertAndSend(queueName, "ping");
         // set game timer to event time  in the DB
     }
 
