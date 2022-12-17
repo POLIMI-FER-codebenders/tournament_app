@@ -1,11 +1,5 @@
 package dsd.codebenders.tournament_app.services;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
 import dsd.codebenders.tournament_app.entities.*;
@@ -19,6 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MatchService {
@@ -169,6 +169,10 @@ public class MatchService {
         return matchRepository.findOngoingMatches();
     }
 
+    public Match getMatchByCDGameIdAnsServer(Integer gameId, Server server) {
+        return matchRepository.findByGameIdAndServer(gameId, server);
+    }
+
     public void setFailedMatch(Match match) {
         match.setStatus(MatchStatus.FAILED);
         matchRepository.save(match);
@@ -204,6 +208,11 @@ public class MatchService {
 
     public void setWinner(Match match, Team winner) {
         match.setWinningTeam(winner);
+        matchRepository.save(match);
+    }
+
+    public void setLastEventSentTimestamp(Match match, Long date) {
+        match.setLastEventTimestamp(date);
         matchRepository.save(match);
     }
 

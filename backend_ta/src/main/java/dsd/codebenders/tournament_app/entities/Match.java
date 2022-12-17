@@ -54,6 +54,8 @@ public class Match {
     @ManyToOne()
     @JoinColumn(name = "ID_server")
     private Server server;
+    @Column(name = "last_event_timestamp")
+    private Long lastEventTimestamp;
 
     public Match() {
     }
@@ -124,5 +126,13 @@ public class Match {
 
     public void setWinningTeam(Team winningTeam) {
         this.winningTeam = winningTeam;
+    }
+
+    public Long getLastEventTimestamp() {
+        return lastEventTimestamp;
+    }
+
+    public void setLastEventTimestamp(Long lastEventTimestamp) {
+        this.lastEventTimestamp = lastEventTimestamp;
     }
 }

@@ -1,28 +1,27 @@
 package dsd.codebenders.tournament_app.tasks;
 
-import dsd.codebenders.tournament_app.entities.Match;
-import dsd.codebenders.tournament_app.entities.event.StreamingEvent;
-
+import dsd.codebenders.tournament_app.responses.StreamingEventResponse;
+import dsd.codebenders.tournament_app.services.MatchService;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 public class SendEventTask implements Runnable {
 
+    private final MatchService matchService;
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final Match match;
-    private final StreamingEvent event;
+    private final StreamingEventResponse event;
 
-    public SendEventTask(SimpMessagingTemplate simpMessagingTemplate, Match match, StreamingEvent event) {
+    public SendEventTask(MatchService matchService, SimpMessagingTemplate simpMessagingTemplate, StreamingEventResponse event) {
+        this.matchService = matchService;
         this.simpMessagingTemplate = simpMessagingTemplate;
-        this.match = match;
         this.event = event;
     }
 
     @Override
     public void run() {
-        String queueName = "/live/" + match.getID();
+        String queueName = "/live/" + event.getMatch().getID();
         System.out.println("send to " + queueName);
-        simpMessagingTemplate.convertAndSend(queueName, "ping");
-        // set game timer to event time  in the DB
+        simpMessagingTemplate.convertAndSend(queueName, event);
+        matchService.setLastEventSentTimestamp(event.getMatch(), event.getTimestamp());
     }
 
 }

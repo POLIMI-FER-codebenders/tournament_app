@@ -4,6 +4,7 @@ import java.util.List;
 
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.Server;
 import dsd.codebenders.tournament_app.entities.Tournament;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     @Query("SELECT m FROM Match m WHERE m.status = 'IN_PHASE_ONE' OR m.status = 'IN_PHASE_TWO' OR m.status = 'IN_PHASE_THREE'")
     List<Match> findOngoingMatches();
+
+    Match findByGameIdAndServer(Integer gameId, Server server);
+
 }
