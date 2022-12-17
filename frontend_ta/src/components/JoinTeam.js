@@ -50,13 +50,13 @@ function TeamEntry(props) {
   const [state, dispatch] = useGlobalState();
   
   return (
-    <div class="team-entry">
-      <button class="item button-container"
+    <div className="team-entry">
+      <button className="item button-container"
        onClick={() => setOpen(!open)}>{props.team.name}
       </button>
       
       {open && (
-        <div class="item container">
+        <div className="item container">
           <p>Date of creation: 
             <span className="flex-items-info">
               {props.team.dateOfCreation[2]}.{props.team.dateOfCreation[1]}.{props.team.dateOfCreation[0]}.
@@ -64,7 +64,7 @@ function TeamEntry(props) {
           </p>
           <p>Members ({props.team.members.length}) of maximum size ({props.team.maxNumberOfPlayers}) :
             {props.team.members.map((m) => 
-              <div class="item-member">
+              <div className="item-member">
                 <span>{m.username}</span> {m.role === "LEADER" && (<span> (leader)</span>)}
               </div>)} 
           </p>
@@ -99,8 +99,8 @@ function InvitationEntry(props){
   const [state, dispatch] = useGlobalState();  
 
   return(
-    <div class="invitation-entry">
-      <p class="inv-team">Invitation from {props.invitation.team.name}</p> 
+    <div className="invitation-entry">
+      <p className="inv-team">Invitation from {props.invitation.team.name}</p> 
       {!hide && ( <div>
       <button className={'item button-container ' + (!state.alreadyInTeam ? 'btn-active' : 'btn-inactive')} 
        onClick={()=> postData("/api/invitation/accept", {"idInvitation" : props.invitation.id})
@@ -117,7 +117,7 @@ function InvitationEntry(props){
                                 }})}>
         Accept
       </button>
-      <button class="item button-container btn-decline"
+      <button className="item button-container btn-decline"
         onClick={()=> postData("/api/invitation/reject", {"idInvitation" : props.invitation.id})
                           .then((response) => {
                             if (response.status === 200) {
@@ -171,8 +171,8 @@ class JoinTeam extends Component{
     return (
       <GlobalStateProvider>
       {this.state.initTeam && (<div><InitInTeam />{this.setState({initTeam : false})}</div>)}
-      <div class="main-panel">
-        <button class="item button-container"
+      <div className="main-panel">
+        <button className="item button-container"
           onClick={() => { 
                           getData("/api/invitation/pending").then((response)=> {
                             if (response.status === 200) 
