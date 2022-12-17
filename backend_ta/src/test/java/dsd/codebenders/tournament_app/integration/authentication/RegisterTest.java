@@ -1,6 +1,8 @@
 package dsd.codebenders.tournament_app.integration.authentication;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -21,6 +23,7 @@ import kong.unirest.HttpResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RegisterTest {
     @LocalServerPort
     private int port;
@@ -35,9 +38,22 @@ class RegisterTest {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    Flyway flyway;
+
+    @Autowired
+    FlywayMigrationStrategy flywayMigrationStrategy;
+
+    @BeforeAll
+    public void cleanUp(){
+        flyway.clean();
+        flywayMigrationStrategy.migrate(flyway);
+    }
     @Test
     @Order(1)
     void registerSuccessTest()  {
+
+        //playerRepository.delete(playerRepository.findByUsername("hrvoje459"));
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode user = mapper.createObjectNode();
