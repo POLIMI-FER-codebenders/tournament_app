@@ -7,10 +7,7 @@ import dsd.codebenders.tournament_app.dao.PlayerRepository;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import org.json.JSONException;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +22,7 @@ import org.springframework.http.*;
 import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,6 +31,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoginTest {
 
     @LocalServerPort
@@ -63,7 +62,7 @@ class LoginTest {
     @Order(2)
     void loginFailureTest() throws JSONException {
 
-        playerRepository.deleteAll();
+        //playerRepository.deleteAll();
         playerService.addNewPlayer(hrvoje);
 
         HttpResponse<String> loginFailure = Unirest.post(createURLWithPort("/authentication/login"))
@@ -91,8 +90,8 @@ class LoginTest {
     @Order(3)
     void loginSuccessfulTest() throws JSONException, JsonProcessingException {
 
-        playerRepository.deleteAll();
-        playerService.addNewPlayer(hrvoje);
+        //playerRepository.deleteAll();
+        //playerService.addNewPlayer(hrvoje);
 
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
@@ -118,6 +117,10 @@ class LoginTest {
 
     }
 
+    @AfterAll
+    public void cleanUp(){
+        playerRepository.delete(hrvoje);
+    }
 
     private String createURLWithPort(String uri) {
         return "http://localhost:" + port + uri;

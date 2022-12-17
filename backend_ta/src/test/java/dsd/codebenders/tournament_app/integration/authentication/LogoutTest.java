@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,11 +42,9 @@ class LogoutTest {
     @Order(1)
     void logoutTest() throws JSONException, JsonProcessingException {
 
-        playerRepository.deleteAll();
         playerService.addNewPlayer(hrvoje);
 
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
-                .header("Accept", "*/*")
                 .header("Origin", "http://localhost")
                 .multiPartContent()
                 .field("username", "hrvoje459")
@@ -78,6 +77,7 @@ class LogoutTest {
         assertEquals(200, logoutSuccess.getStatus());
         assertEquals("You are not authenticated!", getUnauthenticated.getBody());
 
+        playerRepository.delete(hrvoje);
     }
 
     private String createURLWithPort(String uri) {

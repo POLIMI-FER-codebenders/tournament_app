@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -38,7 +39,7 @@ class RegisterTest {
     @Autowired
     private PlayerRepository playerRepository;
 
-    @Autowired
+    /*@Autowired
     Flyway flyway;
 
     @Autowired
@@ -48,12 +49,14 @@ class RegisterTest {
     public void cleanUp(){
         flyway.clean();
         flywayMigrationStrategy.migrate(flyway);
-    }
+    }*/
     @Test
     @Order(1)
     void registerSuccessTest()  {
 
         //playerRepository.delete(playerRepository.findByUsername("hrvoje459"));
+
+        //System.out.println(playerRepository.findAll());
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode user = mapper.createObjectNode();
@@ -184,6 +187,11 @@ class RegisterTest {
         String expectedRegistrationFailure = "Some registration parameters are invalid";
 
         assertEquals(expectedRegistrationFailure, registrationFailure.getBody());
+    }
+
+    @AfterAll
+    public void cleanUp(){
+        playerRepository.delete(playerRepository.findByUsername(userValid[0]));
     }
 
     private String createURLWithPort(String uri) {
