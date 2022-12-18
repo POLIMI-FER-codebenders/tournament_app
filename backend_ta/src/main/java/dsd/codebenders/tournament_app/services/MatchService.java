@@ -155,7 +155,8 @@ public class MatchService {
     }
 
     public List<Team> getWinnersOfRound(Tournament tournament, int roundNumber) {
-        return matchRepository.findByTournamentAndRoundNumber(tournament, roundNumber).stream().map(Match::getWinningTeam).toList();
+        List<Match> matches = matchRepository.findByTournamentAndRoundNumber(tournament, roundNumber);
+        return matches.stream().map(Match::getWinningTeam).collect(Collectors.toList());
     }
 
     public List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
