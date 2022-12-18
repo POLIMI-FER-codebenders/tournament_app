@@ -59,16 +59,16 @@ public class Match {
     @Column(name = "last_scheduled_event_timestamp")
     private Long lastScheduledEventTimestamp;
     @JsonIgnore
-    @Column(name = "last_sent_score_event_timestamp", columnDefinition = "Bigint default 0")
+    @Column(name = "last_sent_score_event_timestamp", nullable = false, columnDefinition = "Bigint default 0")
     private Long lastSentScoreEventTimestamp;
     @JsonIgnore
     @Column(name = "last_scheduled_event_sending_time")
     private Long lastScheduledEventSendingTime;
     @JsonIgnore
-    @Column(name = "streamed_attackers_score", columnDefinition = "Int default 0")
+    @Column(name = "streamed_attackers_score", nullable = false, columnDefinition = "Int default 0")
     private Integer streamedAttackersScore;
     @JsonIgnore
-    @Column(name = "streamed_defenders_score", columnDefinition = "Int default 0")
+    @Column(name = "streamed_defenders_score", nullable = false, columnDefinition = "Int default 0")
     private Integer streamedDefendersScore;
 
     public Match() {
