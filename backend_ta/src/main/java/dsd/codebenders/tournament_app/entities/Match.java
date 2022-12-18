@@ -56,6 +56,8 @@ public class Match {
     private Server server;
     @Column(name = "last_event_timestamp")
     private Long lastEventTimestamp;
+    @Column(name = "last_event_sent_time")
+    private Long lastEventSentTime;
 
     public Match() {
     }
@@ -135,4 +137,13 @@ public class Match {
     public void setLastEventTimestamp(Long lastEventTimestamp) {
         this.lastEventTimestamp = lastEventTimestamp;
     }
+
+    public Long getLastEventSentTime() {
+        return lastEventSentTime;
+    }
+
+    public void setLastEventSentTime(Long lastEventSentTime) {
+        this.lastEventSentTime = lastEventSentTime;
+    }
+
 }

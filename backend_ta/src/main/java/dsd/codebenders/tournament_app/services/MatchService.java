@@ -211,8 +211,9 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public void setLastEventSentTimestamp(Match match, Long date) {
-        match.setLastEventTimestamp(date);
+    public void setLastEventSent(Match match, Long lastEventTimestamp, Long lastEventSentTime) {
+        match.setLastEventTimestamp(lastEventTimestamp);
+        match.setLastEventSentTime(lastEventSentTime);
         matchRepository.save(match);
     }
 

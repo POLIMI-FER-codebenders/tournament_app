@@ -72,9 +72,21 @@ public class StreamingService {
         }
         events.sort((o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()));
         for(StreamingEventResponse e : events) {
-            //TODO: determine right delay
-            Date date = DateUtility.addSeconds(new Date(), 10);
-            scheduler.schedule(new SendEventTask(matchService, simpMessagingTemplate, e), date);
+            Long lastScheduledEventTimestamp = e.getMatch().getLastEventTimestamp();
+            Long lastScheduledEventSentTime = e.getMatch().getLastEventSentTime();
+            Date newEventDate = new Date();
+            if(lastScheduledEventSentTime == null) {
+                scheduler.execute(new SendEventTask(simpMessagingTemplate, e));
+            } else {
+                long sendDelay = lastScheduledEventSentTime + (e.getTimestamp() - lastScheduledEventTimestamp) - DateUtility.toSeconds(newEventDate);
+                if(sendDelay > 0) {
+                    newEventDate = DateUtility.addSeconds(newEventDate, (int) sendDelay);
+                    scheduler.schedule(new SendEventTask(simpMessagingTemplate, e), newEventDate);
+                } else {
+                    scheduler.execute(new SendEventTask(simpMessagingTemplate, e));
+                }
+            }
+            matchService.setLastEventSent(e.getMatch(), e.getTimestamp(), DateUtility.toSeconds(newEventDate));
         }
     }
 
