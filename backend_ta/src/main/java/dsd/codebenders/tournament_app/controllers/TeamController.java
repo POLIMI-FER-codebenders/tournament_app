@@ -91,9 +91,9 @@ public class TeamController {
             throw new BadRequestException("Invalid arguments");
         }
         // retrieve currently authenticated user from session
-        String loggedPlayerUsername = playerService.getSelf().getUsername();
+        Player player = playerService.getSelf();
         Long playerToKickId = kickMemberFromTeamRequest.getIdKickedPlayer();
-        teamService.kickMember(loggedPlayerUsername, playerToKickId);
+        teamService.kickMember(player, playerToKickId);
     }
 
     @PostMapping(value = "/members/promote-leader")
