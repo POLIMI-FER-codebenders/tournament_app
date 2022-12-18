@@ -212,9 +212,13 @@ public class MatchService {
     }
 
     public void setLastEventSent(Match match, Long lastEventTimestamp, Long lastEventSentTime) {
-        match.setLastEventTimestamp(lastEventTimestamp);
-        match.setLastEventSentTime(lastEventSentTime);
+        match.setLastScheduledEventTimestamp(lastEventTimestamp);
+        match.setLastScheduledEventSendingTime(lastEventSentTime);
         matchRepository.save(match);
+    }
+
+    public void updateLastScoreEvent(long id, int attackersScore, int defendersScore, long timestamp) {
+        matchRepository.updateLastScoreEvent(id, attackersScore, defendersScore, timestamp);
     }
 
     public Optional<Match> findById(Long id) {

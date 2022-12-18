@@ -32,7 +32,6 @@ public class StreamingService {
     private final ServerService serverService;
     private final CDPlayerService cdPlayerService;
     private final ThreadPoolTaskScheduler scheduler;
-
     private Long lastEventTimestamp;
 
     @Autowired
@@ -70,18 +69,18 @@ public class StreamingService {
         }
         events.sort((o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()));
         for(StreamingEvent e : events) {
-            Long lastScheduledEventTimestamp = e.getMatch().getLastEventTimestamp();
-            Long lastScheduledEventSentTime = e.getMatch().getLastEventSentTime();
+            Long lastScheduledEventTimestamp = e.getMatch().getLastScheduledEventTimestamp();
+            Long lastScheduledEventSendingTime = e.getMatch().getLastScheduledEventSendingTime();
             Date newEventDate = new Date();
-            if(lastScheduledEventSentTime == null) {
-                scheduler.execute(new SendEventTask(simpMessagingTemplate, e));
+            if(lastScheduledEventSendingTime == null) {
+                scheduler.execute(new SendEventTask(matchService, simpMessagingTemplate, e));
             } else {
-                long sendDelay = lastScheduledEventSentTime + (e.getTimestamp() - lastScheduledEventTimestamp) - DateUtility.toSeconds(newEventDate);
+                long sendDelay = lastScheduledEventSendingTime + (e.getTimestamp() - lastScheduledEventTimestamp) - DateUtility.toSeconds(newEventDate);
                 if(sendDelay > 0) {
                     newEventDate = DateUtility.addSeconds(newEventDate, (int) sendDelay);
-                    scheduler.schedule(new SendEventTask(simpMessagingTemplate, e), newEventDate);
+                    scheduler.schedule(new SendEventTask(matchService, simpMessagingTemplate, e), newEventDate);
                 } else {
-                    scheduler.execute(new SendEventTask(simpMessagingTemplate, e));
+                    scheduler.execute(new SendEventTask(matchService, simpMessagingTemplate, e));
                 }
             }
             matchService.setLastEventSent(e.getMatch(), e.getTimestamp(), DateUtility.toSeconds(newEventDate));

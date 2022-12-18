@@ -7,7 +7,9 @@ import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Server;
 import dsd.codebenders.tournament_app.entities.Tournament;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
     @Query("SELECT m FROM Match m WHERE m.ID IN"
@@ -24,5 +26,11 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findOngoingMatches();
 
     Match findByGameIdAndServer(Integer gameId, Server server);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Match m SET m.streamedAttackersScore = ?2, m.streamedDefendersScore = ?3, m.lastSentScoreEventTimestamp = ?4 " +
+            "WHERE m.ID = ?1 AND m.lastSentScoreEventTimestamp <= ?4")
+    void updateLastScoreEvent(long id, int attackersScore, int defendersScore, long timestamp);
 
 }

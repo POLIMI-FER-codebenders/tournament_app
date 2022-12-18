@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
@@ -54,10 +55,21 @@ public class Match {
     @ManyToOne()
     @JoinColumn(name = "ID_server")
     private Server server;
-    @Column(name = "last_event_timestamp")
-    private Long lastEventTimestamp;
-    @Column(name = "last_event_sent_time")
-    private Long lastEventSentTime;
+    @JsonIgnore
+    @Column(name = "last_scheduled_event_timestamp")
+    private Long lastScheduledEventTimestamp;
+    @JsonIgnore
+    @Column(name = "last_sent_score_event_timestamp", columnDefinition = "Bigint default 0")
+    private Long lastSentScoreEventTimestamp;
+    @JsonIgnore
+    @Column(name = "last_scheduled_event_sending_time")
+    private Long lastScheduledEventSendingTime;
+    @JsonIgnore
+    @Column(name = "streamed_attackers_score", columnDefinition = "Int default 0")
+    private Integer streamedAttackersScore;
+    @JsonIgnore
+    @Column(name = "streamed_defenders_score", columnDefinition = "Int default 0")
+    private Integer streamedDefendersScore;
 
     public Match() {
     }
@@ -130,20 +142,44 @@ public class Match {
         this.winningTeam = winningTeam;
     }
 
-    public Long getLastEventTimestamp() {
-        return lastEventTimestamp;
+    public Long getLastScheduledEventTimestamp() {
+        return lastScheduledEventTimestamp;
     }
 
-    public void setLastEventTimestamp(Long lastEventTimestamp) {
-        this.lastEventTimestamp = lastEventTimestamp;
+    public void setLastScheduledEventTimestamp(Long lastEventTimestamp) {
+        this.lastScheduledEventTimestamp = lastEventTimestamp;
     }
 
-    public Long getLastEventSentTime() {
-        return lastEventSentTime;
+    public Long getLastSentScoreEventTimestamp() {
+        return lastSentScoreEventTimestamp;
     }
 
-    public void setLastEventSentTime(Long lastEventSentTime) {
-        this.lastEventSentTime = lastEventSentTime;
+    public void setLastSentScoreEventTimestamp(Long lastSentEventTimestamp) {
+        this.lastSentScoreEventTimestamp = lastSentEventTimestamp;
+    }
+
+    public Long getLastScheduledEventSendingTime() {
+        return lastScheduledEventSendingTime;
+    }
+
+    public void setLastScheduledEventSendingTime(Long lastEventSentTime) {
+        this.lastScheduledEventSendingTime = lastEventSentTime;
+    }
+
+    public Integer getStreamedAttackersScore() {
+        return streamedAttackersScore;
+    }
+
+    public void setStreamedAttackersScore(Integer streamedAttackersScore) {
+        this.streamedAttackersScore = streamedAttackersScore;
+    }
+
+    public Integer getStreamedDefendersScore() {
+        return streamedDefendersScore;
+    }
+
+    public void setStreamedDefendersScore(Integer streamedDefendersScore) {
+        this.streamedDefendersScore = streamedDefendersScore;
     }
 
 }
