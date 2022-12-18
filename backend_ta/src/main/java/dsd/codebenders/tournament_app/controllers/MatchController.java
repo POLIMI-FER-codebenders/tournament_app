@@ -53,6 +53,8 @@ public class MatchController {
         CDPlayer cdPlayer = cdPlayerService.getCDPlayerByServer(player, server);
         map.put("result", "ongoing match found");
         map.put("id", match.getID().toString());
+        map.put("cdId", match.getGameId().toString());
+        map.put("startingDate", Long.toString(match.getStartDate().getTime()));
         map.put("server", server.getAddress());
         map.put("token", cdPlayer.getToken());
         map.put("phaseOneDuration", tournamentService.getPhaseOneDuration().toString());
