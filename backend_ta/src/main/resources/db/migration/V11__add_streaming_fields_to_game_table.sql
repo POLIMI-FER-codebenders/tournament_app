@@ -12,12 +12,3 @@ ALTER TABLE game
 
 ALTER TABLE game
     ADD streamed_defenders_score INT DEFAULT 0 NULL;
-
-ALTER TABLE game
-    MODIFY last_sent_score_event_timestamp BIGINT NOT NULL;
-
-ALTER TABLE game
-    MODIFY streamed_attackers_score INT NOT NULL;
-
-ALTER TABLE game
-    MODIFY streamed_defenders_score INT NOT NULL;
