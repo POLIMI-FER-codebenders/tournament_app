@@ -1,6 +1,6 @@
 import { Component, useState } from "react";
 import "../styles/JoinTeam.css"
-import postData, { getData } from "../utils";
+import postData, { getData, GoToErrorPage } from "../utils";
 import React from 'react';
 
 function InitInTeam(){
@@ -8,24 +8,22 @@ function InitInTeam(){
   getData("/api/team/get-mine")
   .then((response) => {
     if (response.status === 200) {
-      if (!response.result) 
-      dispatch({ alreadyInTeam : false });
-      return <div></div>;
+      if (!response.result)
+        dispatch({ alreadyInTeam : "" });
+      else
+        dispatch({ alreadyInTeam : response.result.name });
     }
   });
-  dispatch({ alreadyInTeam : true });
   return <div></div>;
 }
 
 const initialGlobalState = {
-  alreadyInTeam : true
+  alreadyInTeam : ""
 };
 const GlobalStateContext = React.createContext(initialGlobalState);
 const DispatchStateContext = React.createContext(undefined);
 
-/**
- * Global State provider & hooks
- */
+// Global State provider & hooks
 const GlobalStateProvider = ({ children }) => {
   const [state, dispatch] = React.useReducer(
     (state, newValue) => ({ ...state, ...newValue }),
@@ -71,18 +69,25 @@ function TeamEntry(props) {
           <p>The team is {props.team.policy} to new players. <br/>
             {props.team.members.length === props.team.maxNumberOfPlayers && (<span>Can't join, currently full.</span>)}
             {props.team.policy === "OPEN" && props.team.members.length < props.team.maxNumberOfPlayers && (
-              <button className={!state.alreadyInTeam ? 'btn-active' : 'btn-inactive'}
-                onClick={()=> postData("/api/team/join", {"idTeam" : props.team.id})
+              <button className={state.alreadyInTeam === props.team.name ? 'btn-inactive' : 'btn-active'}
+                onClick={()=> { 
+                                if (!window.confirm('Are you sure you want to join this team?\n' +
+                                    'This action will kick you from your current team and join the new one.'))
+                                  {
+                                    console.log('User did not change their team');
+                                    return;
+                                  }
+                                postData("/api/team/join", {"idTeam" : props.team.id})
                                 .then((response) => {
                                   if (response.status === 200) {
                                     alert(`You have joined team ${props.team.name}`);
-                                    dispatch({ alreadyInTeam : true });
+                                    dispatch({ alreadyInTeam : props.team.name });
                                   }
                                   else {
-                                    JoinTeam.setState({
-                                      errorMessage: "the server encountered an error",
-                                      badResponse: response.message});
-                                  }})}>
+                                    alert(response.message);
+                                  }
+                                })
+                              }}>
                 Join this team
               </button>
             )}
@@ -101,36 +106,33 @@ function InvitationEntry(props){
   return(
     <div className="invitation-entry">
       <p className="inv-team">Invitation from {props.invitation.team.name}</p> 
+
       {!hide && ( <div>
-      <button className={'item button-container ' + (!state.alreadyInTeam ? 'btn-active' : 'btn-inactive')} 
-       onClick={()=> postData("/api/invitation/accept", {"idInvitation" : props.invitation.id})
+        <button className={'item button-container ' + (!state.alreadyInTeam ? 'btn-active' : 'btn-inactive')} 
+          onClick={()=> postData("/api/invitation/accept", {"idInvitation" : props.invitation.id})
                               .then((response) => { 
                                 if (response.status === 200) {
-                                  dispatch({ alreadyInTeam : true });
+                                  dispatch({ alreadyInTeam : props.invitation.team.name });
                                   setHide(true);
                                   setStatus("accepted");
                                 }
                                 else {
-                                  JoinTeam.setState({
-                                    errorMessage: "the server encountered an error",
-                                    badResponse: response.message});
+                                  alert(response.message);
                                 }})}>
-        Accept
-      </button>
-      <button className="item button-container btn-decline"
-        onClick={()=> postData("/api/invitation/reject", {"idInvitation" : props.invitation.id})
+          Accept
+        </button>
+        <button className="item button-container btn-decline"
+          onClick={()=> postData("/api/invitation/reject", {"idInvitation" : props.invitation.id})
                           .then((response) => {
                             if (response.status === 200) {
                               setHide(true);
                               setStatus("rejected");
                             } 
                             else {
-                              JoinTeam.setState({
-                              errorMessage: "the server encountered an error",
-                              badResponse: response.message});
+                              alert(response.message);
                             }})}>
-        Decline
-      </button>
+          Decline
+        </button>
       </div>)}
       {hide && (<span>You have {status} this invitation</span>)}
     </div>
@@ -146,8 +148,10 @@ class JoinTeam extends Component{
       invitations: [],
       data : [],
       view_inv: "Check",
-      alreadyInTeam: true,
-      initTeam: true
+      alreadyInTeam: "",
+      initTeam: true,
+      errorMessage: "",
+      badResponse: ""
     };
   }
   
@@ -155,19 +159,28 @@ class JoinTeam extends Component{
     getData("/api/team/get-all").then((response)=> {
       if (response.status === 200) 
         this.setState({data: response.result});
-      else 
-        console.log("error");
+      else {
+        this.setState({
+          errorMessage: "the server encountered an error",
+          badResponse: response.message
+        });
+      }
     });
     
     getData("/api/invitation/pending").then((response)=> {
       if (response.status === 200) 
         this.setState({invitations: response.result});
-      else 
-        console.log("error");
+      else {
+        this.setState({
+          errorMessage: "the server encountered an error",
+          badResponse: response.message
+        });
+      }
     });
   }
 
   render(){
+    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <GlobalStateProvider>
       {this.state.initTeam && (<div><InitInTeam />{this.setState({initTeam : false})}</div>)}
@@ -177,8 +190,11 @@ class JoinTeam extends Component{
                           getData("/api/invitation/pending").then((response)=> {
                             if (response.status === 200) 
                               this.setState({invitations: response.result});
-                            else 
-                              console.log("error");
+                            else {
+                              this.setState({
+                                errorMessage: "the server encountered an error",
+                                badResponse: response.message});
+                            }
                           });
                           if (this.state.view_inv === "Check") {
                             this.setState({view_inv : "Close"});
@@ -190,7 +206,7 @@ class JoinTeam extends Component{
         </button>
         {this.state.view_inv === "Close" &&
         <div>
-          {this.state.invitations.map((object, i) => <InvitationEntry invitation={object} key={i} active={!this.state.alreadyInTeam}/>)}
+          {this.state.invitations.map((object, i) => <InvitationEntry invitation={object} key={i}/>)}
         </div>}
 
         <h2>Teams</h2>
