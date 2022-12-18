@@ -1,6 +1,6 @@
 #iframediv {
     width: 100vw;
-    height: 100vh;
+    height: 95vh;
 }
 
 #iframe {
@@ -9,10 +9,6 @@
     border: 1px ridge #509dca;
 }
 
-html {
-    overflow-y: hidden;
-    overflow-x: hidden;
-}
 
 #backlink {
     

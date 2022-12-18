@@ -106,7 +106,7 @@ export class TournamentEntry extends React.Component {
        
         if (this.props.record.creator.name === sessionStorage.getItem("username")) {
             let formtoreturn;
-            console.log(this.props.classes);
+          
            let maxround=this.props.record.numberOfRounds.toString();
             formtoreturn =
                 <div id="displayclassupload">
