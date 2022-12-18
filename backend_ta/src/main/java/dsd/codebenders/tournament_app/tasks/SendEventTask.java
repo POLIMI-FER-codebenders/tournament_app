@@ -1,13 +1,13 @@
 package dsd.codebenders.tournament_app.tasks;
 
-import dsd.codebenders.tournament_app.responses.StreamingEventResponse;
+import dsd.codebenders.tournament_app.entities.streaming.StreamingEvent;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 public class SendEventTask implements Runnable {
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final StreamingEventResponse event;
+    private final StreamingEvent event;
 
-    public SendEventTask(SimpMessagingTemplate simpMessagingTemplate, StreamingEventResponse event) {
+    public SendEventTask(SimpMessagingTemplate simpMessagingTemplate, StreamingEvent event) {
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.event = event;
     }

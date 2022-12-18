@@ -1,8 +1,8 @@
-package dsd.codebenders.tournament_app.requests;
+package dsd.codebenders.tournament_app.entities.streaming;
 
 import dsd.codebenders.tournament_app.entities.score.MultiplayerScoreboard;
 
-public class StreamingEventRequest {
+public class CDEvent {
 
     private Integer userId;
     private String message;

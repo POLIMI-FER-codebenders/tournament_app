@@ -1,10 +1,9 @@
-package dsd.codebenders.tournament_app.responses;
+package dsd.codebenders.tournament_app.entities.streaming;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import dsd.codebenders.tournament_app.entities.Match;
-import dsd.codebenders.tournament_app.entities.streaming.EventType;
 
-public class StreamingEventResponse {
+public class StreamingEvent {
 
     @JsonIgnore
     private Match match;
@@ -14,14 +13,14 @@ public class StreamingEventResponse {
     private Integer attackersScore;
     private Integer defendersScore;
 
-    public StreamingEventResponse(Match match, String user, EventType type, Long timestamp) {
+    public StreamingEvent(Match match, String user, EventType type, Long timestamp) {
         this.match = match;
         this.user = user;
         this.type = type;
         this.timestamp = timestamp;
     }
 
-    public StreamingEventResponse(Match match, EventType type, Long timestamp, Integer attackersScore, Integer defendersScore) {
+    public StreamingEvent(Match match, EventType type, Long timestamp, Integer attackersScore, Integer defendersScore) {
         this.match = match;
         this.type = type;
         this.timestamp = timestamp;
@@ -29,7 +28,7 @@ public class StreamingEventResponse {
         this.defendersScore = defendersScore;
     }
 
-    public StreamingEventResponse(Match match, EventType type, Long timestamp) {
+    public StreamingEvent(Match match, EventType type, Long timestamp) {
         this.match = match;
         this.type = type;
         this.timestamp = timestamp;

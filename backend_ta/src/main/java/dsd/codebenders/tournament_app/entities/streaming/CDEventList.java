@@ -1,18 +1,18 @@
-package dsd.codebenders.tournament_app.requests;
+package dsd.codebenders.tournament_app.entities.streaming;
 
 import java.util.List;
 import java.util.Map;
 
-public class StreamingEventListRequest {
+public class CDEventList {
 
-    private Map<Integer, List<StreamingEventRequest>> events;
+    private Map<Integer, List<CDEvent>> events;
     private Boolean hasMore;
 
-    public Map<Integer, List<StreamingEventRequest>> getEvents() {
+    public Map<Integer, List<CDEvent>> getEvents() {
         return events;
     }
 
-    public void setEvents(Map<Integer, List<StreamingEventRequest>> events) {
+    public void setEvents(Map<Integer, List<CDEvent>> events) {
         this.events = events;
     }
 
