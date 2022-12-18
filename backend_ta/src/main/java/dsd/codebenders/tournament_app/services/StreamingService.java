@@ -4,6 +4,7 @@ import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Server;
 import dsd.codebenders.tournament_app.entities.score.MultiplayerScoreboard;
+import dsd.codebenders.tournament_app.entities.streaming.EventType;
 import dsd.codebenders.tournament_app.requests.StreamingEventListRequest;
 import dsd.codebenders.tournament_app.requests.StreamingEventRequest;
 import dsd.codebenders.tournament_app.responses.StreamingEventResponse;
@@ -75,23 +76,25 @@ public class StreamingService {
     }
 
     private List<StreamingEventResponse> convertToStreamingEventResponseList(StreamingEventListRequest request, Long timestamp, Server server) {
-        // TODO: move score events based on Riccardo's update of API
         List<StreamingEventResponse> responses = new ArrayList<>();
-        for(Integer id: request.getMultiplayerScoreboards().keySet()) {
-            Match match = matchService.getMatchByCDGameIdAnsServer(id, server);
-            MultiplayerScoreboard scoreboard = request.getMultiplayerScoreboards().get(id);
-            responses.add(new StreamingEventResponse(match, "SCORE_UPDATE", timestamp,
-                    scoreboard.getAttackersTotal().getPoints(), scoreboard.getDefendersTotal().getPoints()));
-        }
         for(Integer id: request.getEvents().keySet()) {
             Match match = matchService.getMatchByCDGameIdAnsServer(id, server);
             List<StreamingEventRequest> events = request.getEvents().get(id);
             for(StreamingEventRequest e: events) {
                 if(e.getUserId() != null) {
                     Player player = cdPlayerService.findByUserIdAndServer(e.getUserId(), server).get().getRealPlayer();
-                    responses.add(new StreamingEventResponse(match, player.getUsername(), e.getType(), e.getTimestamp()));
+                    try {
+                        responses.add(new StreamingEventResponse(match, player.getUsername(), EventType.valueOf(e.getType()), e.getTimestamp()));
+                    } catch (IllegalArgumentException ignored) { }
                 } else {
-                    responses.add(new StreamingEventResponse(match, e.getType(), e.getTimestamp()));
+                    try {
+                        responses.add(new StreamingEventResponse(match, EventType.valueOf(e.getType()), e.getTimestamp()));
+                    } catch (IllegalArgumentException ignored) { }
+                }
+                MultiplayerScoreboard scoreboard = e.getMultiplayerScoreboard();
+                if(scoreboard != null) {
+                    responses.add(new StreamingEventResponse(match, EventType.SCORE_UPDATE, timestamp,
+                            scoreboard.getAttackersTotal().getPoints(), scoreboard.getDefendersTotal().getPoints()));
                 }
             }
         }

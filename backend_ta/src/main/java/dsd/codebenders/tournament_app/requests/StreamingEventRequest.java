@@ -1,11 +1,15 @@
 package dsd.codebenders.tournament_app.requests;
 
+import dsd.codebenders.tournament_app.entities.score.MultiplayerScoreboard;
+
 public class StreamingEventRequest {
 
     private Integer userId;
     private String message;
     private String type;
     private Long timestamp;
+
+    private MultiplayerScoreboard multiplayerScoreboard;
 
     public Integer getUserId() {
         return userId;
@@ -37,6 +41,14 @@ public class StreamingEventRequest {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public MultiplayerScoreboard getMultiplayerScoreboard() {
+        return multiplayerScoreboard;
+    }
+
+    public void setMultiplayerScoreboard(MultiplayerScoreboard multiplayerScoreboard) {
+        this.multiplayerScoreboard = multiplayerScoreboard;
     }
 
 }
