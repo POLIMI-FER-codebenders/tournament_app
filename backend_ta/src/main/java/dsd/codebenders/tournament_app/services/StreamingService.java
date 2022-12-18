@@ -53,9 +53,8 @@ public class StreamingService {
         if(lastEventTimestamp == null) {
             lastEventTimestamp = DateUtility.toSeconds(DateUtility.addSeconds(new Date(), - streamingUpdatesDelay / 1000));
         }
-        long timestamp = lastEventTimestamp + 1;
         Map<String, String> query = new HashMap<>();
-        query.put("fromTimestamp", Long.toString(timestamp));
+        query.put("fromTimestamp", Long.toString(lastEventTimestamp + 1));
         List<Server> servers = serverService.getAllActiveServers();
         List<StreamingEventResponse> events = new ArrayList<>();
         for(Server s: servers) {
@@ -63,13 +62,12 @@ public class StreamingService {
             do {
                 try {
                     request = HTTPRequestsSender.sendGetRequest(s, "/admin/api/events", query, StreamingEventListRequest.class);
-                    events.addAll(convertToStreamingEventResponseList(request, lastEventTimestamp, s));
-
+                    events.addAll(convertToStreamingEventResponseList(request, s));
+                    query.put("fromTimestamp", Long.toString(lastEventTimestamp + 1));
                 } catch (RestClientException e) {
                     System.err.println("Impossible to retrieve streaming events from server " + s.getAddress());
                     request = null;
                 }
-                // TODO: update timestamp
             } while(request != null && request.getHasMore());
         }
         events.sort((o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()));
@@ -80,7 +78,7 @@ public class StreamingService {
         }
     }
 
-    private List<StreamingEventResponse> convertToStreamingEventResponseList(StreamingEventListRequest request, Long timestamp, Server server) {
+    private List<StreamingEventResponse> convertToStreamingEventResponseList(StreamingEventListRequest request, Server server) {
         List<StreamingEventResponse> responses = new ArrayList<>();
         for(Integer id: request.getEvents().keySet()) {
             Match match = matchService.getMatchByCDGameIdAnsServer(id, server);
@@ -98,8 +96,11 @@ public class StreamingService {
                 }
                 MultiplayerScoreboard scoreboard = e.getMultiplayerScoreboard();
                 if(scoreboard != null) {
-                    responses.add(new StreamingEventResponse(match, EventType.SCORE_UPDATE, timestamp,
+                    responses.add(new StreamingEventResponse(match, EventType.SCORE_UPDATE, e.getTimestamp(),
                             scoreboard.getAttackersTotal().getPoints(), scoreboard.getDefendersTotal().getPoints()));
+                }
+                if(e.getTimestamp() > lastEventTimestamp) {
+                    lastEventTimestamp = e.getTimestamp();
                 }
             }
         }
