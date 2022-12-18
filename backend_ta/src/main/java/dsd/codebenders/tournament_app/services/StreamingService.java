@@ -12,6 +12,7 @@ import dsd.codebenders.tournament_app.tasks.SendEventTask;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +25,8 @@ import java.util.*;
 @Service
 public class StreamingService {
 
+    @Value("${tournament-app.streaming.updates-delay:10000}")
+    private int streamingUpdatesDelay;
     private final MatchService matchService;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final ServerService serverService;
@@ -31,6 +34,8 @@ public class StreamingService {
     private final ThreadPoolTaskScheduler scheduler;
 
     private Long lastEventTimestamp;
+
+
 
     @Autowired
     public StreamingService(MatchService matchService, SimpMessagingTemplate simpMessagingTemplate, ServerService serverService, CDPlayerService cdPlayerService, ThreadPoolTaskScheduler scheduler) {
@@ -42,11 +47,11 @@ public class StreamingService {
         this.lastEventTimestamp = null;
     }
 
-    @Scheduled(fixedDelay = 15000)
+    @Scheduled(fixedDelayString = "${tournament-app.streaming.updates-delay:10000}")
     @Async
     public void getUpdates() {
         if(lastEventTimestamp == null) {
-            lastEventTimestamp = DateUtility.toSeconds(DateUtility.addSeconds(new Date(), -15));
+            lastEventTimestamp = DateUtility.toSeconds(DateUtility.addSeconds(new Date(), - streamingUpdatesDelay / 1000));
         }
         long timestamp = lastEventTimestamp + 1;
         Map<String, String> query = new HashMap<>();
