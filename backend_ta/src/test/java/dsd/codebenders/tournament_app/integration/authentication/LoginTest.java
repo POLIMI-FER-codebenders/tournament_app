@@ -117,6 +117,36 @@ class LoginTest {
 
     }
 
+    @Test
+    @Order(4)
+    void logoutTest() throws JSONException, JsonProcessingException {
+
+        // we are logged in because of loginSuccessfulTest() so we dont have to login in this test
+
+        HttpResponse<String> getAuthenticated = Unirest.get(createURLWithPort("/api/player/get"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        String username = mapper.readTree(getAuthenticated.getBody()).findValuesAsText("username").get(0);
+
+
+        assertEquals("hrvoje459", username);
+
+
+        HttpResponse<String> logoutSuccess = Unirest.get(createURLWithPort("/authentication/logout")).asString();
+
+        HttpResponse<String> getUnauthenticated = Unirest.get(createURLWithPort("/api/player/get"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .asString();
+
+        assertEquals(200, logoutSuccess.getStatus());
+        assertEquals("You are not authenticated!", getUnauthenticated.getBody());
+
+    }
+
     @AfterAll
     public void cleanUp(){
         playerRepository.delete(hrvoje);
