@@ -22,15 +22,12 @@ class ListPlayers extends Component {
     this.state.players.forEach(p => {
       invitNotSend.push(p.id);
     });
-    let data = {
-      idTeam: this.state.teamId
-    };
-    getData("/api/invitation/get-from-team", data)
+    getData("/api/invitation/pending/team")
     .then((response) => {
       if (response.status === 200) {
         if (response.result) {
           response.result.forEach(invite => {
-            invitNotSend = invitNotSend.filter(i => i !== invite.ID_invited_player)
+            invitNotSend = invitNotSend.filter(i => i !== invite.invitedPlayer.id)
           });
           this.setState({
             invitNotSend: invitNotSend

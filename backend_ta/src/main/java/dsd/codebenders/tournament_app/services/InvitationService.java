@@ -33,6 +33,10 @@ public class InvitationService {
         return invitationRepository.findByInvitedPlayerAndStatusEquals(invitedPlayer, InvitationStatus.PENDING);
     }
 
+    public List<Invitation> getPending(Team team) {
+        return invitationRepository.findByTeamAndStatus(team, InvitationStatus.PENDING);
+    }
+
     public Invitation createInvitation(Player sender, Long IDInvitedPlayer, Long IDTeam) {
         Player invitedPlayer = playerRepository.findById(IDInvitedPlayer).orElseThrow(() -> new ResourceNotFoundException("Invalid invited player"));
         Team team = teamRepository.findById(IDTeam).orElseThrow(() -> new ResourceNotFoundException("Invalid team"));
@@ -89,5 +93,9 @@ public class InvitationService {
         }
         invitation.setStatus(InvitationStatus.REJECTED);
         invitationRepository.save(invitation);
+    }
+
+    public void deleteAllForTeam(Team team) {
+        invitationRepository.deleteByTeamAndStatus(team,InvitationStatus.PENDING); //Keep accepted and rejected for history
     }
 }
