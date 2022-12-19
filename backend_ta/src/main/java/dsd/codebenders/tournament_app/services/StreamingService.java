@@ -1,5 +1,6 @@
 package dsd.codebenders.tournament_app.services;
 
+import dsd.codebenders.tournament_app.entities.CDPlayer;
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Server;
@@ -92,24 +93,34 @@ public class StreamingService {
         for(Integer id: cdEventList.getEvents().keySet()) {
             Match match = matchService.getMatchByCDGameIdAnsServer(id, server);
             List<CDEvent> cdEvents = cdEventList.getEvents().get(id);
-            for(CDEvent e: cdEvents) {
-                if(e.getUserId() != null) {
-                    Player player = cdPlayerService.findByUserIdAndServer(e.getUserId(), server).get().getRealPlayer();
-                    try {
-                        streamingEvents.add(new StreamingEvent(match, player.getUsername(), EventType.valueOf(e.getType()), e.getTimestamp()));
-                    } catch (IllegalArgumentException ignored) { }
-                } else {
-                    try {
-                        streamingEvents.add(new StreamingEvent(match, EventType.valueOf(e.getType()), e.getTimestamp()));
-                    } catch (IllegalArgumentException ignored) { }
+            for(CDEvent cdEvent: cdEvents) {
+                EventType eventType;
+                try {
+                    eventType = EventType.valueOf(cdEvent.getType());
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Received unsupported event " + cdEvent.getType());
+                    continue;
                 }
-                MultiplayerScoreboard scoreboard = e.getMultiplayerScoreboard();
+                if(eventType == EventType.GAME_CREATED || eventType == EventType.GAME_STARTED || eventType == EventType.GAME_GRACE_ONE
+                        || eventType == EventType.GAME_GRACE_TWO || eventType == EventType.GAME_FINISHED) {
+                    streamingEvents.add(new StreamingEvent(match, eventType, cdEvent.getTimestamp()));
+                } else {
+                    Optional <CDPlayer> cdPlayer = cdPlayerService.findByUserIdAndServer(cdEvent.getUserId(), server);
+                    if(cdPlayer.isPresent()) {
+                        Player player = cdPlayer.get().getRealPlayer();
+                        streamingEvents.add(new StreamingEvent(match, player.getUsername(), eventType, cdEvent.getTimestamp()));
+                    } else {
+                        System.err.println("Unable to retrieve CD player " + cdEvent.getUserId() + " for event " + cdEvent.getType());
+                        continue;
+                    }
+                }
+                MultiplayerScoreboard scoreboard = cdEvent.getMultiplayerScoreboard();
                 if(scoreboard != null) {
-                    streamingEvents.add(new StreamingEvent(match, EventType.SCORE_UPDATE, e.getTimestamp(),
+                    streamingEvents.add(new StreamingEvent(match, EventType.SCORE_UPDATE, cdEvent.getTimestamp(),
                             scoreboard.getAttackersTotal().getPoints(), scoreboard.getDefendersTotal().getPoints()));
                 }
-                if(e.getTimestamp() > lastEventTimestamp) {
-                    lastEventTimestamp = e.getTimestamp();
+                if(cdEvent.getTimestamp() > lastEventTimestamp) {
+                    lastEventTimestamp = cdEvent.getTimestamp();
                 }
             }
         }
