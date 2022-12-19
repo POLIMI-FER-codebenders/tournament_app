@@ -6,6 +6,7 @@ import dsd.codebenders.tournament_app.services.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -23,9 +24,12 @@ public class StreamingController {
     }
 
     @GetMapping(value = "/score")
-    public Map<String, Integer> getStreamingScore(Long matchId){
+    public Map<String, Integer> getStreamingScore(@RequestParam(name = "matchId") Long matchId){
         Map<String, Integer> map = new HashMap<>();
         Match match;
+        if(matchId == null) {
+            throw new BadRequestException("Match id is missing");
+        }
         if(matchService.findById(matchId).isPresent()) {
             match = matchService.findById(matchId).get();
         } else {
