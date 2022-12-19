@@ -72,6 +72,9 @@ public class Match {
     private Integer streamedDefendersScore;
 
     public Match() {
+        this.lastSentScoreEventTimestamp = 0L;
+        this.streamedAttackersScore = 0;
+        this.streamedDefendersScore = 0;
     }
 
     public Match(Team attackersTeam, Team defendersTeam, Integer roundNumber, Tournament tournament, Date startDate) {
@@ -80,6 +83,9 @@ public class Match {
         this.roundNumber = roundNumber;
         this.tournament = tournament;
         this.startDate = startDate;
+        this.lastSentScoreEventTimestamp = 0L;
+        this.streamedAttackersScore = 0;
+        this.streamedDefendersScore = 0;
     }
 
     public Long getID() {
