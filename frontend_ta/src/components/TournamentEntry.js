@@ -60,20 +60,22 @@ export class TournamentEntry extends React.Component {
         else if (this.state.joinreply === "KO") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
         return (
             <div>
-                <div className="list-entry flex-container" >
-                    <div className="list-entry-details flex-container-details" onClick={this.DisplayTournamentInfo}>
-                        <div class="col1 flex-items">{this.props.record.name}</div>
-                        <div class="col2 flex-items">27011/2022</div>
-                        <div class="col3 flex-items">{this.props.record.type}</div>
-                        <div class="col4 flex-items">{this.props.record.status}</div>
-                        <div class="col5 flex-items">{this.props.record.teamSize}</div>
+                <div className="list-tour-entry ">
+                    <div className="flex-container" >
+                        <div className="list-entry-details flex-container-details" onClick={this.DisplayTournamentInfo}>
+                            <div class="col1 flex-items">{this.props.record.name}</div>
+                            <div class="col2 flex-items">27011/2022</div>
+                            <div class="col3 flex-items">{this.props.record.type}</div>
+                            <div class="col4 flex-items">{this.props.record.status}</div>
+                            <div class="col5 flex-items">{this.props.record.teamSize}</div>
+                        </div>
+                        <div class="col6 flex-items">
+                            {this.JoinButton(this.props.record.status)}
+                        </div>
                     </div>
-                    <div class="col6 flex-items">
-                        {this.JoinButton(this.props.record.status)}
-                    </div>
+                    {formtoshow}
+                    {joinreplytext}
                 </div>
-                {formtoshow}
-                {joinreplytext}
             </div>
         );
     }
@@ -109,16 +111,24 @@ export class TournamentEntry extends React.Component {
             console.log(this.props.classes);
            let maxround=this.props.record.numberOfRounds.toString();
             formtoreturn =
-                <div id="displayclassupload">
-                    <form onSubmit={this.SelectClass}>
-                        <label className="labelclassupload" htmlFor="roundid" >Select the round to which apply a class</label>
-                        <input type="number" id="roundid" required min="1" max={maxround}  ></input>
-                        <label className="labelclassupload" htmlFor="classes">Select a class for the selected round:</label>
-                        <select id="classes" name="classes" required>
-                            {this.props.classes.map((elem, i) => <option value={elem.id} key={i}>{elem.filename}</option>)}
-                        </select>
-                        <div className="button-class-container">
-                            <button id="classbuttonupload" type="submit">Select Class </button>
+                <div className="class">
+                    <span className="name">Choice of class for each round:</span>
+                    <form className="displayclassupload" onSubmit={this.SelectClass}>
+                        <div className="input-bloc">
+
+                            <div className="input-container">
+                                <label htmlFor="roundid" >Round:</label>
+                                <input type="number" id="roundid" required min="1" max={maxround}  ></input>
+                            </div>
+                            <div className="input-container">
+                                <label htmlFor="classes">Class:</label>
+                                <select className="selector" id="classes" name="classes" required>
+                                    {this.props.classes.map((elem, i) => <option value={elem.id} key={i}>{elem.filename}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="button-container classbuttonupload">
+                            <input type="submit" value="Select Class" />
                         </div>
                     </form>
                     
@@ -129,7 +139,44 @@ export class TournamentEntry extends React.Component {
         else return null;
     }
 
+    DisplayTeamInfo(direction) {
+        let teamstext = "";
+        let teamsnames = this.props.record.tournamentScores.map(elem => elem.team.name);
+        if (teamsnames.length > 0) {
+            for (let index = 0; index < teamsnames.length; index++) {
+                const teamtext = teamsnames[index];
+                teamstext += teamtext
+                if (index === teamsnames.length -2) {
+                    teamstext += " and ";
+                }
+                else if (index < teamsnames.length -2) {
+                    teamstext += ", ";
+                }
+            }
+        }
+        else teamstext = "no team has joined yet"
+        return (
+            <div>
+              <div className={"flex-container-team-" + direction}>
+                <span className="flex-items-team name">Teams participating in the tournament:</span>
+                <span className="flex-items-team">{teamstext}</span>
+              </div>
+              <div className="flex-container-team-row">
+                <span className="flex-items-team name">Number of teams required:</span>
+                <span className="flex-items-team">{this.props.record.numberOfTeams.toString()}</span>
+              </div>
+              <div className="flex-container-team-row">
+                <span className="flex-items-team name">Remaining number of team slots:</span>
+                <span className="flex-items-team">{(this.props.record.numberOfTeams - teamsnames.length).toString()}</span>
+              </div>
+
+            </div>
+        )
+    }
+
     JoinButton(status) {
+        console.log("eh oh !!!!")
+        console.log(status)
         let data = this.state.playerteam
         let teamsintournament = this.props.record.tournamentScores.map(record => record.team.id);
 
@@ -155,14 +202,15 @@ export class TournamentEntry extends React.Component {
         }
         else teamstext = "no team have joined yet"
         let summarystatusteam= "The tournament is a " + this.props.record.numberOfTeams.toString() + " teams tournament,there are still " + (this.props.record.numberOfTeams - teamsnames.length).toString() + " slots "
-        let teams = <p>{teamstext}<br/> {summarystatusteam}</p>
+        // let teams = <p>{teamstext}<br/> {summarystatusteam}</p>
+        // let teams = this.DisplayTeamInfo();
         if (this.props.record.status !== "TEAMS_JOINING") {
             //  if (this.props.record.status == "ended") winner = <p> The tournament is ended, the winner is {tourinfo.winner}</p>
             //    else winner = null;
 
             content = (<div>
 
-                {teams}
+                {this.DisplayTeamInfo("row")}
                 <p>Here is the list of scheduled matches</p>
                 <div class="list-matches">
                     <div class="list-headers-matches flex-container">
@@ -182,8 +230,8 @@ export class TournamentEntry extends React.Component {
         else { //the game is not started yet
             content =
                 <div id="classuploadinfo">
+                    {this.DisplayTeamInfo("col")}
                     {classuploading}
-                    {teams}
                     
                 </div>
         }
