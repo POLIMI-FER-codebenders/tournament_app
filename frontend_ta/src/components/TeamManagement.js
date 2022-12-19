@@ -147,7 +147,7 @@ class ManageTeams extends Component {
   }
 
   handleClickDelete(event) {
-    postData("/api/team/members/delete/")
+    postData("/api/team/delete/")
       .then((response) => {
         if (response.status === 200) {
           this.initTeam();
