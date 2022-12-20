@@ -201,7 +201,7 @@ public class TournamentService {
         }
         logger.info(getTournamentTeams(tournament).stream().map(Team::getID).collect(Collectors.toList()).toString());
         logger.info(winners.stream().filter(Objects::nonNull).map(Team::getID).collect(Collectors.toList()).toString());
-        List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().map(Team::getID).collect(Collectors.toList()), winners.stream().map(Team::getID).collect(Collectors.toList()));
+        List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().filter(Objects::nonNull).map(Team::getID).collect(Collectors.toList()), winners.stream().filter(Objects::nonNull).map(Team::getID).collect(Collectors.toList()));
         logger.info(IDs.toString());
         List<List<Team>> nextMatches = IDs.stream().map(ids -> ids.stream().map(id -> teamRepository.findById(id).get()).toList()).toList();
         boolean oneValid = false;
