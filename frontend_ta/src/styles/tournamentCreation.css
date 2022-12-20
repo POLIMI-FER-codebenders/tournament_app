@@ -18,10 +18,6 @@
     align-items: center;
 }
 
-#uploadclasslabel{
- padding-bottom: 10px;
-}
-
 .uploadclassbutton input[type="submit"] {
   background: #688bec;
   border: 1px solid #688bec;
@@ -29,4 +25,11 @@
 
 .uploadclassbutton input[type="submit"]:hover {
   background: #97abe3;
+}
+
+input[type="file"]::file-selector-button {
+  cursor: pointer;
+  font-size: 15px;
+  border: 1px solid #a5a5a5;
+  padding: 5px 10px;
 }

@@ -48,6 +48,11 @@ input[type="submit"]:hover {
     font-size: 12px;
   }
 
+  .success {
+    color: #00ae03fe;
+    font-size: 12px;
+  }
+
   .descInput {
     font-size: small;
     font-style: italic;

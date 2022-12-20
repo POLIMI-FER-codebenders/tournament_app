@@ -35,6 +35,7 @@
 }
 
 .list-entry-details {
+    cursor: pointer;
     border-radius: 10px; 
     border: 1px solid rgb(237, 240, 238);
 }
@@ -198,4 +199,13 @@
 .input-bloc .input-container {
     flex-direction: row;
     align-items: center;
+}
+
+.join-bloc .input-container {
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.list-tour-entry p {
+    margin: auto 5px;
 }
