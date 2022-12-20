@@ -23,7 +23,6 @@ class ManageTeams extends Component {
     this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
-    this.handleClickDelete = this.handleClickDelete.bind(this);
   }
 
   componentDidMount() {
@@ -146,23 +145,6 @@ class ManageTeams extends Component {
       });
   }
 
-  handleClickDelete(event) {
-    postData("/api/team/leave/")
-      .then((response) => {
-        if (response.status === 200) {
-          this.initTeam();
-          this.initPlayers();
-        }
-        else {
-          this.setState({
-            errorMessage: "the server encountered an error",
-            badResponse: response.message
-          })
-        };
-
-      });
-  }
-
   renderErrorMessage() {
     if (this.state.errorMessage == null) return;
     return (
@@ -262,7 +244,7 @@ class ManageTeams extends Component {
           </div>
         );
       } else if (this.state.team.teamMembers.length === 1) {
-        return (<div class="btn btn-red" name="delete" id={idPlayer} onClick={this.handleClickDelete} >Delete</div>);
+        return (<div class="btn btn-red" name="delete" id={idPlayer} onClick={this.handleClickLeave} >Delete</div>);
       } else return;
     }
   }
