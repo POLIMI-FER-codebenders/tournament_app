@@ -7,60 +7,8 @@
     flex-grow: 3;
  
   }
-  .input-tour-container{
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: 10px;
-  }
-  .button-tour-container{
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: 10px;
-  }
-  .selector-tour{
-    height: 34px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    width: 257px;
-    
-}
-.tourlabel,.tourinput{
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-}
-.tourlabel{
-    padding-bottom:1px;
-}
-
-
-  .tourinput[type="text"],
-  .tourinput[type="number"]
-  {
-    height: 25px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    width: 250px;
-    padding-top: 5px;
-  }
-
-  .tourinput[type="date"]{
-    height: 32px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    width: 257px;
-    padding-top:5px
-  }
-
-  #createtournamentbutton{
-    width: 200px;
-    
-}
 #maintourcreationdiv{
-    display: flex;
   flex-direction: row;
-  flex-grow:8
 }
 
 #uploadclasses{
@@ -69,21 +17,19 @@
     flex-grow:1;
     align-items: center;
 }
-.input-group{
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: 10px;
-}
-#uploadclasslabel{
- padding-bottom: 10px;
-}
-#uploadclassbutton{
-    cursor: pointer;
-    font-size: 15px;
-    background: #688bec;
-    border: 1px solid #688bec;
-    color: #fff;  
+
+.uploadclassbutton input[type="submit"] {
+  background: #688bec;
+  border: 1px solid #688bec;
 }
 
+.uploadclassbutton input[type="submit"]:hover {
+  background: #97abe3;
+}
+
+input[type="file"]::file-selector-button {
+  cursor: pointer;
+  font-size: 15px;
+  border: 1px solid #a5a5a5;
+  padding: 5px 10px;
+}

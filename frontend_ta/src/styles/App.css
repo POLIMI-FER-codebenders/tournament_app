@@ -1,7 +1,3 @@
-.App {
-  text-align: center;
-}
-
 .App-logo {
   height: 20vmin;
   pointer-events: none;
@@ -22,6 +18,10 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.App-header p {
+  margin: 2rem;
 }
 
 .App-link {
@@ -53,8 +53,9 @@
 .main-panel{
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   flex-grow: 3;
+  padding: 2rem;
 }
 
 .main-container{
