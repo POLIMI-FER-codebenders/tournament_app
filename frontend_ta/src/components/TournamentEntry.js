@@ -27,7 +27,9 @@ export class TournamentEntry extends React.Component {
     render() {
         let formtoshow;
         if (this.props.viewindex !== this.props.currentview) formtoshow = null;
+        
         else formtoshow = this.state.tourcontent;
+        
         let joinreplytext;
         if (this.state.joinreply === "OK") joinreplytext = <p>You have successfully joined the tournament!</p>
         else if (this.state.joinreply === "KO") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
@@ -225,6 +227,7 @@ export class TournamentEntry extends React.Component {
         );
     }
     DisplayTeamForm() {
+        
         if (sessionStorage.getItem("username") === null) {
             this.props.backHome(this.props.index);
             return;
@@ -243,17 +246,20 @@ export class TournamentEntry extends React.Component {
         }
 
         else if (this.props.playerteam !== null) {
+           
+           
             formtodisplay = (
                 <div>
                     <form onSubmit={this.JoinTournament} className="join-bloc">
                         <div className="input-container">
-                            <label htmlFor="teamtojointour">Join with your team: {this.state.playerteam.name}</label>
+                            <label htmlFor="teamtojointour">Join with your team: {this.props.playerteam.name}</label>
                             <input type="submit" id="teamtojointour" value="Join Tournament" />
                         </div>
                     </form>
 
                 </div>
             )
+            
         }
         else {
             formtodisplay = (
@@ -263,6 +269,7 @@ export class TournamentEntry extends React.Component {
             )
         }
         this.props.refreshView(this.props.viewindex);
+        console.log("beforestate");
         this.setState({ tourcontent: formtodisplay });
 
     }
