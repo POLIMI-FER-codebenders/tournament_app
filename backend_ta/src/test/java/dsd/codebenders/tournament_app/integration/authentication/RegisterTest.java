@@ -192,6 +192,7 @@ class RegisterTest {
     @AfterAll
     public void cleanUp(){
         playerRepository.delete(playerRepository.findByUsername(userValid[0]));
+        Unirest.shutDown();
     }
 
     private String createURLWithPort(String uri) {

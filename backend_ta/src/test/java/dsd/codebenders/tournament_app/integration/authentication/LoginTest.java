@@ -150,6 +150,7 @@ class LoginTest {
     @AfterAll
     public void cleanUp(){
         playerRepository.delete(hrvoje);
+        Unirest.shutDown();
     }
 
     private String createURLWithPort(String uri) {

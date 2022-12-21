@@ -412,7 +412,10 @@ public class JoinTeamTest {
         assertEquals(invitationTeamID, joinedTeamID);
     }
 
-
+    @AfterAll
+    public void cleanUp(){
+        Unirest.shutDown();
+    }
 
     private String createURLWithPort(String uri) {
         return "http://localhost:" + port + uri;
