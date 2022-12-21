@@ -20,7 +20,7 @@ export class DisplayTournament extends React.Component {
     getData("/api/classes/get-all").then((response) => {
       if (response.status === 200) {
         this.setState({classes: response.result,badResponse:null});
-        console.log(response.result);}
+        }
        else this.setState({ badResponse: response.message });
       }
       );
@@ -30,7 +30,7 @@ export class DisplayTournament extends React.Component {
     getData("/api/tournament/list").then((response)=> {
       if (response.status === 200) {
        this.setState({data: response.result,badResponse:null});
-       console.log(response.result);}
+       }
       else this.setState({ badResponse: response.message });
      }
      );

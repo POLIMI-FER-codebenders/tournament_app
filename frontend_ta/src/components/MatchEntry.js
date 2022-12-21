@@ -28,7 +28,7 @@ export class MatchEntry extends React.Component {
         getData("/api/match/current_match").then((response) => {
             if (response.status === 200) {
               this.setState({currentMatch: response.result,badResponse:null});
-              console.log(response.result);}
+              }
              else this.setState({ badResponse: response.message });
             }
             );
@@ -36,10 +36,17 @@ export class MatchEntry extends React.Component {
         }
     
     render() { 
+        console.log(this.props.record);
+        console.log(this.state.currentMatch);
+        let date=new Date(this.props.record.startDate);
+        console.log(date);
+        console.log(date.getHours());
+        console.log(date.getMinutes());
+        console.log(date.getSeconds())
+
         if(this.state.frameactive) return  <GoToPlayPage info={this.state.currentMatch} />;
         if (this.state.badResponse!=null) return (<GoToErrorPage path="/error" message={this.state.badResponse} />)
-        console.log(this.state.currentMatch);
-         console.log(this.state.currentMatch);
+        
         let playbutton;
         if(this.state.currentMatch!=null && this.state.currentMatch.result==="ongoing match found"){
            
