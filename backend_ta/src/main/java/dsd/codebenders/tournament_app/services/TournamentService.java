@@ -92,9 +92,13 @@ public class TournamentService {
         switch (tournament.getStatus()) {
             case TEAMS_JOINING -> {
                 if (getTournamentTeams(tournament).size() == tournament.getNumberOfTeams()) {
-                    checkRoundClassChoiceCompleteness(tournament);
-                    newStatus = TournamentStatus.SCHEDULING;
+                    tournament.setStatus(TournamentStatus.SELECTING_CLASSES);
+                    return tournamentRepository.save(tournament);
                 }
+            }
+            case SELECTING_CLASSES -> {
+                checkRoundClassChoiceCompleteness(tournament);
+                newStatus = TournamentStatus.SCHEDULING;
             }
             case IN_PROGRESS -> {
                 List<Match> roundMatches = matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound());
@@ -252,7 +256,7 @@ public class TournamentService {
         if(!tournament.getCreator().equals(loggedPlayer)){
             throw new BadRequestException("Only the creator of the tournament can upload class choices.");
         }
-        if(tournament.getStatus() != TournamentStatus.TEAMS_JOINING){
+        if(tournament.getStatus() != TournamentStatus.TEAMS_JOINING && tournament.getStatus() != TournamentStatus.SELECTING_CLASSES){
             throw new BadRequestException("Class choices can be uploaded only during TEAMS_JOINING phase.");
         }
         if(classChoiceRequest.getRoundNumber() <= 0 || tournament.getNumberOfRounds() < classChoiceRequest.getRoundNumber()){
