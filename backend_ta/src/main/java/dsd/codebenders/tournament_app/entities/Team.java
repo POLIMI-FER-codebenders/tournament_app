@@ -65,6 +65,12 @@ public class Team {
         this.dateOfCreation = dateOfCreation;
     }
 
+    public Team(String name, int maxNumberOfPlayers , TeamPolicy policy) {
+        this.name = name;
+        this.maxNumberOfPlayers = maxNumberOfPlayers;
+        this.policy = policy;
+    }
+
     public TeamResponse serialize() {
         return new TeamResponse(
                 this.ID,
@@ -158,6 +164,15 @@ public class Team {
         return this.teamMembers.size() == this.maxNumberOfPlayers;
     }
 
+    public boolean isPlayerInTeam(Player player){
+        return this.teamMembers.contains(player);
+    }
+
+
+    @Override
+    public String toString(){
+        return "Team: " + this.getID() + " " + this.name + " " + this.maxNumberOfPlayers + " " + this.teamMembers;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) {
