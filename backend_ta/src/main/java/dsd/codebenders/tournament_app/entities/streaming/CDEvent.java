@@ -9,7 +9,7 @@ public class CDEvent {
     private String type;
     private Long timestamp;
 
-    private MultiplayerScoreboard multiplayerScoreboard;
+    private MultiplayerScoreboard scoreboard;
 
     public Integer getUserId() {
         return userId;
@@ -43,12 +43,12 @@ public class CDEvent {
         this.timestamp = timestamp;
     }
 
-    public MultiplayerScoreboard getMultiplayerScoreboard() {
-        return multiplayerScoreboard;
+    public MultiplayerScoreboard getScoreboard() {
+        return scoreboard;
     }
 
-    public void setMultiplayerScoreboard(MultiplayerScoreboard multiplayerScoreboard) {
-        this.multiplayerScoreboard = multiplayerScoreboard;
+    public void setScoreboard(MultiplayerScoreboard scoreboard) {
+        this.scoreboard = scoreboard;
     }
 
 }

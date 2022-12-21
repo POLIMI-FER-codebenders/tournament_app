@@ -114,7 +114,7 @@ public class StreamingService {
                         continue;
                     }
                 }
-                MultiplayerScoreboard scoreboard = cdEvent.getMultiplayerScoreboard();
+                MultiplayerScoreboard scoreboard = cdEvent.getScoreboard();
                 if(scoreboard != null) {
                     streamingEvents.add(new StreamingEvent(match, EventType.SCORE_UPDATE, cdEvent.getTimestamp(),
                             scoreboard.getAttackersTotal().getPoints(), scoreboard.getDefendersTotal().getPoints()));
