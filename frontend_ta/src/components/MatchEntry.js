@@ -43,7 +43,7 @@ export class MatchEntry extends React.Component {
             }
             );
           }
-        }
+    }
     
     render() { 
 

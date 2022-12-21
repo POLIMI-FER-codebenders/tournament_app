@@ -12,6 +12,7 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.JoinTournamentRequest;
+import dsd.codebenders.tournament_app.services.ClassService;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
 import dsd.codebenders.tournament_app.services.TournamentService;
@@ -31,6 +32,7 @@ public class TournamentController {
     private final PlayerService playerService;
     private final TeamService teamService;
     private final TournamentService tournamentService;
+    private final ClassService classService;
     @Value("${game.tournament.league.min-teams:2}")
     private int minLeagueTeams;
     @Value("${game.tournament.knockout.min-teams:2}")
@@ -51,10 +53,11 @@ public class TournamentController {
     private boolean debug;
 
     @Autowired
-    public TournamentController(TeamService teamService, PlayerService playerService, TournamentService tournamentService) {
+    public TournamentController(TeamService teamService, PlayerService playerService, TournamentService tournamentService, ClassService classService) {
         this.playerService = playerService;
         this.teamService = teamService;
         this.tournamentService = tournamentService;
+        this.classService = classService;
     }
 
     @GetMapping(value = "/list")
@@ -88,6 +91,8 @@ public class TournamentController {
             throw new BadRequestException("An active tournament with the same name already exists");
         } else if (tournament.getMatchType() == null) {
             throw new BadRequestException("Missing match type");
+        } else if (classService.getAllClasses().size() == 0) {
+            throw new BadRequestException("Our database of available classes to play on is currently empty, please upload one before creating a tournament.");
         } else if (tournament.getType().equals(TournamentType.LEAGUE)) {
             if (tournament.getNumberOfTeams() < minLeagueTeams) {
                 throw new BadRequestException("The minimum number of teams for a league tournament is " + minLeagueTeams);

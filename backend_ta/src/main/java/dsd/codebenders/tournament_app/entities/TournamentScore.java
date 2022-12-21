@@ -73,6 +73,14 @@ public class TournamentScore {
         return forfeit;
     }
 
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public void setLeaguePoints(Integer leaguePoints) {
+        this.leaguePoints = leaguePoints;
+    }
+
     public void forfeit() {
         this.forfeit = true;
     }
