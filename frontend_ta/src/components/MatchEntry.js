@@ -35,8 +35,10 @@ export class MatchEntry extends React.Component {
             if (response.status === 200) {
                 response.result.id=response.result.id*1 // convert from string to integer
               this.setState({currentMatch: response.result,badResponse:null});
+
               
             }
+
              else this.setState({ badResponse: response.message });
             }
             );
@@ -44,10 +46,15 @@ export class MatchEntry extends React.Component {
         }
     
     render() { 
+
        
+
         if(this.state.frameactive) return  <GoToPlayPage info={this.state.currentMatch} />;
         if(this.state.streamactive) return <GoToStreamingPage info={this.props.record}/>
         if (this.state.badResponse!=null) return (<GoToErrorPage path="/error" message={this.state.badResponse} />)
+
+        
+
         let playbutton;
         if(this.state.currentMatch!=null && this.state.currentMatch.result==="ongoing match found" && this.props.record.id===this.state.currentMatch.id ){
            

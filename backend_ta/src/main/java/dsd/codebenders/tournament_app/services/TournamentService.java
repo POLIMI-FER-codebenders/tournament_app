@@ -234,6 +234,17 @@ public class TournamentService {
         return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
     }
 
+    public Integer getPhaseOneDuration() {
+        return phaseOneDuration;
+    }
+
+    public Integer getPhaseTwoDuration() {
+        return phaseTwoDuration;
+    }
+
+    public Integer getPhaseThreeDuration() {
+        return phaseThreeDuration;
+    }
 
     public RoundClassChoice postRoundChoice(ClassChoiceRequest classChoiceRequest, Player loggedPlayer) {
         Tournament tournament = tournamentRepository.findById(classChoiceRequest.getIdTournament()).orElseThrow(() -> new BadRequestException("Tournament doesn't exist."));

@@ -38,9 +38,9 @@ export function CreateTournament() {
   }
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(!(numberofteams >= 2 && numberofteams <= 16));
+    
     let data = { name: name, numberOfTeams: numberofteams, teamSize: size, type: type, matchType: gametype }
-    if(name.length>255) setCreationMessage("tournament successfully created");
+    if(name.length>255) setCreationMessage("maximum name size  is 255");
     else if(!(size>=1 && size<=16))setCreationMessage("team sizes must be from 1 to 16");
     else if(type==="KNOCKOUT" && !(numberofteams>=2 && numberofteams<=16))setCreationMessage("number of teams for knockout must be even  from 2 to 16 ");
     else if(type==="LEAGUE" && !(numberofteams>=2 && numberofteams<=8))setCreationMessage("number of teams for league must be even from 2 to 8 ");
