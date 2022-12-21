@@ -25,21 +25,14 @@ export class MatchEntry extends React.Component {
     
     componentDidMount(){
         if(sessionStorage.getItem("username")!=null){
-        // getData("/api/match/current_match").then((response) => {
-        //     if (response.status === 200) {
-        //       this.setState({currentMatch: response.result,badResponse:null});
-        //       console.log(response.result);}
-        //      else this.setState({ badResponse: response.message });
-        //     }
-        //     );
-        //   }
-          const data = [
-            { "name": "the code league", "date": "16.10.2022", "status": "started","type":"league","teamsize":8 },
-            { "name": "cr tour", "date": "14.10.2022", "status": "not started","type":"knockout","teamsize":12},
-            { "name": "Chunin tour ", "date": "14.10.2022", "status": "started","type":"knockout","teamsize":4 }
-          ]
-          this.setState({currentMatch: data,badResponse:null});
-        }
+        getData("/api/match/current_match").then((response) => {
+            if (response.status === 200) {
+              this.setState({currentMatch: response.result,badResponse:null});
+              console.log(response.result);}
+             else this.setState({ badResponse: response.message });
+            }
+            );
+          }
     }
     
     render() { 
