@@ -1,4 +1,4 @@
-import { Component, useState } from "react";
+import { Component } from "react";
 import ListPlayers from "./ListPlayers";
 import postData from '../utils';
 import { getData } from "../utils";
@@ -146,16 +146,16 @@ class ManageTeams extends Component {
   }
 
   renderErrorMessage() {
-    if (this.state.errorMessage == null) return;
+    if (this.state.errorMessage === null) return;
     return (
-      <p>{this.state.errorMessage}</p>
+      <p className='error'>{this.state.errorMessage}</p>
     );
   }
 
 
   render() {
-    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.errorMessage == "Empty response") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.errorMessage === "Empty response") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <div className="main-panel">
         <h2>Team Management</h2>

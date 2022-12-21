@@ -1,5 +1,59 @@
-#iframe 
-{
- width:100vw;
- height:100vw;
+#iframediv {
+    width: 100vw;
+    height: 95vh;
 }
+
+#iframe {
+    width: 100%;
+    height: 100%;
+    border: 1px ridge #509dca;
+}
+
+
+#backlink {
+    
+    color: #ffffff;
+    text-decoration: none;
+    margin-left: 1vw;
+}
+
+#backlink:hover {
+    color: #ffffff;
+
+}
+
+#framemenu {
+    border: 1px solid #03a9f4;
+    height: 5vh;
+    background-color: #03a9f4;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#clock {
+    margin-left: 1vw;
+    width: 4.5vh;
+    height: 4.5vh;
+}
+
+#time {
+    margin-left: 1vw;
+    color: #ffffff;
+}
+
+/*
+#clock{
+    
+  margin-left:20vw;
+  margin-top:-3vh;
+  margin-bottom:4vh;
+  width:4.5vh;
+  height:4.5vh;
+}
+#time{
+    margin-left:40vw;
+    margin-top:-3vh;
+    margin-bottom:4vh;
+}
+*/
