@@ -27,7 +27,7 @@ public class EndMatchTask implements Runnable {
     private final Match match;
     private final MatchService matchService;
     private final TournamentService tournamentService;
-    private final TournamentScheduler tournamentScheduler;
+    private final TournamentSchedulerService tournamentSchedulerService;
     private final Logger logger = LoggerFactory.getLogger(EndMatchTask.class);
 
     public EndMatchTask(Match match, MatchService matchService, TournamentService tournamentService, TournamentSchedulerService tournamentSchedulerService) {
