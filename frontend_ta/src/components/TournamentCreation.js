@@ -49,7 +49,6 @@ export function CreateTournament() {
   }
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(!(numberofteams >= 2 && numberofteams <= 16));
     setSuccess("error");
     let data = { name: name, numberOfTeams: numberofteams, teamSize: size, type: type, matchType: gametype }
     if (name.length > 255) {
