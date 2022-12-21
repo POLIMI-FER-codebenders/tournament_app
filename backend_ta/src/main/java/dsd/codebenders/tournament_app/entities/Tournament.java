@@ -1,12 +1,5 @@
 package dsd.codebenders.tournament_app.entities;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -16,6 +9,11 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.serializers.PlayerIDAndNameSerializer;
 import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({@JsonSubTypes.Type(value = LeagueTournament.class, name = "LEAGUE"), @JsonSubTypes.Type(value = KnockoutTournament.class, name = "KNOCKOUT")})
@@ -29,7 +27,7 @@ public abstract class Tournament {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long ID;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "Varchar(255)")
     protected String name;
 
     @Column(name = "number_of_teams", nullable = false)

@@ -31,7 +31,7 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "Varchar(255)")
     private String name;
     @Column(name = "max_number_of_players", nullable = false)
     private int maxNumberOfPlayers;
