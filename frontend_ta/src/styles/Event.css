@@ -1,0 +1,9 @@
+#evententrydiv {
+    display:flex;
+    flex-direction:row;    
+    
+}
+#typediv {
+    margin: auto 2px;
+    min-width: 200px;
+}

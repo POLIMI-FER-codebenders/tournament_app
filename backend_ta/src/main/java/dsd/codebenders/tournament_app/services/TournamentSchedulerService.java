@@ -1,4 +1,4 @@
-package dsd.codebenders.tournament_app.scheduler;
+package dsd.codebenders.tournament_app.services;
 
 import dsd.codebenders.tournament_app.dao.TournamentScoreRepository;
 import dsd.codebenders.tournament_app.entities.Match;
@@ -6,15 +6,17 @@ import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.entities.utils.MatchStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
-import dsd.codebenders.tournament_app.services.MatchService;
-import dsd.codebenders.tournament_app.services.TournamentService;
+import dsd.codebenders.tournament_app.tasks.DisableEquivalenceClaimsTask;
+import dsd.codebenders.tournament_app.tasks.DisableTestsAndMutantsTask;
+import dsd.codebenders.tournament_app.tasks.EndMatchTask;
+import dsd.codebenders.tournament_app.tasks.StartMatchTask;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.util.Date;
 import java.util.List;
 
-public class TournamentScheduler extends ThreadPoolTaskScheduler {
+public class TournamentSchedulerService extends ThreadPoolTaskScheduler {
 
     private final int phaseTwoDelay;
     private final int phaseThreeDelay;
@@ -22,7 +24,7 @@ public class TournamentScheduler extends ThreadPoolTaskScheduler {
     private final TournamentService tournamentService;
     private final MatchService matchService;
 
-    public TournamentScheduler(int phaseTwoDelay, int phaseThreeDelay, int matchEndingDelay, TournamentService tournamentService, MatchService matchService) {
+    public TournamentSchedulerService(int phaseTwoDelay, int phaseThreeDelay, int matchEndingDelay, TournamentService tournamentService, MatchService matchService) {
         this.phaseTwoDelay = phaseTwoDelay;
         this.phaseThreeDelay = phaseThreeDelay;
         this.matchEndingDelay = matchEndingDelay;

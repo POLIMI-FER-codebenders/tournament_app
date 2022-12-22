@@ -6,29 +6,39 @@ import { CDFrame } from "./CDFrame";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react'
 import { GoToPlayPage } from "../utils";
-
+import { GoToStreamingPage } from "../utils";
 export class MatchEntry extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentMatch:null,
             badResponse:null,
-            frameactive:false
+            frameactive:false,
+            streamactive:false
         };
         this.showCDFrame =this.showCDFrame.bind(this);
+        this.showStreaming= this.showStreaming.bind(this);
         
     }
+    
 
     showCDFrame(){
        this.setState({frameactive:true});
+    }
+
+    showStreaming(){
+        this.setState({streamactive:true});
     }
     
     componentDidMount(){
         if(sessionStorage.getItem("username")!=null){
         getData("/api/match/current_match").then((response) => {
             if (response.status === 200) {
+                response.result.id=response.result.id*1 // convert from string to integer
               this.setState({currentMatch: response.result,badResponse:null});
-              }
+
+              
+            }
+
              else this.setState({ badResponse: response.message });
             }
             );
@@ -36,19 +46,17 @@ export class MatchEntry extends React.Component {
     }
     
     render() { 
-        console.log(this.props.record);
-        console.log(this.state.currentMatch);
-        let date=new Date(this.props.record.startDate);
-        console.log(date);
-        console.log(date.getHours());
-        console.log(date.getMinutes());
-        console.log(date.getSeconds())
+
+       
 
         if(this.state.frameactive) return  <GoToPlayPage info={this.state.currentMatch} />;
+        if(this.state.streamactive) return <GoToStreamingPage info={this.props.record}/>
         if (this.state.badResponse!=null) return (<GoToErrorPage path="/error" message={this.state.badResponse} />)
+
         
+
         let playbutton;
-        if(this.state.currentMatch!=null && this.state.currentMatch.result==="ongoing match found"){
+        if(this.state.currentMatch!=null && this.state.currentMatch.result==="ongoing match found" && this.props.record.id===this.state.currentMatch.id ){
            
             playbutton=<div class="col9-matches flex-items-matches">
         <div class="btn-matches" onClick={this.showCDFrame} >Play</div>
@@ -66,7 +74,7 @@ export class MatchEntry extends React.Component {
                     <div class="col6-matches flex-items-matches">{this.props.record.status}</div>
                     <div class="col7-matches flex-items-matches"></div>
                     <div class="col8-matches flex-items-matches">
-                        <div class="btn-matches" >Live Score</div>
+                        <div class="btn-matches" onClick={this.showStreaming} >Live Score</div>
                     </div>
                     {playbutton}
                     

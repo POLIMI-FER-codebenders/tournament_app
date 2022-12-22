@@ -20,6 +20,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @Service
 public class MatchService {
 
@@ -168,6 +174,14 @@ public class MatchService {
                 .getRoundClassChoiceByTournamentAndRound(match.getTournament(), match.getRoundNumber()).getGameClass();
     }
 
+    public List<Match> getOngoingMatches() {
+        return matchRepository.findOngoingMatches();
+    }
+
+    public Match getMatchByCDGameIdAnsServer(Integer gameId, Server server) {
+        return matchRepository.findByGameIdAndServer(gameId, server);
+    }
+
     public void setFailedMatch(Match match) {
         match.setStatus(MatchStatus.FAILED);
         matchRepository.save(match);
@@ -211,6 +225,16 @@ public class MatchService {
     public void setWinner(Match match, Team winner) {
         match.setWinningTeam(winner);
         matchRepository.saveAndFlush(match);
+    }
+
+    public void setLastEventSent(Match match, Long lastEventTimestamp, Long lastEventSentTime) {
+        match.setLastScheduledEventTimestamp(lastEventTimestamp);
+        match.setLastScheduledEventSendingTime(lastEventSentTime);
+        matchRepository.save(match);
+    }
+
+    public void updateLastScoreEvent(long id, int attackersScore, int defendersScore, long timestamp) {
+        matchRepository.updateLastScoreEvent(id, attackersScore, defendersScore, timestamp);
     }
 
     public Optional<Match> findById(Long id) {

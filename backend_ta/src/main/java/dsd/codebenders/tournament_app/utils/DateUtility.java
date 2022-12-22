@@ -12,4 +12,8 @@ public class DateUtility {
         return calendar.getTime();
     }
 
+    public static Long toSeconds(Date date) {
+        return date.getTime()/1000;
+    }
+
 }
