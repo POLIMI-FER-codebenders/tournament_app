@@ -1,10 +1,8 @@
 package dsd.codebenders.tournament_app.services;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.MatchRepository;
@@ -14,11 +12,19 @@ import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.*;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MatchService {
@@ -29,6 +35,7 @@ public class MatchService {
     private final ServerService serverService;
     private final RoundClassChoiceService roundClassChoiceService;
     private final MatchRepository matchRepository;
+    private final Logger logger = LoggerFactory.getLogger(MatchService.class);
     @Value("${tournament-app.tournament-match.mutant-validator-level:moderate}")
     private String mutantValidatorLevel;
     @Value("${tournament-app.tournament-match.max-assertions-per-test:2}")
@@ -82,6 +89,7 @@ public class MatchService {
         } catch (RestClientException | JsonProcessingException e) {
             throw new MatchCreationException("Unable to start game. Caused by: " + e.getMessage());
         }
+        logger.info("Starting match " + match.getID());
         goToNextPhase(match);
     }
 
@@ -153,7 +161,8 @@ public class MatchService {
     }
 
     public List<Team> getWinnersOfRound(Tournament tournament, int roundNumber) {
-        return matchRepository.findByTournamentAndRoundNumber(tournament, roundNumber).stream().map(Match::getWinningTeam).toList();
+        List<Match> matches = matchRepository.findByTournamentAndRoundNumber(tournament, roundNumber);
+        return matches.stream().map(Match::getWinningTeam).collect(Collectors.toList());
     }
 
     public List<Match> getMatchesByTournamentAndRoundNumber(Tournament tournament, int round) {
@@ -163,6 +172,14 @@ public class MatchService {
     public GameClass getMatchClass(Match match) {
         return roundClassChoiceService
                 .getRoundClassChoiceByTournamentAndRound(match.getTournament(), match.getRoundNumber()).getGameClass();
+    }
+
+    public List<Match> getOngoingMatches() {
+        return matchRepository.findOngoingMatches();
+    }
+
+    public Match getMatchByCDGameIdAnsServer(Integer gameId, Server server) {
+        return matchRepository.findByGameIdAndServer(gameId, server);
     }
 
     public void setFailedMatch(Match match) {
@@ -177,30 +194,47 @@ public class MatchService {
             case IN_PHASE_TWO -> match.setStatus(MatchStatus.IN_PHASE_THREE);
             case IN_PHASE_THREE -> match.setStatus(MatchStatus.ENDED);
         }
-        return matchRepository.save(match);
+        return matchRepository.saveAndFlush(match);
     }
 
-    @Transactional
     public boolean setFailedMatchAndCheckRoundEnding(Match match) {
-        setFailedMatch(match);
-        long activeMatches =
-                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
-                        .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
-        return activeMatches == 0;
+        synchronized (match.getTournament()) {
+            setFailedMatch(match);
+            long activeMatches =
+                    getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
+                            .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
+            return activeMatches == 0;
+        }
     }
 
-    @Transactional
     public boolean endMatchAndCheckRoundEnding(Match match) {
-        match = goToNextPhase(match);
-        long activeMatches =
-                getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()).stream()
-                        .filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
-        return activeMatches == 0;
+        synchronized (match.getTournament()) {
+            match = goToNextPhase(match);
+            logger.info("Ended match " + match.getID());
+            List<Match> concurrentMatches = new ArrayList<>(getMatchesByTournamentAndRoundNumber(match.getTournament(), match.getRoundNumber()));
+            logger.info("Concurrent matches:");
+            for(Match m : concurrentMatches) {
+                logger.info("Match " + m.getID() + " " + m.getStatus().toString());
+            }
+            long activeMatches = concurrentMatches.stream().filter(m -> m.getStatus() != MatchStatus.ENDED && m.getStatus() != MatchStatus.FAILED).count();
+            logger.info("Number of matches still active " + activeMatches);
+            return activeMatches == 0;
+        }
     }
 
     public void setWinner(Match match, Team winner) {
         match.setWinningTeam(winner);
+        matchRepository.saveAndFlush(match);
+    }
+
+    public void setLastEventSent(Match match, Long lastEventTimestamp, Long lastEventSentTime) {
+        match.setLastScheduledEventTimestamp(lastEventTimestamp);
+        match.setLastScheduledEventSendingTime(lastEventSentTime);
         matchRepository.save(match);
+    }
+
+    public void updateLastScoreEvent(long id, int attackersScore, int defendersScore, long timestamp) {
+        matchRepository.updateLastScoreEvent(id, attackersScore, defendersScore, timestamp);
     }
 
     public Optional<Match> findById(Long id) {

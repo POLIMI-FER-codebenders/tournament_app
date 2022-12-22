@@ -29,11 +29,14 @@ public class TeamService {
     private int maxNumberOfPlayersInATeam;
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
+    private final InvitationService invitationService;
 
     @Autowired
-    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository) {
+    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository,
+                       InvitationService invitationService) {
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
+        this.invitationService = invitationService;
     }
 
     public Team findById(Long ID){
@@ -92,19 +95,24 @@ public class TeamService {
 
     public void leaveTeam(Player player) {
         Team team = player.getTeam();
-        if(team == null){
+        if (team == null) {
             throw new BadRequestException("You are not currently in any team.");
         }
-        if(team.isInTournament()){
+        if (team.isInTournament()) {
             throw new BadRequestException("You can't leave a team currently involved in a tournament.");
         }
-        if(player.getRole() == TeamRole.LEADER){
-            throw new BadRequestException("The leader can't leave the team");
+        if (player.getRole() == TeamRole.LEADER && team.getTeamMembers().size() != 1) {
+            throw new BadRequestException("The leader can't leave a team with other members");
         }
         team.removeTeamMember(player);
         player.setTeam(null);
         player.setRole(null);
         playerRepository.save(player);
+        if (team.getTeamMembers().isEmpty()) {
+            team.setPolicy(TeamPolicy.CLOSED);
+            team.setMaxNumberOfPlayers(-1);
+            invitationService.deleteAllForTeam(team);
+        }
     }
 
     public void kickMember(Player loggedPlayer, Long playerToKickId) {
@@ -126,8 +134,8 @@ public class TeamService {
         playerRepository.save(playerToKick);
     }
 
-    public List<TeamResponse> findAll() {
-        List<Team> teams = teamRepository.findAll();
+    public List<TeamResponse> findAllNotDeleted() {
+        List<Team> teams = teamRepository.findByMaxNumberOfPlayersGreaterThanEqual(0);
         return teams.stream().map(Team::serialize).collect(Collectors.toList());
     }
 

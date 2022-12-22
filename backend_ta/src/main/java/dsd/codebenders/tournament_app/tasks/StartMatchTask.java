@@ -1,19 +1,20 @@
-package dsd.codebenders.tournament_app.scheduler;
+package dsd.codebenders.tournament_app.tasks;
 
 import dsd.codebenders.tournament_app.entities.Match;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.services.MatchService;
+import dsd.codebenders.tournament_app.services.TournamentSchedulerService;
 
 public class StartMatchTask implements Runnable {
 
     private final Match match;
     private final MatchService matchService;
-    private final TournamentScheduler tournamentScheduler;
+    private final TournamentSchedulerService tournamentSchedulerService;
 
-    public StartMatchTask(Match match, MatchService matchService, TournamentScheduler tournamentScheduler) {
+    public StartMatchTask(Match match, MatchService matchService, TournamentSchedulerService tournamentSchedulerService) {
         this.match = match;
         this.matchService = matchService;
-        this.tournamentScheduler = tournamentScheduler;
+        this.tournamentSchedulerService = tournamentSchedulerService;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class StartMatchTask implements Runnable {
         } catch (MatchCreationException e) {
             System.err.println("ERROR: Match " + match.getID() + " failed while starting");
             if(matchService.setFailedMatchAndCheckRoundEnding(match)) {
-                tournamentScheduler.prepareRoundAndStartMatches(match.getTournament());
+                tournamentSchedulerService.prepareRoundAndStartMatches(match.getTournament());
             }
         }
     }
