@@ -4,18 +4,17 @@ import dsd.codebenders.tournament_app.dao.CDGameCLassRepository;
 import dsd.codebenders.tournament_app.dao.GameClassRepository;
 import dsd.codebenders.tournament_app.dao.PlayerRepository;
 import dsd.codebenders.tournament_app.dao.ServerRepository;
-import dsd.codebenders.tournament_app.entities.*;
-import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
+import dsd.codebenders.tournament_app.entities.CDGameClass;
+import dsd.codebenders.tournament_app.entities.GameClass;
+import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
