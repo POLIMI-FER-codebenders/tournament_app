@@ -1,6 +1,8 @@
 package dsd.codebenders.tournament_app.integration.authentication;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -16,11 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RegisterTest {
     @LocalServerPort
     private int port;
@@ -35,9 +39,24 @@ class RegisterTest {
     @Autowired
     private PlayerRepository playerRepository;
 
+    /*@Autowired
+    Flyway flyway;
+
+    @Autowired
+    FlywayMigrationStrategy flywayMigrationStrategy;
+
+    @BeforeAll
+    public void cleanUp(){
+        flyway.clean();
+        flywayMigrationStrategy.migrate(flyway);
+    }*/
     @Test
     @Order(1)
     void registerSuccessTest()  {
+
+        //playerRepository.delete(playerRepository.findByUsername("hrvoje459"));
+
+        //System.out.println(playerRepository.findAll());
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode user = mapper.createObjectNode();
@@ -168,6 +187,12 @@ class RegisterTest {
         String expectedRegistrationFailure = "Some registration parameters are invalid";
 
         assertEquals(expectedRegistrationFailure, registrationFailure.getBody());
+    }
+
+    @AfterAll
+    public void cleanUp(){
+        playerRepository.delete(playerRepository.findByUsername(userValid[0]));
+        Unirest.shutDown();
     }
 
     private String createURLWithPort(String uri) {

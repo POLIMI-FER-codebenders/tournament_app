@@ -4,6 +4,8 @@ import java.util.List;
 
 import dsd.codebenders.tournament_app.entities.Invitation;
 import dsd.codebenders.tournament_app.entities.Player;
+import dsd.codebenders.tournament_app.entities.utils.TeamRole;
+import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.requests.AcceptRejectInvitationRequest;
 import dsd.codebenders.tournament_app.requests.CreateInvitationRequest;
 import dsd.codebenders.tournament_app.services.InvitationService;
@@ -35,6 +37,19 @@ public class InvitationController {
         // Retrieve currently authenticated user from session and pass it as the creator
         Player player = playerService.getSelf();
         return invitationService.getPending(player);
+    }
+
+    @GetMapping(value = "/pending/team")
+    public List<Invitation> getTeamPendingInvitations() {
+        // Retrieve currently authenticated user from session and pass it as the creator
+        Player player = playerService.getSelf();
+        if (player.getTeam() == null) {
+            throw new BadRequestException("You are not part of a team");
+        }
+        if (player.getRole() != TeamRole.LEADER) {
+            throw new BadRequestException("You're not the leader of the team");
+        }
+        return invitationService.getPending(player.getTeam());
     }
 
     @PostMapping(value = "/create")

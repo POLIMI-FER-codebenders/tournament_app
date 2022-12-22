@@ -8,7 +8,6 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
-import dsd.codebenders.tournament_app.scheduler.TournamentScheduler;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class TournamentService {
@@ -38,7 +36,7 @@ public class TournamentService {
     private final TournamentScoreRepository tournamentScoreRepository;
     private final TeamRepository teamRepository;
     private final MatchService matchService;
-    private TournamentScheduler tournamentScheduler;
+    private TournamentSchedulerService tournamentSchedulerService;
     private final GameClassRepository gameClassRepository;
     private final RoundClassChoiceRepository roundClassChoiceRepository;
 
@@ -55,10 +53,10 @@ public class TournamentService {
 
     @PostConstruct
     public void init() {
-        this.tournamentScheduler = new TournamentScheduler(phaseOneDuration, phaseOneDuration + phaseTwoDuration,
+        this.tournamentSchedulerService = new TournamentSchedulerService(phaseOneDuration, phaseOneDuration + phaseTwoDuration,
                 phaseOneDuration + phaseTwoDuration + phaseThreeDuration, this, matchService);
-        this.tournamentScheduler.setPoolSize(10);
-        this.tournamentScheduler.initialize();
+        this.tournamentSchedulerService.setPoolSize(10);
+        this.tournamentSchedulerService.initialize();
     }
 
     public Tournament findById(Long ID) {
@@ -75,7 +73,7 @@ public class TournamentService {
         tournamentScoreRepository.save(tournamentScore);
         team.setInTournament(true);
         teamRepository.save(team);
-        return tournamentScheduler.prepareRoundAndStartMatches(getTournamentByID(tournament.getID()).get());
+        return tournamentSchedulerService.prepareRoundAndStartMatches(getTournamentByID(tournament.getID()).get());
     }
 
     public Tournament removeTeam(Tournament tournament, Team team) {
@@ -109,8 +107,8 @@ public class TournamentService {
                 }
             }
         }
-        logger.info("tryAdvance: to " + newStatus);
         if (newStatus != null) {
+            logger.info("tryAdvance: to " + newStatus);
             tournament.setStatus(newStatus);
             tournament = handleStatus(tournament);
         }
@@ -143,6 +141,49 @@ public class TournamentService {
             }
             case ENDED -> {
                 //TODO
+                Team winningTeam;
+                switch (tournament.getType()) {
+                    case KNOCKOUT -> {
+                        logger.info("Computing winning team for tournament " + tournament.getID() + " of type KNOCKOUT");
+                        // get the winner of the last round
+                        winningTeam = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound()).get(0);
+                    }
+                    case LEAGUE -> {
+                        logger.info("Computing winning team for tournament " + tournament.getID() + " of type LEAGUE");
+                        // compute the team that has scored the highest
+                        List<TournamentScore> tournamentScoreList = tournamentScoreRepository.findByTournament_ID(tournament.getID());
+                        tournamentScoreList.sort(Comparator.comparing(TournamentScore::getLeaguePoints).reversed());
+                        if(tournamentScoreList.size() > 1) {
+                            if(tournamentScoreList.get(0).getLeaguePoints().equals(tournamentScoreList.get(1).getLeaguePoints())) {
+                                // tie case
+                                Integer highestScore = tournamentScoreList.get(0).getLeaguePoints();
+                                List<TournamentScore> winningCandidates = tournamentScoreList.stream().filter(x -> x.getLeaguePoints().equals(highestScore)).collect(Collectors.toList());
+                                // elect a random winner among the teams having the highest score
+                                logger.info("Tournament " + tournament.getID() + " ended with a tie between two or more teams, randomly picking the winner");
+                                int randomNum = ThreadLocalRandom.current().nextInt(0, winningCandidates.size());
+                                winningTeam = winningCandidates.get(randomNum).getTeam();
+                            } else {
+                                // in the normal case, the winner is the team with the highest number of league points
+                                winningTeam = tournamentScoreList.get(0).getTeam();
+                            }
+                        } else {
+                            // there is only one team left, thus it is the automatic winner
+                            winningTeam = tournamentScoreList.get(0).getTeam();
+                        }
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + tournament.getType());
+                }
+                tournament.setWinningTeam(winningTeam);
+                logger.info("The winning team of tournament " + tournament.getID() + " is " + winningTeam.getName());
+                // clear inTournament variable for each team in the tournament
+                List<Team> teams = tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).collect(Collectors.toList());
+                logger.info("Number of teams: " + teams.size());
+                for(Team team : teams) {
+                    logger.info("Clearing variable inTournament for team " + team.getName());
+                    team.setInTournament(false);
+                    teamRepository.save(team);
+                }
+                return tournament;
             }
         }
         return tryAdvance(tournament);
@@ -155,12 +196,12 @@ public class TournamentService {
         if (tournament.getCurrentRound() == 1) {
             winners = getTournamentTeams(tournament);
         } else {
-            winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound());
+            winners = matchService.getWinnersOfRound(tournament, tournament.getCurrentRound()-1);
         }
-        logger.error(getTournamentTeams(tournament).stream().map(Team::getID).toList().toString());
-        logger.error(winners.stream().map(Team::getID).toList().toString());
-        List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().map(Team::getID).toList(), winners.stream().map(Team::getID).toList());
-        logger.error(IDs.toString());
+        logger.info(getTournamentTeams(tournament).stream().map(Team::getID).collect(Collectors.toList()).toString());
+        logger.info(winners.stream().filter(Objects::nonNull).map(Team::getID).collect(Collectors.toList()).toString());
+        List<List<Long>> IDs = tournament.scheduleMatches(getTournamentTeams(tournament).stream().filter(Objects::nonNull).map(Team::getID).collect(Collectors.toList()), winners.stream().filter(Objects::nonNull).map(Team::getID).collect(Collectors.toList()));
+        logger.info(IDs.toString());
         List<List<Team>> nextMatches = IDs.stream().map(ids -> ids.stream().map(id -> teamRepository.findById(id).get()).toList()).toList();
         boolean oneValid = false;
         Date roundStart = DateUtility.addSeconds(new Date(), breakTimeDuration);
@@ -232,7 +273,8 @@ public class TournamentService {
     }
 
     public List<Team> getTournamentTeams(Tournament tournament) {
-        return tournamentScoreRepository.findByTournament_ID(tournament.getID()).stream().map(TournamentScore::getTeam).toList();
+         List<TournamentScore> tournamentScoreList = tournamentScoreRepository.findByTournament_ID(tournament.getID());
+         return tournamentScoreList.stream().map(TournamentScore::getTeam).collect(Collectors.toList());
     }
 
     public Integer getPhaseOneDuration() {
@@ -274,5 +316,13 @@ public class TournamentService {
             tournamentRepository.save(tournament);
         }
         return roundClassChoice;
+    }
+
+    public void givePointsForWin(Tournament tournament, Team winner) {
+        TournamentScore score = tournamentScoreRepository.findByTeamAndTournament(winner, tournament)
+                .orElseThrow(IllegalStateException::new);
+        // add one point to the league points for the winner team
+        score.setLeaguePoints(score.getLeaguePoints() + 1);
+        tournamentScoreRepository.saveAndFlush(score);
     }
 }

@@ -2,6 +2,7 @@ import { Component } from "react";
 // import "../styles/listPlayers.css";
 import "../styles/teamManagement.css";
 import postData from '../utils';
+import { getData } from "../utils";
 import { GoToErrorPage } from '../utils';
 
 class ListPlayers extends Component {
@@ -12,13 +13,39 @@ class ListPlayers extends Component {
       errorMessage: "",
       badResponse: "",
       teamId: props.teamId,
-      invitNotSend: props.invitNotSend
+      invitNotSend: []
     };
+  }
+
+  componentDidMount() {
+    let invitNotSend = [];
+    this.state.players.forEach(p => {
+      invitNotSend.push(p.id);
+    });
+    getData("/api/invitation/pending/team")
+    .then((response) => {
+      if (response.status === 200) {
+        if (response.result) {
+          response.result.forEach(invite => {
+            invitNotSend = invitNotSend.filter(i => i !== invite.invitedPlayer.id)
+          });
+          this.setState({
+            invitNotSend: invitNotSend
+          })
+        }
+      }
+      else {
+        this.setState({
+          errorMessage: "the server encountered an error",
+          badResponse: response.message
+        })
+      }
+    });
   }
 
   handleSendInvite(event) {
     let url_invit = "/api/invitation/create/";
-    let data = { 
+    let data = {
       idInvitedPlayer: event.target.id,
       idTeam: this.state.teamId
     };
