@@ -19,9 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping(path = "api/tournament")
 public class TournamentController {
@@ -47,7 +44,7 @@ public class TournamentController {
     private int maxKnockoutTeamSize;
 
     @Autowired
-    public TournamentController(TeamService teamService, PlayerService playerService, TournamentService tournamentService, ClassService classService) {
+    public TournamentController(PlayerService playerService, TournamentService tournamentService, ClassService classService) {
         this.playerService = playerService;
         this.tournamentService = tournamentService;
         this.classService = classService;
