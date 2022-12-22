@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class StreamingService {
     private Long lastEventTimestamp;
 
     @Autowired
-    public StreamingService(MatchService matchService, SimpMessagingTemplate simpMessagingTemplate, ServerService serverService, CDPlayerService cdPlayerService, ThreadPoolTaskScheduler scheduler) {
+    public StreamingService(MatchService matchService, SimpMessagingTemplate simpMessagingTemplate, ServerService serverService, CDPlayerService cdPlayerService, @Qualifier("threadPoolTaskScheduler") ThreadPoolTaskScheduler scheduler) {
         this.matchService = matchService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.serverService = serverService;
