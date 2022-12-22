@@ -31,8 +31,8 @@ class TeamCreation extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    let data = { name: this.state.name, maxNumberOfPlayers: maxnumberofplayers, policy: this.state.type }
     let maxnumberofplayers = document.getElementById("sizeteam").value;
+    let data = { name: this.state.name, maxNumberOfPlayers: maxnumberofplayers, policy: this.state.type }
     if (this.state.name.length > 255) this.setState({ messageError: "the name must be 255 char maximum", messageSuccess: null  });
     else if (maxnumberofplayers > 10 || maxnumberofplayers < 1) this.setState({ messageError: "team size must be from 1 to 127", messageSuccess: null  })
     else postData("/api/team/create", data).then((response) => {
