@@ -73,7 +73,7 @@ class ClassServiceTest {
             Mockito.verify(gameClassRepository).save(Mockito.any(GameClass.class));
             Mockito.verify(cdGameClassService).addNewCDGameClass(cdGameClass);
         }
-        }
+    }
 
     @Test
     void testGetAllClasses() {
