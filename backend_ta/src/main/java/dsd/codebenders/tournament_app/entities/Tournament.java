@@ -1,6 +1,5 @@
 package dsd.codebenders.tournament_app.entities;
 
-import java.time.Instant;
 import java.util.*;
 
 import javax.persistence.*;
@@ -56,7 +55,8 @@ public abstract class Tournament {
     @Column(name = "current_round")
     protected Integer currentRound = 0;
 
-    protected Date nextRoundStartTime = new Date(); //TODO remove the default when we have scheduling
+    @Column(name = "start_date")
+    protected Date startDate;
 
     @OneToMany(mappedBy = "tournament", fetch = FetchType.EAGER)
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
@@ -104,12 +104,12 @@ public abstract class Tournament {
         return matchType;
     }
 
-    public Date getNextRoundStartTime() {
-        return nextRoundStartTime;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setNextRoundStartTime(Date nextRoundStartTime) {
-        this.nextRoundStartTime = nextRoundStartTime;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public TournamentStatus getStatus() {
