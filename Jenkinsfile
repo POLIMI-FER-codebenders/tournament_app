@@ -72,7 +72,7 @@ pipeline {
         }
         stage('Run backend tests') {
             environment {
-                CODEDEFENDERS_TEST_SERVER_TOKEN=credentials('discord_webhook_ta')
+                CODEDEFENDERS_TEST_SERVER_TOKEN=credentials('CODEDEFENDERS_TEST_SERVER_TOKEN')
             }
             when {
                 anyOf{
