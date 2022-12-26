@@ -566,7 +566,7 @@ public class TeamManagementTest {
 
 
         assertEquals(400, promoteToLeaderResponse.getStatus());
-        assertEquals("Can't promote members while team is in tournament", promoteToLeaderResponse.getBody());
+        assertEquals("Can't promote members while team is in tournament.", promoteToLeaderResponse.getBody());
         assertEquals("MEMBER", playerService.findByUsername(player6.getUsername()).getRole().toString());
     }
 
