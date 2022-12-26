@@ -55,18 +55,12 @@ export default function Streaming(props) {
             setDefendersPoints(msg.defendersScore);
         }
         let eventscopy = events;
-        if (eventscopy.length == 10) eventscopy.pop();
-
-        console.log(eventscopy);
+        if (eventscopy.length == 10) eventscopy.pop(); 
         eventscopy.push(msg);
-        setEvents(eventscopy)
-        console.log(msg);
-        console.log(events);
-   
-
+        setEvents(eventscopy);
     }
 
-    console.log('/live/' + location.state.info.id);
+    console.log( location.state.info);
     return (
         <>
             <SockJsClient
@@ -81,20 +75,18 @@ export default function Streaming(props) {
                 }
                 debug={false}
             />
-            <div id="streamingheader"></div>
+            <div id="streamingheader">{location.state.info.status}</div>
             <div id="scorediv">
                 <div id="firstteam" >
-                    <h2 className="streamingheading">{location.state.info.attackersTeam.name}</h2>
-
-                    <h3 className="streamingscore">{attackersPoints}</h3>
-
+                    <div className="streamingheading">{location.state.info.attackersTeam.name}</div>
+                    <div className="streamingscore">{attackersPoints}</div>
                 </div>
                 <div id="middleteamzone" >
                     <img id="cdlogo" src={cdlogo}></img>
                 </div>
                 <div id="secondteam">
-                    <h2 className="streamingheading">{location.state.info.defendersTeam.name}</h2>
-                    <h3 className="streamingscore">{defendersPoints}</h3>
+                    <div className="streamingheading">{location.state.info.defendersTeam.name}</div>
+                    <div className="streamingscore">{defendersPoints}</div>
                 </div>
             </div>
             <div

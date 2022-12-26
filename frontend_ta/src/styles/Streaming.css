@@ -3,6 +3,10 @@
     border-color: black;
     border-style: solid;
     border-width: 1px;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 
 }
 #scorediv{
@@ -49,7 +53,7 @@
 }
 .streamingheading{
  
- font-size: medium;
+ font-size:25px;
  
 }
 
@@ -67,12 +71,12 @@
 }
 .streamingscore{
 
-font-size:40px;
+font-size:100px;
        
  }
 
  #eventsdiv{
-    height:40vh;
+    
     display: flex;
     padding-left: 10px;
     margin-bottom: 5px;
