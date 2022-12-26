@@ -18,6 +18,7 @@ import kong.unirest.Unirest;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -25,6 +26,7 @@ import org.springframework.security.web.server.ServerRedirectStrategy;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,6 +44,8 @@ public class JoinTournamentTest {
     private TeamRepository teamRepository;
     @Autowired
     private TournamentService tournamentService;
+    @Value("${code-defenders.default-servers.token:}")
+    private String defaultServersToken;
 
     private Player teamOneLeader = new Player("playerOneLeader", "pol@pol.pl", "testTestT1");
     private Player teamOneMember= new Player("playerTwoMember", "ptm@ptm.pl", "testTestT1");
@@ -396,6 +400,7 @@ public class JoinTournamentTest {
     @Test
     @Order(6)
     void secondTeamJoinTournamentTournamentStartTest(){
+        assumeTrue(defaultServersToken != null && !defaultServersToken.isEmpty());
         // Login as teamTwoLeader
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
