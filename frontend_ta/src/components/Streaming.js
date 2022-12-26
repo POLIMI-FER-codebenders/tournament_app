@@ -6,6 +6,7 @@ import { getData } from "../utils.js"
 import React, { useState } from 'react';
 import '../styles/Streaming.css';
 import cdlogo from '../images/cdlogo.png';
+import background from '../images/background1.jpg';
 import SockJsClient from 'react-stomp';
 import { EventEntry } from "./EventEntry.js";
 const SOCKET_URL = '/watch';
@@ -16,28 +17,41 @@ export default function Streaming(props) {
     const[trigger,SetTrigger]=useState(false);
     const location = useLocation();
     let navigate = useNavigate();
-
-
+    function RetrievePhase(){
+        if(location.state.info.status==="CREATED") return "Match in break time";
+        else if(location.state.info.status==="IN_PHASE_ONE") return "Match in phase one";
+        else if(location.state.info.status==="IN_PHASE_TWO") return "Match in phase two";
+        else if(location.state.info.status==="IN_PHASE_THREE") return "Match in phase three";
+        else if(location.state.info.status==="ENDED") return "Match Ended";
+        else return location.state.info.status;
+    }
+     
     useEffect(() => {
-        console.log(location.state);
+        let page = document.getElementsByTagName("body")[0];
+        page.className="backgroundstreaming"
+        page.style.backgroundImage =  '../images/background1.jpg'
+        page.style.backgroundSize ="cover";
+    
         if (location.state === null) navigate("/");
         else {
 
             getData("/streaming/score?matchId=" + location.state.info.id).then((response) => {
                 if (response.status === 200) {
-                    setAttackersPoints(response.result.attackersScore);
-                    setDefendersPoints(response.result.defendersScore);
-                    /*
+                    setAttackersPoints(response.result.attackersScore * 1);  //converting string to integer
+                    setDefendersPoints(response.result.defendersScore * 1);
+                    location.state.info.status=response.result.status;
+                    
+                    
                     let testevententry = {
                         attackersScore: null, defendersScore: null, timestamp: 1671560242,
                         type: "DEFENDER_TEST_CREATED", user: "y99"
                     }
                     let testevent=[];
-                    for(let i = 0; i < 2; i++){
+                    for(let i = 0; i < 9; i++){
                         testevent.push(testevententry);
                     }
                     setEvents(testevent);
-                    */
+                    
 
                 }
                 else navigate("/error", { state: { message: response.message } });
@@ -45,7 +59,7 @@ export default function Streaming(props) {
         }
     }, [])
     let onConnected = () => {
-        console.log("Connected!!")
+        console.log("Connected!!");
     }
 
     let OnMessageReceived = (msg) => {
@@ -75,7 +89,10 @@ export default function Streaming(props) {
                 }
                 debug={false}
             />
-            <div id="streamingheader">{location.state.info.status}</div>
+            <div id="streamingheader">
+            <a href="http://localhost:3000" id="backlinkstreaming">Back To Tournament Application</a>
+                <div id="phaseheader">{RetrievePhase()}</div>
+                </div>
             <div id="scorediv">
                 <div id="firstteam" >
                     <div className="streamingheading">{location.state.info.attackersTeam.name}</div>

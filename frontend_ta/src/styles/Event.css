@@ -1,6 +1,9 @@
 #evententrydiv {
     display:flex;
-    flex-direction:row;    
+    flex-direction:row; 
+    font-size:30px;
+    font-family: Harrington;
+    font-weight: bold;    
     
 }
 #typediv {

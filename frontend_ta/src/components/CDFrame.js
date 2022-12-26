@@ -171,7 +171,6 @@ export function CDFrame(props) {
       let cdurl = datarender.server + "/login?token=" + datarender.token    + "&nextUrl=" +datarender.server+ "/multiplayergame?gameId=" + datarender.cdId;
       return (
         <div id="maindiv">
-
           <div id="framemenu">
             <a href="http://localhost:3000" id="backlink">Back To Tournament Application</a>
             <img id="clock" src={clock}></img>
