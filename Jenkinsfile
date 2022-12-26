@@ -71,6 +71,9 @@ pipeline {
             }
         }
         stage('Run backend tests') {
+            environment {
+                CODEDEFENDERS_TEST_SERVER_TOKEN=credentials('discord_webhook_ta')
+            }
             when {
                 anyOf{
                     branch 'master'
