@@ -99,9 +99,12 @@ export class EventEntry extends React.Component {
      return description;
     }
     render() {
+        let classname="";
+        if(this.props.record.type.startsWith("ATTACKER"))classname="red";
+        else if(this.props.record.type.startsWith("DEFENDER")) classname="blue"
         return (
             <> <div id="evententrydiv">
-                <div id="typediv">{this.RetrieveEventDescription()}</div>
+                <div id="typediv" className={classname}>{this.RetrieveEventDescription()}</div>
                 
                 </div>
             </>

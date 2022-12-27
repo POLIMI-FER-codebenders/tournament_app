@@ -1,8 +1,6 @@
 #streamingheader{
     height:10vh;
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
+    
 }
 #phaseheader{
     font-family: Harrington;
@@ -16,10 +14,7 @@
 }
 #scorediv{
     height:50vh;
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-    display:flex;
+    display:flex;  
 }
 /*
 background-color: #47c2ff;
@@ -32,23 +27,29 @@ background-size: cover;
 #firstteam{
     width: 45vw;
     height:100%;
-    border-color: black;
+    border-color: rgb(204, 14, 14);
     border-style: solid;
-    border-width: 1px;
     display:flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    border-radius: 40px;
+    overflow:hidden;
+    position: relative;
     
 }
 #middleteamzone{
     width: 10vw;
     height:100%;
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-    display:flex;
-    align-items: center;
+   border-left-style:none;
+   border-right-style: none;
+   border-top-style:solid ;
+   border-bottom-style:solid;
+   border-top-color:rgb(50, 12, 187);
+   border-bottom-color:rgb(204, 14, 14);
+   border-radius: 40px;
+   display:flex;
+   align-items: center;
     justify-content: center;
     
 
@@ -56,9 +57,9 @@ background-size: cover;
 #secondteam{
     width: 45vw;
     height:100%;
-    border-color: black;
+    border-color: rgb(50, 12, 187);
+    border-radius:40px;
     border-style: solid;
-    border-width: 1px;
     display:flex;
     align-items: center;
     justify-content: center;
@@ -104,5 +105,32 @@ font-weight: bold;
 #backlinkstreaming:hover {
     color: #ffffffde;
 }
+/*
+#firstteam:before{
+    content:'';
+    position:absolute;
+    width: 150%;
+    height: 100px;
+    background:linear-gradient(
+        rgb(204, 14, 14),rgb(77, 2, 2)
+    );
+    animation: rotate 4s linear infinite;   
+}
 
+#firstteam:after{
+    content:'';
+    position:absolute;
+
+}
+
+
+@keyframes rotate{
+    0%{
+        transform:rotate(0deg)
+    }
+    100%{
+        transform: rotate(360deg)
+    }
+}   
+*/
  

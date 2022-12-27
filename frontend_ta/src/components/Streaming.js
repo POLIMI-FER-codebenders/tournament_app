@@ -28,9 +28,7 @@ export default function Streaming(props) {
      
     useEffect(() => {
         let page = document.getElementsByTagName("body")[0];
-        page.className="backgroundstreaming"
-        page.style.backgroundImage =  '../images/background1.jpg'
-        page.style.backgroundSize ="cover";
+        page.className="backgroundstreaming";
     
         if (location.state === null) navigate("/");
         else {
@@ -41,7 +39,7 @@ export default function Streaming(props) {
                     setDefendersPoints(response.result.defendersScore * 1);
                     location.state.info.status=response.result.status;
                     
-                    
+                    /*                 
                     let testevententry = {
                         attackersScore: null, defendersScore: null, timestamp: 1671560242,
                         type: "DEFENDER_TEST_CREATED", user: "y99"
@@ -51,12 +49,16 @@ export default function Streaming(props) {
                         testevent.push(testevententry);
                     }
                     setEvents(testevent);
-                    
+                    */
 
                 }
                 else navigate("/error", { state: { message: response.message } });
             })
         }
+        return function cleanup() {
+            let page = document.getElementsByTagName("body")[0];
+            page.className="";
+          }
     }, [])
     let onConnected = () => {
         console.log("Connected!!");
@@ -68,13 +70,16 @@ export default function Streaming(props) {
             setAttackersPoints(msg.attackersScore);
             setDefendersPoints(msg.defendersScore);
         }
+        if(msg.type==="GAME_STARTED") location.state.info.status="IN_PHASE_ONE";
+        if(msg.type==="GAME_GRACE_ONE") location.state.info.status="IN_PHASE_TWO";
+        if(msg.type==="GAME_GRACE_TWO") location.state.info.status="IN_PHASE_THREE";
+        if(msg.type==="GAME_FINISHED") location.state.info.status="ENDED"
+        
         let eventscopy = events;
-        if (eventscopy.length == 10) eventscopy.pop(); 
+        if (eventscopy.length == 7) eventscopy.shift(); 
         eventscopy.push(msg);
         setEvents(eventscopy);
     }
-
-    console.log( location.state.info);
     return (
         <>
             <SockJsClient

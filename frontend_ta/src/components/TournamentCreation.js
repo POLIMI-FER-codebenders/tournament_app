@@ -159,7 +159,7 @@ export function CreateTournament() {
         <h3>Upload classes </h3>
         <form id="formclassupload" encType="multipart/form-data" onSubmit={handleClassSubmit}>
           <div class="input-container">
-            <input id="file" type="file" multiple />
+            <input id="file" type="file" multiple required />
           </div>
           <div className="button-container uploadclassbutton">
             <input type="submit" value="Upload" />
