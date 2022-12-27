@@ -26,7 +26,7 @@ import org.springframework.test.context.event.annotation.BeforeTestMethod;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-integration.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
