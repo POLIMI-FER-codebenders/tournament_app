@@ -143,6 +143,9 @@ public class TeamService {
     }
 
     public void promoteToLeader(Player playerLogged, Player playerToPromote) {
+        if(playerLogged.getTeam().isInTournament()){
+            throw new BadRequestException("Can't promote members while team is in tournament.");
+        }
         if(playerLogged.getRole() != TeamRole.LEADER) {
             throw new BadRequestException("Only the leader can promote other members.");
         }
