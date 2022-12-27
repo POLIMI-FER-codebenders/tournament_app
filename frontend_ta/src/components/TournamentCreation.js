@@ -9,7 +9,6 @@ export function CreateTournament() {
   const [type, setType] = useState("KNOCKOUT");
   const [size, setSize] = useState(1);
   const [numberofteams, setnumberofteams] = useState(2);
-  const [gametype, setgameType] = useState("MULTIPLAYER");
   const [creationMessage, setCreationMessage] = useState("")
   const [success, setSuccess] = useState("")
   const [numberofteamstext, setnumberofteamstext] = useState("Must be a power of 2 between 2 and 16")
@@ -24,9 +23,6 @@ export function CreateTournament() {
       setSize(event.target.value);
     else if (eventsource === "numberteams")
       setnumberofteams(event.target.value);
-    else if (eventsource === "gametype") {
-      setgameType(event.target.value);
-    }
     else if (eventsource === "tourtype") {
       if (event.target.value === "KNOCKOUT") {
         setnumberofteamstext("Must be a power of 2 between 2 and 16");
@@ -50,7 +46,7 @@ export function CreateTournament() {
   const handleSubmit = (event) => {
     event.preventDefault();
     setSuccess("error");
-    let data = { name: name, numberOfTeams: numberofteams, teamSize: size, type: type, matchType: gametype }
+    let data = { name: name, numberOfTeams: numberofteams, teamSize: size, type: type, matchType: "MULTIPLAYER" }
     if (name.length > 255) {
       setCreationMessage("maximum name size  is 255");
     }
@@ -116,13 +112,6 @@ export function CreateTournament() {
             <select className="selector" name="tourtype" id="typeselector" value={type} onChange={handleChange}>
               <option value="KNOCKOUT">Knockout</option>
               <option value="LEAGUE">League</option>
-            </select>
-          </div>
-          <div className="input-container">
-            <label htmlFor="gametypeselector">Type of game</label>
-            <select class="selector" name="gametype" id="gametypeselector" value={gametype} onChange={handleChange}>
-              <option value="MELEE">Melee</option>
-              <option value="MULTIPLAYER">Multiplayer</option>
             </select>
           </div>
           <div className="input-container">

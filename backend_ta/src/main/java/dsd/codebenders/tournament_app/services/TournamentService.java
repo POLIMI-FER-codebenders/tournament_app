@@ -8,6 +8,7 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
+import dsd.codebenders.tournament_app.tasks.StartTournamentTask;
 import dsd.codebenders.tournament_app.utils.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 @Service
 public class TournamentService {
 
+    @Value("${tournament-app.tournament.class-selection-time-duration:60}")
+    private int classSelectionTimeDuration;
     @Value("${tournament-app.tournament-match.break-time-duration:10}")
     private int breakTimeDuration;
     @Value("${tournament-app.tournament-match.phase-one-duration:10}")
@@ -90,9 +93,17 @@ public class TournamentService {
         switch (tournament.getStatus()) {
             case TEAMS_JOINING -> {
                 if (getTournamentTeams(tournament).size() == tournament.getNumberOfTeams()) {
-                    checkRoundClassChoiceCompleteness(tournament);
-                    newStatus = TournamentStatus.SCHEDULING;
+                    tournament.setStatus(TournamentStatus.SELECTING_CLASSES);
+                    Date startDate = DateUtility.addSeconds(new Date(), classSelectionTimeDuration);
+                    tournament.setStartDate(startDate);
+                    tournament = tournamentRepository.save(tournament);
+                    tournamentSchedulerService.schedule(new StartTournamentTask(tournament, tournamentSchedulerService), startDate);
+                    return tournament;
                 }
+            }
+            case SELECTING_CLASSES -> {
+                checkRoundClassChoiceCompleteness(tournament);
+                newStatus = TournamentStatus.SCHEDULING;
             }
             case IN_PROGRESS -> {
                 List<Match> roundMatches = matchService.getMatchesByTournamentAndRoundNumber(tournament, tournament.getCurrentRound());
@@ -294,7 +305,7 @@ public class TournamentService {
         if(!tournament.getCreator().equals(loggedPlayer)){
             throw new BadRequestException("Only the creator of the tournament can upload class choices.");
         }
-        if(tournament.getStatus() != TournamentStatus.TEAMS_JOINING){
+        if(tournament.getStatus() != TournamentStatus.TEAMS_JOINING && tournament.getStatus() != TournamentStatus.SELECTING_CLASSES){
             throw new BadRequestException("Class choices can be uploaded only during TEAMS_JOINING phase.");
         }
         if(classChoiceRequest.getRoundNumber() <= 0 || tournament.getNumberOfRounds() < classChoiceRequest.getRoundNumber()){

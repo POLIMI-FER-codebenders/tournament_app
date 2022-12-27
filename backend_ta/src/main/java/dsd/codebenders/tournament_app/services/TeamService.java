@@ -47,6 +47,9 @@ public class TeamService {
         if(creator.getTeam() != null){
             throw new BadRequestException("You are already in a team, you can't create a new one.");
         }
+        if(team.getName() == null || team.getName().isEmpty() || team.getName().length() > 255) {
+            throw new BadRequestException("Team name is invalid");
+        }
         if(team.getMaxNumberOfPlayers() > maxNumberOfPlayersInATeam){
             throw new BadRequestException("Maximum size of the team created goes beyond the maximum limit, set to " + maxNumberOfPlayersInATeam + ".");
         }
@@ -140,6 +143,9 @@ public class TeamService {
     }
 
     public void promoteToLeader(Player playerLogged, Player playerToPromote) {
+        if(playerLogged.getTeam().isInTournament()){
+            throw new BadRequestException("Can't promote members while team is in tournament.");
+        }
         if(playerLogged.getRole() != TeamRole.LEADER) {
             throw new BadRequestException("Only the leader can promote other members.");
         }
