@@ -45,12 +45,12 @@ public class CreateTournamentTest {
     private Player playerTC = new Player("playerTournamentCreator", "ptc@ptc.pl", "testTestT1");
 
     // {name, teamSize, numberOfTeams, type, matchType}
-    private String[] knockoutTournamentCorrectInfo = {"knockoutTournament", "1", "2", "KNOCKOUT", "MELEE"};
-    private String[] leagueTournamentCorrectInfo = {"leagueTournament", "1", "2", "LEAGUE", "MELEE"};
-    private String[] tournamentInfoInvalidType = {"tournamentName", "1", "2", "KNOCKOUTt", "MELEE"};
-    private String[] tournamentInfoInvalidMatchType = {"tournamentName", "1", "2", "KNOCKOUT", "MELEEe"};
-    private String[] tournamentInfoKnockoutPowerOfTwo = {"tournamentName", "1", "3", "KNOCKOUT", "MELEE"};
-    private String[] tournamentInfoMinTeamSize   = {"tournamentName", "0", "2", "KNOCKOUT", "MELEE"};
+    private String[] knockoutTournamentCorrectInfo = {"knockoutTournament", "1", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] leagueTournamentCorrectInfo = {"leagueTournament", "1", "2", "LEAGUE", "MULTIPLAYER"};
+    private String[] tournamentInfoInvalidType = {"tournamentName", "1", "2", "KNOCKOUTt", "MULTIPLAYER"};
+    private String[] tournamentInfoInvalidMatchType = {"tournamentName", "1", "2", "KNOCKOUT", "MULTIPLAYERr"};
+    private String[] tournamentInfoKnockoutPowerOfTwo = {"tournamentName", "1", "3", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoMinTeamSize   = {"tournamentName", "0", "2", "KNOCKOUT", "MULTIPLAYER"};
 
 
     @BeforeAll
