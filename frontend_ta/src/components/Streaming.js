@@ -8,7 +8,7 @@ import '../styles/Streaming.css';
 import cdlogo from '../images/cdlogo.png';
 import SockJsClient from 'react-stomp';
 import { EventEntry } from "./EventEntry.js";
-const SOCKET_URL = '/watch';
+const SOCKET_URL = process.env.REACT_APP_BACKEND_ADDRESS + '/watch';
 export default function Streaming(props) {
     const [attackersPoints, setAttackersPoints] = useState(0);
     const [defendersPoints, setDefendersPoints] = useState(0);
