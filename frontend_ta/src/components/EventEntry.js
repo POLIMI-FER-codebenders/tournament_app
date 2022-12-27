@@ -72,7 +72,9 @@ export class EventEntry extends React.Component {
         description= "New Scores";
         break;
      }
-     let date = new Date(this.props.record.timestamp);
+    
+     let date = new Date(this.props.record.timestamp * 1000);
+     
      let hours = date.getHours();
      let minutes = date.getMinutes();
      let seconds =  date.getSeconds();
