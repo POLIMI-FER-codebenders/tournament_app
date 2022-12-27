@@ -57,9 +57,9 @@ public class JoinTournamentTest {
     private String[] teamTwoInfo = {"TeamTwo", "2", "OPEN"};
 
     // {name, teamSize, numberOfTeams, type, matchType}
-    private String[] firstTournamentInfo = {"firstTournament", "2", "2", "KNOCKOUT", "MELEE"};
-    private String[] secondTournamentInfo = {"secondTournament", "2", "2", "KNOCKOUT", "MELEE"};
-    private String[] thirdTournamentInfo = {"thirdTournament", "1", "2", "KNOCKOUT", "MELEE"};
+    private String[] firstTournamentInfo = {"firstTournament", "2", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] secondTournamentInfo = {"secondTournament", "2", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] thirdTournamentInfo = {"thirdTournament", "1", "2", "KNOCKOUT", "MULTIPLAYER"};
 
     @BeforeAll
     void addPlayersAndTeams() throws InterruptedException {

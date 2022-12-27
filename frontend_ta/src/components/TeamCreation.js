@@ -21,7 +21,7 @@ class TeamCreation extends Component {
       return ( <p className='success'>{this.state.messageSuccess}</p>);
     }
     else if (this.state.messageError !== null && this.state.messageSuccess === null) {
-      return (<p className='error'>{this.state.messageError}</p>); 
+      return (<p className='error'>{this.state.messageError}</p>);
     } else return
   }
 
@@ -32,10 +32,10 @@ class TeamCreation extends Component {
   handleSubmit(event) {
     event.preventDefault();
     let maxnumberofplayers = document.getElementById("sizeteam").value;
+    let data = { name: this.state.name, maxNumberOfPlayers: maxnumberofplayers, policy: this.state.type }
     if (this.state.name.length > 255) this.setState({ messageError: "the name must be 255 char maximum", messageSuccess: null  });
     else if (maxnumberofplayers > 10 || maxnumberofplayers < 1) this.setState({ messageError: "team size must be from 1 to 127", messageSuccess: null  })
-    let data = { name: this.state.name, maxNumberOfPlayers: maxnumberofplayers, policy: this.state.type }
-    postData("/api/team/create", data).then((response) => {
+    else postData("/api/team/create", data).then((response) => {
       if (response.status === 200) {
         this.setState({ messageSuccess: "team successfully created", messageError: null });
       }

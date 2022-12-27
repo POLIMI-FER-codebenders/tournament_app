@@ -26,7 +26,7 @@ public abstract class Tournament {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long ID;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "Varchar(255)")
     protected String name;
 
     @Column(name = "number_of_teams", nullable = false)
