@@ -57,7 +57,7 @@ public class TeamManagementTest {
 
 
     // {name, teamSize, numberOfTeams, type, matchType}
-    private String[] player8TournamentInfo = {"player8tournament", "2", "2", "KNOCKOUT", "MELEE"};
+    private String[] player8TournamentInfo = {"player8tournament", "2", "2", "KNOCKOUT", "MULTIPLAYER"};
 
 
     @BeforeAll
