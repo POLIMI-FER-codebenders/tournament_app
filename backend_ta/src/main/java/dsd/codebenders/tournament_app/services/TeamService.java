@@ -29,11 +29,14 @@ public class TeamService {
     private int maxNumberOfPlayersInATeam;
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
+    private final InvitationService invitationService;
 
     @Autowired
-    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository) {
+    public TeamService(TeamRepository teamRepository, PlayerRepository playerRepository,
+                       InvitationService invitationService) {
         this.teamRepository = teamRepository;
         this.playerRepository = playerRepository;
+        this.invitationService = invitationService;
     }
 
     public Team findById(Long ID){
@@ -43,6 +46,9 @@ public class TeamService {
     public Team createTeam(Team team, Player creator) {
         if(creator.getTeam() != null){
             throw new BadRequestException("You are already in a team, you can't create a new one.");
+        }
+        if(team.getName() == null || team.getName().isEmpty() || team.getName().length() > 255) {
+            throw new BadRequestException("Team name is invalid");
         }
         if(team.getMaxNumberOfPlayers() > maxNumberOfPlayersInATeam){
             throw new BadRequestException("Maximum size of the team created goes beyond the maximum limit, set to " + maxNumberOfPlayersInATeam + ".");
@@ -59,6 +65,7 @@ public class TeamService {
         team.setInTournament(false);
         team.setDateOfCreation(LocalDate.now());
 
+        creator.addTeamCreated(team);
         creator.setTeam(team);
         creator.setRole(TeamRole.LEADER);
         return teamRepository.save(team);
@@ -78,6 +85,7 @@ public class TeamService {
         if(team.getTeamMembers().contains(player)){
             throw new BadRequestException("You are already part of the team!");
         }
+        team.addTeamMember(player);
         player.setTeam(team);
         player.setRole(TeamRole.MEMBER);
         playerRepository.save(player);
@@ -90,22 +98,27 @@ public class TeamService {
 
     public void leaveTeam(Player player) {
         Team team = player.getTeam();
-        if(team == null){
+        if (team == null) {
             throw new BadRequestException("You are not currently in any team.");
         }
-        if(team.isInTournament()){
+        if (team.isInTournament()) {
             throw new BadRequestException("You can't leave a team currently involved in a tournament.");
         }
-        if(player.getRole() == TeamRole.LEADER){
-            throw new BadRequestException("The leader can't leave the team");
+        if (player.getRole() == TeamRole.LEADER && team.getTeamMembers().size() != 1) {
+            throw new BadRequestException("The leader can't leave a team with other members");
         }
+        team.removeTeamMember(player);
         player.setTeam(null);
         player.setRole(null);
         playerRepository.save(player);
+        if (team.getTeamMembers().isEmpty()) {
+            team.setPolicy(TeamPolicy.CLOSED);
+            team.setMaxNumberOfPlayers(-1);
+            invitationService.deleteAllForTeam(team);
+        }
     }
 
-    public void kickMember(String loggedPlayerUsername, Long playerToKickId) {
-        Player loggedPlayer = playerRepository.findByUsername(loggedPlayerUsername);
+    public void kickMember(Player loggedPlayer, Long playerToKickId) {
         Player playerToKick = playerRepository.findById(playerToKickId).orElseThrow(() -> new BadRequestException("Player doesn't exist."));
         Team team = loggedPlayer.getTeam();
 
@@ -118,17 +131,21 @@ public class TeamService {
         if(team.isInTournament()){
             throw new BadRequestException("You can't kick out players while the team is involved in a tournament.");
         }
+        team.removeTeamMember(playerToKick);
         playerToKick.setTeam(null);
         playerToKick.setRole(null);
         playerRepository.save(playerToKick);
     }
 
-    public List<TeamResponse> findAll() {
-        List<Team> teams = teamRepository.findAll();
+    public List<TeamResponse> findAllNotDeleted() {
+        List<Team> teams = teamRepository.findByMaxNumberOfPlayersGreaterThanEqual(0);
         return teams.stream().map(Team::serialize).collect(Collectors.toList());
     }
 
     public void promoteToLeader(Player playerLogged, Player playerToPromote) {
+        if(playerLogged.getTeam().isInTournament()){
+            throw new BadRequestException("Can't promote members while team is in tournament.");
+        }
         if(playerLogged.getRole() != TeamRole.LEADER) {
             throw new BadRequestException("Only the leader can promote other members.");
         }

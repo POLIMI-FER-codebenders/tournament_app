@@ -1,9 +1,10 @@
 package dsd.codebenders.tournament_app.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dsd.codebenders.tournament_app.dao.ServerRepository;
 import dsd.codebenders.tournament_app.entities.Server;
-import dsd.codebenders.tournament_app.errors.*;
+import dsd.codebenders.tournament_app.errors.CDServerAlreadyRegisteredException;
+import dsd.codebenders.tournament_app.errors.CDServerNotFoundException;
+import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.responses.LoadResponse;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,10 @@ public class ServerService {
             tmpAddress = address.substring(0, address.length() - 1);
         }
         return serverRepository.findByAddress(tmpAddress);
+    }
+
+    public List<Server> getAllActiveServers() {
+        return serverRepository.findAllActive();
     }
 
     public void addServer(Server server) throws CDServerAlreadyRegisteredException {
