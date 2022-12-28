@@ -20,6 +20,7 @@ import {
   RouterProvider,
   Route,
 } from "react-router-dom";
+import Streaming from './components/Streaming';
 
 
 function Header() {
@@ -142,6 +143,10 @@ class App extends Component {
     {
       path: "/play",
       element:<CDFrame />
+    },
+    {
+      path:"/streaming",
+      element:<Streaming/>
     }
 
   ]

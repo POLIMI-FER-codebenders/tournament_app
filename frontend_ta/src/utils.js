@@ -95,6 +95,13 @@ export function  GoToPlayPage(props) {
   }
   );
 }
+export function  GoToStreamingPage(props) {
+  let navigate = useNavigate();
+  useEffect(() => {
+    navigate("/streaming", { state: { info: props.info} });
+  }
+  );
+}
 
 export function checkPassword(password) {
   return /\d/.test(password) && /[A-Z]/.test(password) && /[a-z]/.test(password) && password.length >= 8 && password.length <= 20 && !/[^A-Za-z0-9]/.test()

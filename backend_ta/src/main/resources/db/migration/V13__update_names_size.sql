@@ -1,0 +1,5 @@
+ALTER TABLE tournament
+    MODIFY name VARCHAR(255) NOT NULL;
+
+ALTER TABLE team
+    MODIFY name VARCHAR(255) NOT NULL;

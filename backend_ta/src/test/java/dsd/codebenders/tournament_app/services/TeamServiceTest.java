@@ -198,9 +198,9 @@ class TeamServiceTest {
     void findAll() {
         playerRepository.save(creator);
         team.setCreator(creator);
-        int oldSize = teamService.findAll().size();
+        int oldSize = teamService.findAllNotDeleted().size();
         teamRepository.saveAndFlush(team);
-        assertEquals(teamService.findAll().size(), oldSize + 1);
+        assertEquals(teamService.findAllNotDeleted().size(), oldSize + 1);
     }
 
     @Test

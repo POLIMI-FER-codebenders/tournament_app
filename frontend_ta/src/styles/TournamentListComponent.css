@@ -1,17 +1,14 @@
 .list {
-    width: 80%;
-    max-width: 850px;
+    width: fit-content;
 }
 
 
 .flex-container {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px;
     min-width: fit-content;
 }
+
 .flex-container-details {
     display: flex;
     justify-content: space-between;
@@ -20,20 +17,25 @@
     margin-bottom: 5px;
     min-width: fit-content;
 }
+
 .flex-container-details:hover {
-    background: #cac8c8;    
+    background: #cac8c8;
 }
 
 .list-headers {
     font-weight: bold;
 }
 
-.list-entry {
+.list-tour-entry {
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     border-radius: 10px;
     border: 2px solid rgb(225, 230, 227);
 }
 
 .list-entry-details {
+    cursor: pointer;
     border-radius: 10px; 
     border: 1px solid rgb(237, 240, 238);
 }
@@ -47,6 +49,7 @@
     min-width: 200px;
 
 }
+
 .col2 {
     min-width: 120px;
 }
@@ -54,6 +57,7 @@
 .col3 {
     min-width: 120px;
 }
+
 .col4 {
     min-width: 170px;
 }
@@ -61,7 +65,8 @@
 .col5 {
     min-width: 120px;
 }
-.col6{
+
+.col6 {
     min-width: 100px;
 }
 
@@ -70,11 +75,13 @@
     padding: 5px 10px;
     text-align: center;
 }
-.joinable{
+
+.joinable {
     cursor: pointer;
     padding: 5px 10px;
     text-align: center;
 }
+
 .joined {
     cursor: pointer;
     padding: 5px 10px;
@@ -82,7 +89,7 @@
 
 }
 
-.col6 .joined{
+.col6 .joined {
     border: 1px solid #07be44;
     background: #07be44;
     color: #fff;
@@ -94,6 +101,7 @@
     background: #07be44;
     color: #fff;
 }
+
 .col6 .joinable:hover {
     background: #04772a;
 }
@@ -107,44 +115,102 @@
 }
 
 .col6 .btn:hover {
-    background: #cf4540;    
+    background: #cf4540;
 }
 
-#classuploadinfo{
-    display:flex;
-    flex-direction:column;
-    align-items: left;
-    justify-content: left;
+#classuploadinfo {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    /* flex-direction: row; */
+    /* align-items: left; */
+    /* justify-content: left; */
 }
-.displayclassupload{
-    display:flex;
-    flex-direction:column;
-    padding-bottom:1px;
-    align-items: left;
-    justify-content: left;
+
+.displayclassupload {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 1px;
 }
-.labelclassupload{
-    display:flex;
-    flex-direction:column; 
-    font-size: 14px;
-}
-#roundid{
-    height:13px;
-    width:40px;
-}
-#classbuttonupload{
-    cursor: pointer;
+
+
+/* #roundid {
+    height: 13px;
+    width: 40px;
+} */
+
+.classbuttonupload input[type="submit"] {
     background: #688bec;
     border: 1px solid #688bec;
-    color: #fff;
-    display:flex;
-    flex-direction:column;
-    align-items: center; 
-    
 }
-#classes{
-width:100px;
+
+.classbuttonupload input[type="submit"]:hover {
+    background: #97abe3;
 }
-.button-class-container{
-    padding-top: 10px;
-  }
+
+.flex-container-team-row {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.flex-container-team-col {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.flex-items-team {
+    margin: auto 5px;
+}
+
+.name {
+    font-weight: 500;
+}
+
+/* .input-container {
+    flex-direction: row;
+} */
+
+.input-bloc {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1px;
+    align-items: left;
+    justify-content: left;
+}
+
+.class {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.input-bloc .input-container label {
+    width: 60px;
+}
+
+.input-bloc .input-container {
+    flex-direction: row;
+    align-items: center;
+}
+
+.join-bloc .input-container {
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.list-tour-entry p {
+    margin: auto 5px;
+}
+#winnertournament{
+    margin-bottom: 15px;
+    margin-left:10px;
+
+}

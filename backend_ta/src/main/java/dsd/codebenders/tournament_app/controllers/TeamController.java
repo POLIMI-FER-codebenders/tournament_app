@@ -5,7 +5,6 @@ import java.util.List;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
-import dsd.codebenders.tournament_app.requests.GetTeamRequest;
 import dsd.codebenders.tournament_app.requests.JoinTeamRequest;
 import dsd.codebenders.tournament_app.requests.KickMemberFromTeamRequest;
 import dsd.codebenders.tournament_app.requests.PromoteToTeamLeaderRequest;
@@ -15,9 +14,7 @@ import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,7 +49,7 @@ public class TeamController {
 
     @GetMapping(value = "/get-all")
     public List<TeamResponse> getAllTeams() {
-        return teamService.findAll();
+        return teamService.findAllNotDeleted();
     }
 
     @GetMapping(value = "/members/get-all")
