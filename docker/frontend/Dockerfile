@@ -8,6 +8,7 @@ RUN npm install react-stomp
 COPY ./frontend_ta/src/ ./src/
 COPY ./frontend_ta/public/ ./public/
 ARG REACT_APP_BACKEND_ADDRESS
+ARG REACT_APP_FRONTEND_ADDRESS
 RUN npm run build
 
 # Release step
