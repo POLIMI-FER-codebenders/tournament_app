@@ -1,4 +1,4 @@
-import { Component, useState } from "react";
+import { Component } from "react";
 import ListPlayers from "./ListPlayers";
 import postData from '../utils';
 import { getData } from "../utils";
@@ -18,13 +18,11 @@ class ManageTeams extends Component {
       display_invite: false,
       isTeamLoaded: false,
       isPlayersLoaded: false,
-      invitNotSend: []
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
     this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
-
   }
 
   componentDidMount() {
@@ -69,13 +67,6 @@ class ManageTeams extends Component {
               players: response.result,
               user: response.result.find(p => p.username === sessionStorage.getItem("username"))
             })
-
-            let invitNotSend = [];
-            response.result.forEach(p => {
-              invitNotSend.push(p.id);
-            });
-            this.setState({ invitNotSend: invitNotSend })
-
           } else {
             this.setState({
               isPlayersLoaded: false,
@@ -95,7 +86,6 @@ class ManageTeams extends Component {
   }
 
   handleClickInvite() {
-    console.log(this.state.team);
     const previous_value = this.state.display_invite
     this.setState({ display_invite: !previous_value })
   }
@@ -156,16 +146,16 @@ class ManageTeams extends Component {
   }
 
   renderErrorMessage() {
-    if (this.state.errorMessage == null) return;
+    if (this.state.errorMessage === null) return;
     return (
-      <p>{this.state.errorMessage}</p>
+      <p className='error'>{this.state.errorMessage}</p>
     );
   }
 
 
   render() {
-    if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
-    if (this.state.errorMessage == "Empty response") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    if (this.state.errorMessage === "Empty response") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <div className="main-panel">
         <h2>Team Management</h2>
@@ -192,6 +182,12 @@ class ManageTeams extends Component {
               <div className="flex-container-info">
                 <span className="flex-items-info name-entry">Team policy:</span>
                 <span className="flex-items-info">{this.state.team.policy}</span>
+              </div>
+              <div className="flex-container-info">
+                <span className="flex-items-info name-entry">Maximum size:</span>
+                <span className="flex-items-info">
+                  {this.state.team.maxNumberOfPlayers}
+                </span>
               </div>
               <div className="flex-container-info">
                 <span className="flex-items-info name-entry">Date of creation:</span>
@@ -247,13 +243,15 @@ class ManageTeams extends Component {
             <div class="btn btn-blue" name="promote" id={idPlayer} onClick={this.handleClickPromote}>Promote to leader</div>
           </div>
         );
+      } else if (this.state.team.teamMembers.length === 1) {
+        return (<div class="btn btn-red" name="delete" id={idPlayer} onClick={this.handleClickLeave} >Delete</div>);
       } else return;
     }
   }
 
   actionInvite() {
     if (this.state.isPlayersLoaded) {
-      if (this.state.user.role === "LEADER") {
+      if (this.state.user.role === "LEADER" && this.state.team.teamMembers.length < this.state.team.maxNumberOfPlayers) {
         return (
           <div class="btn btn-yellow flex-items-btn" name="display_invite" onClick={this.handleClickInvite}>Invite players</div>
         );
@@ -271,7 +269,6 @@ class ManageTeams extends Component {
               .filter(user => !this.state.team.teamMembers.find(p => p.id === user.id))
             }
             teamId={this.state.team.id}
-            invitNotSend={this.state.invitNotSend}
           />
         </div>
       )

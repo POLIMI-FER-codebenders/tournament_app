@@ -1,9 +1,6 @@
 package dsd.codebenders.tournament_app.entities;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -17,7 +14,7 @@ import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.serializers.PlayerIDAndNameSerializer;
 import dsd.codebenders.tournament_app.serializers.TeamIDAndNameSerializer;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes({@JsonSubTypes.Type(value = LeagueTournament.class, name = "LEAGUE"), @JsonSubTypes.Type(value = KnockoutTournament.class, name = "KNOCKOUT")})
 @Entity
 @Table(name = "tournament")
@@ -29,7 +26,7 @@ public abstract class Tournament {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long ID;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "Varchar(255)")
     protected String name;
 
     @Column(name = "number_of_teams", nullable = false)
@@ -58,9 +55,10 @@ public abstract class Tournament {
     @Column(name = "current_round")
     protected Integer currentRound = 0;
 
-    protected Date nextRoundStartTime = new Date(); //TODO remove the default when we have scheduling
+    @Column(name = "start_date")
+    protected Date startDate;
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", fetch = FetchType.EAGER)
     protected List<TournamentScore> tournamentScores = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament")
@@ -106,12 +104,12 @@ public abstract class Tournament {
         return matchType;
     }
 
-    public Date getNextRoundStartTime() {
-        return nextRoundStartTime;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setNextRoundStartTime(Date nextRoundStartTime) {
-        this.nextRoundStartTime = nextRoundStartTime;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public TournamentStatus getStatus() {

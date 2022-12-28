@@ -20,9 +20,41 @@ input[type="submit"]:hover {
     margin: 10px;
 }
 
-.selector{
-    margin-left: 40%;
-    margin-right: 40%;
-    padding: 1rem;
-    margin-bottom: 1rem;
+.input-container label {
+    width: 250px;
 }
+
+.selector{
+    height: 33px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    width: 256px;
+}
+
+  input[type="text"],
+  input[type="password"],
+  input[type="number"] {
+    height: 29px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    width: 250px;
+  }
+    
+  .button-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .error {
+    color: red;
+    font-size: 12px;
+  }
+
+  .success {
+    color: #00ae03fe;
+    font-size: 12px;
+  }
+
+  .descInput {
+    font-size: small;
+    font-style: italic;
+    color: grey;
+  }
