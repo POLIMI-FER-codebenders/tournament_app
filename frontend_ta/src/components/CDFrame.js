@@ -169,10 +169,11 @@ export function CDFrame(props) {
     </div>);
     else {
       let cdurl = datarender.server + "/login?token=" + datarender.token    + "&nextUrl=" +datarender.server+ "/multiplayergame?gameId=" + datarender.cdId;
+      let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
       return (
         <div id="maindiv">
           <div id="framemenu">
-            <a href="http://localhost:3000" id="backlink">Back To Tournament Application</a>
+            <a href={frontendAddress} id="backlink">Back To Tournament Application</a>
             <img id="clock" src={clock}></img>
             <p id="time" >{timertext}</p>
 

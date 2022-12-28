@@ -9,7 +9,7 @@ import cdlogo from '../images/cdlogo.png';
 import background from '../images/background1.jpg';
 import SockJsClient from 'react-stomp';
 import { EventEntry } from "./EventEntry.js";
-const SOCKET_URL = '/watch';
+const SOCKET_URL = process.env.REACT_APP_BACKEND_ADDRESS + '/watch';
 export default function Streaming(props) {
     const [attackersPoints, setAttackersPoints] = useState(0);
     const [defendersPoints, setDefendersPoints] = useState(0);
@@ -81,6 +81,7 @@ export default function Streaming(props) {
         eventscopy.push(msg);
         setEvents(eventscopy);
     }
+    let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
     return (
         <>
             <SockJsClient
@@ -96,7 +97,7 @@ export default function Streaming(props) {
                 debug={false}
             />
             <div id="streamingheader">
-            <a href="http://localhost:3000" id="backlinkstreaming">Back To Tournament Application</a>
+            <a href={frontendAddress} id="backlinkstreaming">Back To Tournament Application</a>
                 <div id="phaseheader">{RetrievePhase()}</div>
                 </div>
             <div id="scorediv">
