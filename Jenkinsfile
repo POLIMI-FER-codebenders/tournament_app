@@ -71,6 +71,9 @@ pipeline {
             }
         }
         stage('Run backend tests') {
+            environment {
+                CODEDEFENDERS_TEST_SERVER_TOKEN=credentials('CODEDEFENDERS_TEST_SERVER_TOKEN')
+            }
             when {
                 anyOf{
                     branch 'master'

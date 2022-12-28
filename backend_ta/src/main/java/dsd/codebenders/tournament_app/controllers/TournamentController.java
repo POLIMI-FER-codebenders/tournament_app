@@ -6,31 +6,24 @@ import java.util.Optional;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.entities.Tournament;
+import dsd.codebenders.tournament_app.entities.utils.MatchType;
 import dsd.codebenders.tournament_app.entities.utils.TeamRole;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.BadRequestException;
-import dsd.codebenders.tournament_app.errors.MatchCreationException;
 import dsd.codebenders.tournament_app.requests.JoinTournamentRequest;
 import dsd.codebenders.tournament_app.services.ClassService;
 import dsd.codebenders.tournament_app.services.PlayerService;
-import dsd.codebenders.tournament_app.services.TeamService;
 import dsd.codebenders.tournament_app.services.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "api/tournament")
 public class TournamentController {
 
     private final PlayerService playerService;
-    private final TeamService teamService;
     private final TournamentService tournamentService;
     private final ClassService classService;
     @Value("${game.tournament.league.min-teams:2}")
@@ -49,13 +42,10 @@ public class TournamentController {
     private int maxLeagueTeamSize;
     @Value("${game.tournament.knockout.max-team-size:10}")
     private int maxKnockoutTeamSize;
-    @Value("${request-debug:false}")
-    private boolean debug;
 
     @Autowired
-    public TournamentController(TeamService teamService, PlayerService playerService, TournamentService tournamentService, ClassService classService) {
+    public TournamentController(PlayerService playerService, TournamentService tournamentService, ClassService classService) {
         this.playerService = playerService;
-        this.teamService = teamService;
         this.tournamentService = tournamentService;
         this.classService = classService;
     }
@@ -91,6 +81,8 @@ public class TournamentController {
             throw new BadRequestException("An active tournament with the same name already exists");
         } else if (tournament.getMatchType() == null) {
             throw new BadRequestException("Missing match type");
+        } else if (tournament.getMatchType() == MatchType.MELEE) {
+            throw new BadRequestException("Melee match type is currently not supported");
         } else if (classService.getAllClasses().size() == 0) {
             throw new BadRequestException("Our database of available classes to play on is currently empty, please upload one before creating a tournament.");
         } else if (tournament.getType().equals(TournamentType.LEAGUE)) {
@@ -124,7 +116,7 @@ public class TournamentController {
     }
 
     @PostMapping(value = "/join")
-    public Tournament joinTournament(@RequestBody JoinTournamentRequest request) throws MatchCreationException {
+    public Tournament joinTournament(@RequestBody JoinTournamentRequest request) {
         Player player = playerService.getSelf();
         Optional<Tournament> optTournament = tournamentService.getTournamentByID(request.getIdTournament());
         if (player.getRole() != TeamRole.LEADER) {

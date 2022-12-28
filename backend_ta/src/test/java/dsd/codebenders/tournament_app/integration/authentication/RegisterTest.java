@@ -20,7 +20,7 @@ import kong.unirest.Unirest;
 import kong.unirest.HttpResponse;
 import org.springframework.transaction.annotation.Transactional;
 
-@TestPropertySource(locations = "classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-integration.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

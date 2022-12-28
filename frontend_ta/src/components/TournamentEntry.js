@@ -178,7 +178,7 @@ export class TournamentEntry extends React.Component {
         let summarystatusteam= "The tournament is a " + this.props.record.numberOfTeams.toString() + " teams tournament,there are still " + (this.props.record.numberOfTeams - teamsnames.length).toString() + " slots "
         // let teams = <p>{teamstext}<br/> {summarystatusteam}</p>
         // let teams = this.DisplayTeamInfo();
-        if (this.props.record.status !== "TEAMS_JOINING") {
+        if (this.props.record.status !== "TEAMS_JOINING" && this.props.record.status !== "SELECTING_CLASSES") {
             //  if (this.props.record.status == "ended") winner = <p> The tournament is ended, the winner is {tourinfo.winner}</p>
             //    else winner = null;
 
