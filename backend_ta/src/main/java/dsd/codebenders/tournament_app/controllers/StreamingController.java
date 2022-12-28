@@ -24,8 +24,8 @@ public class StreamingController {
     }
 
     @GetMapping(value = "/score")
-    public Map<String, Integer> getStreamingScore(@RequestParam(name = "matchId") Long matchId){
-        Map<String, Integer> map = new HashMap<>();
+    public Map<String, String> getStreamingScore(@RequestParam(name = "matchId") Long matchId){
+        Map<String, String> map = new HashMap<>();
         Match match;
         if(matchId == null) {
             throw new BadRequestException("Match id is missing");
@@ -35,8 +35,9 @@ public class StreamingController {
         } else {
             throw new BadRequestException("Requested match not found");
         }
-        map.put("attackersScore", match.getStreamedAttackersScore());
-        map.put("defendersScore", match.getStreamedDefendersScore());
+        map.put("attackersScore", match.getStreamedAttackersScore().toString());
+        map.put("defendersScore", match.getStreamedDefendersScore().toString());
+        map.put("status",match.getStatus().toString());
         return map;
     }
 

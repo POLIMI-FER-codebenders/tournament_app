@@ -39,7 +39,7 @@ export class TournamentEntry extends React.Component {
                     <div className="flex-container" >
                         <div className="list-entry-details flex-container-details" onClick={this.DisplayTournamentInfo}>
                             <div class="col1 flex-items">{this.props.record.name}</div>
-                            <div class="col2 flex-items">27011/2022</div>
+                            <div class="col2 flex-items"></div>
                             <div class="col3 flex-items">{this.props.record.type}</div>
                             <div class="col4 flex-items">{this.props.record.status}</div>
                             <div class="col5 flex-items">{this.props.record.teamSize}</div>
@@ -179,12 +179,16 @@ export class TournamentEntry extends React.Component {
         // let teams = <p>{teamstext}<br/> {summarystatusteam}</p>
         // let teams = this.DisplayTeamInfo();
         if (this.props.record.status !== "TEAMS_JOINING" && this.props.record.status !== "SELECTING_CLASSES") {
-            //  if (this.props.record.status == "ended") winner = <p> The tournament is ended, the winner is {tourinfo.winner}</p>
-            //    else winner = null;
+
+
+             if (this.props.record.status == "ENDED") winner = <p id="winnertournament"> The tournament is ended, the winner is {this.props.record.winningTeam.name}</p>
+                else winner = null;
+
 
             content = (<div>
 
                 {this.DisplayTeamInfo()}
+                {winner}
                 <div class="list-matches">
                     <div class="list-headers-matches flex-container">
                         <div class="col1-matches flex-items-matches">Team1</div>
@@ -205,7 +209,6 @@ export class TournamentEntry extends React.Component {
                 <div id="classuploadinfo">
                     {this.DisplayTeamInfo()}
                     {classuploading}
-
                 </div>
         }
         this.props.refreshView(this.props.viewindex);
@@ -269,7 +272,6 @@ export class TournamentEntry extends React.Component {
             )
         }
         this.props.refreshView(this.props.viewindex);
-        console.log("beforestate");
         this.setState({ tourcontent: formtodisplay });
 
     }

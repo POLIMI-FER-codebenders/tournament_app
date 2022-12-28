@@ -172,7 +172,6 @@ export function CDFrame(props) {
       let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
       return (
         <div id="maindiv">
-
           <div id="framemenu">
             <a href={frontendAddress} id="backlink">Back To Tournament Application</a>
             <img id="clock" src={clock}></img>
