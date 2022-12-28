@@ -137,7 +137,7 @@ pipeline {
                 sh "docker build --file ./docker/backend/Dockerfile --tag codebenders/tournament_app_backend:${env.GIT_COMMIT} ."
                 sh "docker tag codebenders/tournament_app_backend:${env.GIT_COMMIT} codebenders/tournament_app_backend:dev"
                 
-                sh "docker build --file ./docker/frontend/Dockerfile --tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} ."
+                sh "docker build --build-arg REACT_APP_BACKEND_ADDRESS=http://localhost:8080 --build-arg REACT_APP_FRONTEND_ADDRESS=http://localhost:80 --file ./docker/frontend/Dockerfile --tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} ."
                 sh "docker tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} codebenders/tournament_app_frontend:dev"
 
 
