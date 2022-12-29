@@ -13,14 +13,12 @@ import dsd.codebenders.tournament_app.entities.utils.MatchType;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,8 +61,6 @@ class TournamentServiceTest {
     private Player player7;
     private Player player8;
     private Tournament tournament;
-
-    private static boolean setupIsDone = false;
 
     @BeforeEach
     void setUp() {
