@@ -75,7 +75,7 @@ export class MatchEntry extends React.Component {
                         <div class="btn-matches" onClick={this.showStreaming} >Live Score</div>
                     </div>
     }
-    else streamingbutton=null;
+    else streamingbutton=<div class="col8-matches flex-items-matches"></div>;
     
     let winningteam;
     console.log(this.props.record.winningTeam)

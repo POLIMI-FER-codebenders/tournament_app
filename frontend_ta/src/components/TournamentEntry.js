@@ -13,7 +13,8 @@ export class TournamentEntry extends React.Component {
             joinreply: "",
             badResponse: null,
             selectedround: null,
-            selectedclass: null
+            selectedclass: null,
+            entryid:"entry" + this.props.viewindex
         };
         this.DisplayTeamForm = this.DisplayTeamForm.bind(this);
         this.JoinButton = this.JoinButton.bind(this);
@@ -21,31 +22,44 @@ export class TournamentEntry extends React.Component {
         this.JoinTournament = this.JoinTournament.bind(this);
         this.DisplayClassUploading = this.DisplayClassUploading.bind(this);
         this.SelectClass = this.SelectClass.bind(this);
+        this.ChangeColorSelection=this.ChangeColorSelection.bind(this);
+        this.ScoreboardButton=this.ScoreboardButton.bind(this);
+        this.ShowScoreboard=this.ShowScoreboard.bind(this);
+        
 
     }
 
     render() {
+        console.log(this.props.record);
         let formtoshow;
         if (this.props.viewindex !== this.props.currentview) formtoshow = null;
-        
-        else formtoshow = this.state.tourcontent;
-        
+        else formtoshow = this.state.tourcontent;    
         let joinreplytext;
+        let datestring="Still to be defined";
+        if(this.props.record.startDate!=null){
+        let date=  new Date(this.props.record.startDate);
+        datestring = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+        }  
+        
         if (this.state.joinreply === "OK") joinreplytext = <p>You have successfully joined the tournament!</p>
         else if (this.state.joinreply === "KO") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
         return (
             <div>
-                <div className="list-tour-entry ">
+                <div className="list-tour-entry " id={this.state.entryid} >
                     <div className="flex-container" >
                         <div className="list-entry-details flex-container-details" onClick={this.DisplayTournamentInfo}>
                             <div class="col1 flex-items">{this.props.record.name}</div>
-                            <div class="col2 flex-items"></div>
+                            <div class="col2 flex-items">{datestring}</div>
                             <div class="col3 flex-items">{this.props.record.type}</div>
                             <div class="col4 flex-items">{this.props.record.status}</div>
                             <div class="col5 flex-items">{this.props.record.teamSize}</div>
-                        </div>
+                            </div>
+                        
                         <div class="col6 flex-items">
+                             <div className="tournamentbuttons">
                             {this.JoinButton(this.props.record.status)}
+                            {this.ScoreboardButton(this.props.record.status)}
+                            </div>
                         </div>
                     </div>
                     {formtoshow}
@@ -67,7 +81,12 @@ export class TournamentEntry extends React.Component {
         }
         postData("/api/classes/post-choices", data).then((response) => {
             if (response.status === 200) {
-                this.setState({ tourcontent: <p>Class successfully selected.</p> })
+                this.setState({ tourcontent: 
+                <div className="confirmdiv">
+                <p>Class successfully selected.</p>
+                <button className="confirmbutton" onClick={this.DisplayTournamentInfo}>OK</button>
+                </div>  
+            })
                 this.props.reloadPage();
             }
             else {
@@ -148,7 +167,27 @@ export class TournamentEntry extends React.Component {
             </div>
         )
     }
-
+    ShowScoreboard(){
+        let content=<div id="tablecontainer"> <table id="scoreboard">
+            <thead>
+        <tr>
+          <th>Team Name</th>
+          <th>Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        {this.props.record.tournamentScores.map((object, i) => <tr key={i}>
+            <td>{object.team.name}</td>
+            <td> {object.score}</td>
+            </tr>
+            )}
+        </tbody>
+      </table>
+      </div>
+        this.props.refreshView(this.props.viewindex);
+        this.setState({ tourcontent: content })
+    
+    }
     JoinButton(status) {
 
         let data = this.props.playerteam
@@ -160,11 +199,25 @@ export class TournamentEntry extends React.Component {
         if (status === "TEAMS_JOINING") {
             return <div className="joinable" onClick={this.DisplayTeamForm}>Join</div>
         }
-        else if (status === "SCHEDULING" || status === "IN_PROGRESS" || status === "ENDED") {
+        else if (status === "SCHEDULING" || status==="SELECTING_CLASSES") {
             return <div className="btn" >Join</div>
         }
     }
+    ScoreboardButton(status){
+   if(status==="IN_PROGRESS"  || status==="ENDED"){
+    return <div className="scoreboardbutton" onClick={this.ShowScoreboard}>Scoreboard</div>
+   }
+    }
+
+    ChangeColorSelection(){
+        let currententry = document.getElementById(this.state.entryid);
+       let tourentries = document.getElementsByClassName("list-tour-entry");
+        for(let i = 0; i < tourentries.length; i++){ tourentries[i].style.backgroundColor="transparent"}
+        currententry.style.backgroundColor="rgb(246, 246, 246)";
+    }
     DisplayTournamentInfo() {
+        this.ChangeColorSelection();
+        
         let classuploading = this.DisplayClassUploading();
         let content;
         let winner;
@@ -219,7 +272,10 @@ export class TournamentEntry extends React.Component {
         let data = { idTournament: this.props.record.id };
         postData("/api/tournament/join", data).then((response) => {
             if (response.status === 200) {
-                this.setState({ tourcontent: <p> Successfully joined </p> })
+                this.setState({ tourcontent: <div className="confirmdiv">
+                <p>Successfully joined.</p>
+                <button className="confirmbutton" onClick={this.DisplayTournamentInfo}>OK</button>
+                </div>  })
                 this.props.reloadPage();
             }
             else {
@@ -230,6 +286,7 @@ export class TournamentEntry extends React.Component {
         );
     }
     DisplayTeamForm() {
+        this.ChangeColorSelection();
         
         if (sessionStorage.getItem("username") === null) {
             this.props.backHome(this.props.index);

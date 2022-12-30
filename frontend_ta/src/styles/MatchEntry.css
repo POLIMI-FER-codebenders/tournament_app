@@ -2,6 +2,7 @@
 .list-matches{
     width: 80%;
     max-width: 850px;
+    margin-left:10px;
 }
 .list-entry-matches{
     border-radius: 10px;
@@ -23,6 +24,7 @@
 }
 .flex-items-matches {
     margin: auto 2px;
+    text-align: center;
 }
 .col1-matches {
     min-width: 120px;
