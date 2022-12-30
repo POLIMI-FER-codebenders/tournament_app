@@ -22,7 +22,7 @@ services:
     build:
       context: ./
       dockerfile: ./docker/backend/Dockerfile
-    image: polimifercodebenders/tournament_app_backend_image:3.0.0
+    image: codebenders/tournament_app_backend:latest
     container_name: tournament_app_backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/${DB_SCHEMA:-tournamentdb}
@@ -50,7 +50,7 @@ services:
       args:
         REACT_APP_BACKEND_ADDRESS: http://localhost:${TA_BACKEND_PORT:-8080}
         REACT_APP_FRONTEND_ADDRESS: http://localhost:${TA_FRONTEND_PORT:-80}
-    image: polimifercodebenders/tournament_app_frontend_image:3.0.0
+    image: codebenders/tournament_app_frontend:latest
     container_name: tournament_app_frontend
     ports:
       - "${TA_FRONTEND_PORT:-80}:80"
