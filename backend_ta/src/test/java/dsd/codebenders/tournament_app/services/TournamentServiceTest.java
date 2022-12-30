@@ -13,6 +13,7 @@ import dsd.codebenders.tournament_app.entities.utils.MatchType;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 import dsd.codebenders.tournament_app.entities.utils.TournamentStatus;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
+import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,9 @@ class TournamentServiceTest {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private RoundClassChoiceService roundClassChoiceService;
 
     private Team team1;
     private Team team2;
@@ -194,6 +198,37 @@ class TournamentServiceTest {
 
         // verify that the tournament is started
         assertEquals(tournamentRepository.findById(tournament.getID()).get().getStatus(), TournamentStatus.SELECTING_CLASSES);
+    }
+
+    @Test
+    @Order(4)
+    void postRoundChoiceSuccessful() {
+        // create the tournament
+        tournament = new KnockoutTournament();
+        tournament.setName("TournamentTest");
+        tournament.setCreator(player1);
+        tournament.setNumberOfTeams(4);
+        tournament.setTeamSize(2);
+        tournament.setType(TournamentType.KNOCKOUT);
+        tournament.setMatchType(MatchType.MULTIPLAYER);
+
+        tournamentService.createTournament(tournament, player1);
+
+        // create the class choice request object
+        ClassChoiceRequest classChoiceRequest = new ClassChoiceRequest();
+        classChoiceRequest.setClassId(1L);
+        classChoiceRequest.setIdTournament(tournament.getID());
+        classChoiceRequest.setRoundNumber(1);
+
+        tournamentService.postRoundChoice(classChoiceRequest, player1);
+
+        assertEquals(1L, roundClassChoiceService.getRoundClassChoiceByTournamentAndRound(tournament, 1).getGameClass().getId());
+
+        // update the class choice
+
+        tournamentService.postRoundChoice(classChoiceRequest, player1);
+
+        assertEquals(1L, roundClassChoiceService.getRoundClassChoiceByTournamentAndRound(tournament, 1).getGameClass().getId());
     }
 
 }
