@@ -262,7 +262,7 @@ background:#07098d
     height:75px;
     margin-left:5px;
 }
-
+/*
 th{
     background-color: #ffffff;
 }
@@ -273,15 +273,41 @@ td{
     background-color:#ffffff; 
 }
 table, th, td,tr {
-    border: 1px solid;
+    border: 3px ridge;
+
   }
+  
   th{
     color:#000000
   }
+  */
+  #scoreboard {
+    
+    border:ridge black 1px;
+    border-radius:6px;
+}
+
+.scoreboardtd, .scoreboardth {
+    border-left:ridge black 1px;
+    border-top:ridge black 1px;
+    background-color: #fff;
+}
+
+.scoreboardth {
+    background-color: rgb(27, 27, 212);
+    border-top: none;
+    color:#6bfc9b
+}
+
+.scoreboardtd:first-child, .scoreboardth:first-child {
+     border-left: none;
+}
   #tablecontainer{
     display:flex;
     align-items:center;
     justify-content: center;
     margin-top:10px;
   }
+
+ 
   

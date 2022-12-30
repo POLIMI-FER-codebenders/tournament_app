@@ -168,17 +168,33 @@ export class TournamentEntry extends React.Component {
         )
     }
     ShowScoreboard(){
+        this.ChangeColorSelection();
+        console.log(this.props.record);
+        let type;
+        let score;
+        if(this.props.record.type==="KNOCKOUT")
+        {
+            
+            type="Score";
+        }
+
+        else type="League points";
+        
         let content=<div id="tablecontainer"> <table id="scoreboard">
             <thead>
-        <tr>
-          <th>Team Name</th>
-          <th>Score</th>
+        <tr className="scoreboardtr">
+          <th className="scoreboardth">Team Name</th>
+          <th className="scoreboardth">{type}</th>
         </tr>
         </thead>
         <tbody>
         {this.props.record.tournamentScores.map((object, i) => <tr key={i}>
-            <td>{object.team.name}</td>
-            <td> {object.score}</td>
+            <td className="scoreboardtd">{object.team.name}</td>
+            {this.props.record.type=="KNOCKOUT" &&
+            <td className="scoreboardtd"> {object.score}</td>
+    }
+    {this.props.record.type==="LEAGUE" &&
+       <td className="scoreboardtd"> {object.leaguePoints}</td> }
             </tr>
             )}
         </tbody>
