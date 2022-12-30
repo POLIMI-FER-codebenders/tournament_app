@@ -88,9 +88,12 @@ class ManageTeams extends Component {
   handleClickInvite() {
     const previous_value = this.state.display_invite
     this.setState({ display_invite: !previous_value })
+    this.setState({errorMessage:null});
   }
 
   handleClickLeave() {
+    const previous_value = this.state.display_invite;
+    this.setState({ display_invite: !previous_value });
     postData("/api/team/leave/")
       .then((response) => {
         if (response.status === 200) {
@@ -100,8 +103,8 @@ class ManageTeams extends Component {
         }
         else {
           this.setState({
-            errorMessage: "the server encountered an error",
-            badResponse: response.message
+            errorMessage: "you cannot leave the team while it is in a tournament",
+            
           })
         }
       });
@@ -161,7 +164,7 @@ class ManageTeams extends Component {
         <h2>Team Management</h2>
         <div className="flex-container-main">
           {this.displayTeamInfo()}
-          {this.invitations()}
+            {this.invitations()}
         </div>
         {this.renderErrorMessage()}
       </div>

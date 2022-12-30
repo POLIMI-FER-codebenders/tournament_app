@@ -308,6 +308,9 @@ table, th, td,tr {
     justify-content: center;
     margin-top:10px;
   }
+  .namefilter:hover{
+    cursor:pointer;
+  }
 
  
   

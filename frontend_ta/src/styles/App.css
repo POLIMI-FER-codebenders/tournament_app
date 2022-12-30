@@ -80,3 +80,24 @@
 h2{
   text-align: center;
 }
+#searchbartour{
+  display:flex;
+  flex-direction:column;
+  margin-bottom:10px;
+  width: 100%;
+  align-content: center;
+  align-items: flex-end;
+  margin-right:110px;
+}
+
+.labelsearchtour, .textareasearchtour{
+  display:flex;
+  flex-direction:column;
+}
+.labelsearchtour{
+  font-style:italic;
+}
+#toursearchtextarea{
+  height:20px;
+}
+

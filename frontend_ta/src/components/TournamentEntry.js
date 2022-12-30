@@ -30,7 +30,7 @@ export class TournamentEntry extends React.Component {
     }
 
     render() {
-        console.log(this.props.record);
+        
         let formtoshow;
         if (this.props.viewindex !== this.props.currentview) formtoshow = null;
         else formtoshow = this.state.tourcontent;    
@@ -175,7 +175,7 @@ export class TournamentEntry extends React.Component {
         if(this.props.record.type==="KNOCKOUT")
         {
             
-            type="Score";
+            type="Number of wins";
         }
 
         else type="League points";
@@ -191,7 +191,7 @@ export class TournamentEntry extends React.Component {
         {this.props.record.tournamentScores.map((object, i) => <tr key={i}>
             <td className="scoreboardtd">{object.team.name}</td>
             {this.props.record.type=="KNOCKOUT" &&
-            <td className="scoreboardtd"> {object.score}</td>
+            <td className="scoreboardtd"> {object.leaguePoints}</td>
     }
     {this.props.record.type==="LEAGUE" &&
        <td className="scoreboardtd"> {object.leaguePoints}</td> }

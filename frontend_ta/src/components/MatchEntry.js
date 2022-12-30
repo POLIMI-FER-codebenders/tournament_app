@@ -65,17 +65,18 @@ export class MatchEntry extends React.Component {
         let playbutton;
         if(this.state.currentMatch!=null && this.state.currentMatch.result==="ongoing match found" && this.props.record.id===this.state.currentMatch.id ){
            
-            playbutton=<div class="col9-matches flex-items-matches">
-        <div class="btn-matches" onClick={this.showCDFrame} >Play</div>
-          </div>
+            playbutton=
+        <div className="btn-matches" id="playbutton"  onClick={this.showCDFrame} >Play</div>
+          
         }
+    
     else playbutton=null;
     if(this.props.record.status!="ENDED"){
-       streamingbutton= <div class="col8-matches flex-items-matches">
+       streamingbutton= 
                         <div class="btn-matches" onClick={this.showStreaming} >Live Score</div>
-                    </div>
+                    
     }
-    else streamingbutton=<div class="col8-matches flex-items-matches"></div>;
+    else streamingbutton=null;
     
     let winningteam;
     console.log(this.props.record.winningTeam)
@@ -100,8 +101,10 @@ export class MatchEntry extends React.Component {
                     <div class="col5-matches flex-items-matches">{defenderspoints}</div>
                     <div class="col6-matches flex-items-matches">{this.props.record.status}</div>
                     <div class="col7-matches flex-items-matches">{winningteam}</div>
+                    <div className="col8-matches flex-items-matches buttonmatches">
                     {streamingbutton}
                     {playbutton}
+                    </div>
                     
                 </div>
             </div>
