@@ -72,10 +72,17 @@
 }
 .redteam{
   background-color: rgb(255, 92, 92);
-
+}
+.redteam:hover{
+  cursor:pointer;
+  background-color: #940b0b;
 }
 .greenteam{
   background-color: rgb(111, 224, 111);
+}
+.greenteam:hover{
+  cursor:pointer;
+  background-color: #1c570a;
 }
 
 .teamdescription{
@@ -119,4 +126,17 @@
   width:100px;
   margin:10px;
   margin-right:15px;
+}
+#acceptedinvitation{
+  margin-left:3px;
+  margin-right:3px;
+  font-style:italic;
+}
+#checkinvbutton{
+ border-radius:20px;
+ background-color: rgb(245, 168, 69);
+}
+#checkinvbutton:hover{
+  cursor:pointer;
+  background-color: orangered;
 }

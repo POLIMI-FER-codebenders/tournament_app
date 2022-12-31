@@ -60,7 +60,7 @@ class ListPlayers extends Component {
     postData(url_invit, data)
       .then((response) => {
         if (response.status === 200) {
-          alert(`An invitation has been send to the player ${event.target.id} to join the team ${this.state.teamId}`);
+          
           let tmpInvitNotSend = this.state.invitNotSend;
           this.setState({
             invitNotSend: tmpInvitNotSend.filter(elem => elem !== parseInt(event.target.id))
@@ -115,7 +115,7 @@ function PlayerEntry(props) {
         <div class="col1 flex-items-list">{props.obj.username}</div>
         <div class="col2 flex-items-list">{props.obj.score}</div>
         <div class="col3 flex-items-list">
-          <div class="btn-inactive" id={props.obj.id}>Send invitation</div>
+          <div class="btn-inactive" id={props.obj.id}>Invitation sent</div>
         </div>
       </div>
     );
@@ -130,6 +130,7 @@ function PlayerEntry(props) {
           <div class="btn btn-green" id={props.obj.id} onClick={props.handleClick}>Send invitation</div>
         </div>
       </div>
+      
     );
   }
 

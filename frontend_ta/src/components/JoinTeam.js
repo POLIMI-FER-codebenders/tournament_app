@@ -143,7 +143,7 @@ function InvitationEntry(props){
           Decline
         </button>
       </div>)}
-      {hide && (<span>You have {status} this invitation</span>)}
+      {hide && (<p id="acceptedinvitation"> : {status} </p>)}
     </div>
   );
 }
@@ -201,7 +201,7 @@ class JoinTeam extends Component{
       <GlobalStateProvider>
       {this.state.initTeam && (<div><InitInTeam />{this.setState({initTeam : false})}</div>)}
       <div className="main-panel">
-        <button className="item button-container"
+        <button id="checkinvbutton" className="item button-container "
           onClick={() => { 
                           getData("/api/invitation/pending").then((response)=> {
                             if (response.status === 200) 

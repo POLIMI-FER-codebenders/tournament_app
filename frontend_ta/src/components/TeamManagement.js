@@ -24,6 +24,7 @@ class ManageTeams extends Component {
     this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
+    this.renderSuccessfullMessage=this.renderSuccessfullMessage.bind(this);
   
   }
 
@@ -102,7 +103,9 @@ class ManageTeams extends Component {
     postData("/api/team/leave/")
       .then((response) => {
         if (response.status === 200) {
-          alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          let message=`${this.state.user.username}, you left the team ${this.state.team.name} successfully`
+         // alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          this.setState({successMessage:message});
           this.initTeam();
           this.initPlayers();
         }
@@ -120,7 +123,9 @@ class ManageTeams extends Component {
     postData("/api/team/kick-member/", data)
       .then((response) => {
         if (response.status === 200) {
-          alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
+          let message= `The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`;
+          this.setState({successMessage:message}); 
+          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
           this.initTeam();
           this.initPlayers();
         }
@@ -139,7 +144,9 @@ class ManageTeams extends Component {
     postData("/api/team/members/promote-leader/", data)
       .then((response) => {
         if (response.status === 200) {
-          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          let message=`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promoted to leader for the team ${this.state.team.name}`
+           // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          this.setState({successMessage:message});
           this.initTeam();
           this.initPlayers();
         }
@@ -159,6 +166,13 @@ class ManageTeams extends Component {
       <p className='error'>{this.state.errorMessage}</p>
     );
   }
+  renderSuccessfullMessage(){
+    if (this.state.successMessage === null) return;
+    return (
+      <p className='success'>{this.state.successMessage}</p>
+    );
+  }
+  
 
 
   render() {
@@ -171,7 +185,9 @@ class ManageTeams extends Component {
           {this.displayTeamInfo()}
             {this.invitations()}
         </div>
+        {this.renderSuccessfullMessage()}
         {this.renderErrorMessage()}
+        
       </div>
     );
   }
