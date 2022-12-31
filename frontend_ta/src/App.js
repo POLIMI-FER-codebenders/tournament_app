@@ -76,7 +76,7 @@ class Home extends React.Component {
     return (
       <div>
         <Header />
-        <div class="main-container">
+        <div class="main-container" id="mainpagebackground">
           <div class="button-container" id="mainbuttoncontainer">
             <button class="firstitem barbutton"
               onClick={() => this.setState({ view: 0 })}>

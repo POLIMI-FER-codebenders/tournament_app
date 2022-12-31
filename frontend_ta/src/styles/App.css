@@ -72,9 +72,10 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
-  background-image: linear-gradient(160deg, #f7fcff 0%, #e4f5f3 100%);
-  ;
 
+}
+#mainpagebackground{
+  background-image: linear-gradient(160deg, #f7fcff 0%, #e4f5f3 100%);
 }
 
 .item{

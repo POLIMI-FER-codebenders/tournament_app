@@ -75,11 +75,12 @@ export default function Streaming(props) {
         if(msg.type==="GAME_GRACE_ONE") location.state.info.status="IN_PHASE_TWO";
         if(msg.type==="GAME_GRACE_TWO") location.state.info.status="IN_PHASE_THREE";
         if(msg.type==="GAME_FINISHED") location.state.info.status="ENDED"
-        
+        if(msg.type!=="SCORE_UPDATE"){
         let eventscopy = events;
         if (eventscopy.length == 7) eventscopy.shift(); 
         eventscopy.push(msg);
         setEvents(eventscopy);
+        }
     }
     let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
     return (
