@@ -18,17 +18,21 @@ class ManageTeams extends Component {
       display_invite: false,
       isTeamLoaded: false,
       isPlayersLoaded: false,
+      
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
     this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
+  
   }
 
   componentDidMount() {
     this.initTeam();
     this.initPlayers();
   }
+
+  
 
   initTeam() {
     getData("/api/team/get-mine")
@@ -65,6 +69,7 @@ class ManageTeams extends Component {
             this.setState({
               isPlayersLoaded: true,
               players: response.result,
+              backupplayers:response.result,
               user: response.result.find(p => p.username === sessionStorage.getItem("username"))
             })
           } else {
@@ -93,7 +98,7 @@ class ManageTeams extends Component {
 
   handleClickLeave() {
     const previous_value = this.state.display_invite;
-    this.setState({ display_invite: !previous_value });
+    if(previous_value)this.setState({ display_invite: !previous_value });
     postData("/api/team/leave/")
       .then((response) => {
         if (response.status === 200) {

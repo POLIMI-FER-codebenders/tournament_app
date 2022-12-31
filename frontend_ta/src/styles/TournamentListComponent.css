@@ -311,6 +311,40 @@ table, th, td,tr {
   .namefilter:hover{
     cursor:pointer;
   }
+  #classescontainer{
+    display:flex;
+    width:100%;
+    flex-direction:row;
+    align-items:center;
+    margin-bottom:20px;
+  }
+  #classesselectedp{
+   margin-right:50px;
+   
+  }
+
+  #classesselection {
+    
+    border:ridge black 1px;
+    border-radius:6px;
+}
+
+.classestd, .classesth {
+    border-left:ridge black 1px;
+    border-top:ridge black 1px;
+    background-color: #fff;
+}
+
+.classesth{
+    background-color: rgb(255, 255, 255);
+    border-top: none;
+    color:black;
+    font-weight:normal ;
+    
+}
+
+
+
 
  
   

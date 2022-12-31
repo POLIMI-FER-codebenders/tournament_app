@@ -10,11 +10,15 @@ class ListPlayers extends Component {
     super(props);
     this.state = {
       players: props.players,
+
       errorMessage: "",
       badResponse: "",
       teamId: props.teamId,
-      invitNotSend: []
+      invitNotSend: [],
+      backupplayers:props.players,
+      playername:""
     };
+    this.handleChange= this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -42,7 +46,11 @@ class ListPlayers extends Component {
       }
     });
   }
-
+  handleChange(event) {
+   
+    let playername = event.target.value;
+    this.setState({playername: event.target.value , players: this.state.backupplayers.filter(entry => entry.username.startsWith(playername))});
+  }
   handleSendInvite(event) {
     let url_invit = "/api/invitation/create/";
     let data = {
@@ -70,6 +78,13 @@ class ListPlayers extends Component {
   render() {
     if (this.state.errorMessage == "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
+      <>
+      <div id="searchbartour">
+          <label className="labelsearchtour" htmlFor='toursearchtextarea' >
+        Search player by name
+        <textarea className="textareasearchtour" id="toursearchtextarea" value={this.state.playername} onChange={this.handleChange} />
+      </label>
+  </div>
       <div class="list">
         <div class="list-headers flex-container-list">
           <div class="col1 flex-items-list">Name</div>
@@ -86,6 +101,7 @@ class ListPlayers extends Component {
           />
         )}
       </div>
+      </>
     );
 
   }
