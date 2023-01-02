@@ -108,7 +108,7 @@ class ListPlayers extends Component {
 }
 
 function PlayerEntry(props) {
-  if (props.isInactive) {
+  if (props.isInactive && props.obj.username!=="admin") {
 
     return (
       <div class="list-entry flex-container-list">
@@ -120,7 +120,7 @@ function PlayerEntry(props) {
       </div>
     );
 
-  } else {
+  } else if(props.obj.username!=="admin") {
 
     return (
       <div class="list-entry flex-container-list">

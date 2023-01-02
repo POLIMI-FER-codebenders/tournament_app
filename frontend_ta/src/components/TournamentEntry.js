@@ -15,7 +15,7 @@ export class TournamentEntry extends React.Component {
             selectedround: null,
             selectedclass: null,
             entryid: "entry" + this.props.viewindex,
-            classes: null
+            classes: []
             
         };
         this.DisplayTeamForm = this.DisplayTeamForm.bind(this);
@@ -224,6 +224,8 @@ export class TournamentEntry extends React.Component {
                     <span className="flex-items-team name">Teams participating in the tournament:</span>
                     <span className="flex-items-team">{teamstext}</span>
                 </div>
+
+                {!(this.props.record.status==="ENDED" || this.props.record.status==="IN_PROGRESS")   && <>
                 <div className="flex-container-team-row">
                     <span className="flex-items-team name">Number of teams required:</span>
                     <span className="flex-items-team">{this.props.record.numberOfTeams.toString()}</span>
@@ -231,7 +233,7 @@ export class TournamentEntry extends React.Component {
                 <div className="flex-container-team-row">
                     <span className="flex-items-team name">Remaining number of team slots:</span>
                     <span className="flex-items-team">{(this.props.record.numberOfTeams - teamsnames.length).toString()}</span>
-                </div>
+                </div></>}
 
             </div>
         )
@@ -318,7 +320,7 @@ export class TournamentEntry extends React.Component {
         if (this.props.record.status !== "TEAMS_JOINING" && this.props.record.status !== "SELECTING_CLASSES") {
 
 
-            if (this.props.record.status == "ENDED") winner = <p id="winnertournament"> The tournament is ended, the winner is {this.props.record.winningTeam.name}</p>
+            if (this.props.record.status == "ENDED") winner = <p id="winnertournament"> Winner:  <span id="winnerspan">{this.props.record.winningTeam.name}</span></p>
             else winner = null;
 
 

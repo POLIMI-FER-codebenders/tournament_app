@@ -238,7 +238,10 @@ background:#07098d
 #winnertournament{
     margin-bottom: 15px;
     margin-left:10px;
-
+    font-weight:bold;
+}
+#winnerspan{
+    font-weight:normal;
 }
 .confirmdiv{
     display:flex;
