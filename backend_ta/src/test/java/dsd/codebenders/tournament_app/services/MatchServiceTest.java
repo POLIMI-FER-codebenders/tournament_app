@@ -10,7 +10,6 @@ import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
 import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.errors.MatchCreationException;
-import dsd.codebenders.tournament_app.requests.CDClassUploadRequest;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -25,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -139,6 +138,27 @@ class MatchServiceTest {
             assertEquals(server, match.getServer());
         }
 
+    }
+
+    @Test
+    void startMatchOnCD() throws CDServerUnreachableException, MatchCreationException {
+        // mock a server
+        Server server = new Server();
+        Mockito.when(serverService.getCDServer()).thenReturn(server);
+
+        // Mock a match
+        Match match = Mockito.mock(Match.class);
+        Mockito.when(match.getGameId()).thenReturn(3);
+        Mockito.when(match.getStatus()).thenReturn(MatchStatus.CREATED);
+
+        try (MockedStatic<HTTPRequestsSender> httpRequestsSenderMockedStatic = Mockito.mockStatic(HTTPRequestsSender.class)) {
+            httpRequestsSenderMockedStatic.when(() -> HTTPRequestsSender.sendPostRequest(Mockito.eq(server), Mockito.eq("/admin/api/game/start"), Mockito.any(), Mockito.eq(void.class))).thenReturn(null);
+
+            matchService.startMatchOnCD(match);
+
+            Mockito.verify(match).setStatus(MatchStatus.IN_PHASE_ONE);
+            Mockito.verify(matchRepository).saveAndFlush(Mockito.any(Match.class));
+        }
     }
 
 }
