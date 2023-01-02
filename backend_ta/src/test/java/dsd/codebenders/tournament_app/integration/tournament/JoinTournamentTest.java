@@ -429,14 +429,7 @@ public class JoinTournamentTest {
         System.out.println(successfulJoinTournamentResponse.getBody());
 
         // Check if tournament started
-        //System.out.println(tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getStatus());
         assertEquals("SELECTING_CLASSES", tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getStatus().toString());
-        // Check if there are matches scheduled
-        //assertEquals(false, tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getMatches().isEmpty());
-
-        //System.out.println(tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getMatches().get(0).getServer());
-        //System.out.println(tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getMatches());
-        //System.out.println(serverRepository.findAllActive());
 
     }
 
