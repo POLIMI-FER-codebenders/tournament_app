@@ -46,11 +46,13 @@ export const useGlobalState = () => [
 function TeamEntry(props) {
   const [open, setOpen] = useState(false);
   const [state, dispatch] = useGlobalState();
+  const [joined,setjoined]=useState(false);
   let teambuttonclassname;
   if(!props.team.full)
   teambuttonclassname = "teambutton " + "greenteam";
   else teambuttonclassname = "teambutton " + "redteam";
   let buttonname;
+  
   if(state.alreadyInTeam === props.team.name) 
   buttonname='you are already inside this team'; 
   else buttonname=  'Join Team';
@@ -76,19 +78,14 @@ function TeamEntry(props) {
           </p>
           <p className="pteamdesc3">The team is {props.team.policy} to new players. <br/>
             {props.team.members.length === props.team.maxNumberOfPlayers && (<span>Can't join, currently full.</span>)}
-            {props.team.policy === "OPEN" && props.team.members.length < props.team.maxNumberOfPlayers && (
+            {props.team.policy === "OPEN" && props.team.members.length < props.team.maxNumberOfPlayers && !joined && (
               <button className={state.alreadyInTeam === props.team.name ? 'btn-inactive' : 'btn-active'}
                 onClick={()=> { 
-                                if (!window.confirm('Are you sure you want to join this team?\n' +
-                                    'This action will kick you from your current team and join the new one.'))
-                                  {
-                                    
-                                    return;
-                                  }
+                                
                                 postData("/api/team/join", {"idTeam" : props.team.id})
                                 .then((response) => {
                                   if (response.status === 200) {
-                                    alert(`You have joined team ${props.team.name}`);
+                                    setjoined(true);
                                     dispatch({ alreadyInTeam : props.team.name });
                                   }
                                   else {
@@ -98,7 +95,9 @@ function TeamEntry(props) {
                               }}>{buttonname}
                 
               </button>
+              
             )}
+            {joined && <p>successfully joined the team</p>}
           </p>
         </div>
       )}

@@ -91,7 +91,7 @@ export default function Streaming(props) {
                 onConnect={onConnected}
                 onDisconnect={console.log("Disconnected!")}
                 onMessage={msg =>{
-                     OnMessageReceived(msg) 
+                     OnMessageReceived(msg);
                      SetTrigger(!trigger);
                 } 
                 }
