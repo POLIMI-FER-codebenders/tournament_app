@@ -240,7 +240,6 @@ export class TournamentEntry extends React.Component {
     }
     ShowScoreboard() {
         this.ChangeColorSelection();
-        console.log(this.props.record);
         let type;
         let score;
         if (this.props.record.type === "KNOCKOUT") {

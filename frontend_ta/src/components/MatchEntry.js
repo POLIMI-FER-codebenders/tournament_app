@@ -38,7 +38,7 @@ export class MatchEntry extends React.Component {
                 this.setState({currentMatch: response.result,badResponse:null}); 
                 getData("/api/match/info?gameId=" + response.result.id ).then((response) =>{
                      if(response.status===200){
-                        console.log(response.result)
+                        
                         this.setState({gameinfo:response.result});
                      }
                      else{
@@ -79,7 +79,6 @@ export class MatchEntry extends React.Component {
     else streamingbutton=null;
     
     let winningteam;
-    console.log(this.props.record.winningTeam)
     if(this.props.record.winningTeam!=null){
         winningteam=this.props.record.winningTeam.name;
     }

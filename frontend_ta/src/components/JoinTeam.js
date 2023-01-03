@@ -46,7 +46,6 @@ export const useGlobalState = () => [
 function TeamEntry(props) {
   const [open, setOpen] = useState(false);
   const [state, dispatch] = useGlobalState();
-  console.log(props.team);
   let teambuttonclassname;
   if(!props.team.full)
   teambuttonclassname = "teambutton " + "greenteam";
@@ -83,7 +82,7 @@ function TeamEntry(props) {
                                 if (!window.confirm('Are you sure you want to join this team?\n' +
                                     'This action will kick you from your current team and join the new one.'))
                                   {
-                                    console.log('User did not change their team');
+                                    
                                     return;
                                   }
                                 postData("/api/team/join", {"idTeam" : props.team.id})

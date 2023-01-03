@@ -66,7 +66,7 @@ export default function Streaming(props) {
 
     let OnMessageReceived = (msg) => {
         
-        console.log(msg);
+        
         if(msg.type==="SCORE_UPDATE"){
             setAttackersPoints(msg.attackersScore);
             setDefendersPoints(msg.defendersScore);
