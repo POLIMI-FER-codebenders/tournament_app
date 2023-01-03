@@ -55,7 +55,7 @@ public class TournamentProgressionTest {
     private String[] teamEightInfo = {"TeamEight", "1", "OPEN"};
 
     // {name, teamSize, numberOfTeams, type, matchType}
-    private String[] fourthTournamentInfo = {"fifthTournament", "1", "4", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] fifthTournamentInfo = {"fifthTournament", "1", "4", "KNOCKOUT", "MULTIPLAYER"};
 
     Long tournamentID = -1L;
 
@@ -101,11 +101,11 @@ public class TournamentProgressionTest {
         ObjectMapper tournamentMapper = new ObjectMapper();
         ObjectNode tournament = tournamentMapper.createObjectNode();
 
-        tournament.put("name", fourthTournamentInfo[0]);
-        tournament.put("teamSize", Integer.parseInt(fourthTournamentInfo[1]));
-        tournament.put("numberOfTeams", Integer.parseInt(fourthTournamentInfo[2]));
-        tournament.put("type", fourthTournamentInfo[3]);
-        tournament.put("matchType", fourthTournamentInfo[4]);
+        tournament.put("name", fifthTournamentInfo[0]);
+        tournament.put("teamSize", Integer.parseInt(fifthTournamentInfo[1]));
+        tournament.put("numberOfTeams", Integer.parseInt(fifthTournamentInfo[2]));
+        tournament.put("type", fifthTournamentInfo[3]);
+        tournament.put("matchType", fifthTournamentInfo[4]);
 
         HttpResponse<String> successfulTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
                 .header("Content-Type", "application/json")
@@ -120,7 +120,7 @@ public class TournamentProgressionTest {
         ObjectMapper tournamentBodyMapper = new ObjectMapper();
         ObjectNode tournamentBody = tournamentBodyMapper.createObjectNode();
 
-        tournamentID = tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getID();
+        tournamentID = tournamentService.getActiveTournamentByName(fifthTournamentInfo[0]).get().getID();
 
         tournamentBody.put("idTournament", tournamentID);
 
