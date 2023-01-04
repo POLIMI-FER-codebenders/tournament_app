@@ -3,6 +3,8 @@ package dsd.codebenders.tournament_app.services;
 import dsd.codebenders.tournament_app.dao.ServerRepository;
 import dsd.codebenders.tournament_app.entities.CDPlayer;
 import dsd.codebenders.tournament_app.entities.Server;
+import dsd.codebenders.tournament_app.errors.CDServerAlreadyRegisteredException;
+import dsd.codebenders.tournament_app.errors.CDServerNotFoundException;
 import dsd.codebenders.tournament_app.errors.CDServerUnreachableException;
 import dsd.codebenders.tournament_app.responses.LoadResponse;
 import dsd.codebenders.tournament_app.utils.HTTPRequestsSender;
@@ -60,6 +62,52 @@ class ServerServiceTest {
 
         }
 
+    }
+
+    @Test
+    void addNewServer() throws CDServerAlreadyRegisteredException {
+        Server server = new Server();
+        server.setAddress("http://dummyaddress.com/");
+
+        Mockito.when(serverRepository.findByAddress(Mockito.any(String.class))).thenReturn(null);
+
+        serverService.addServer(server);
+
+        assertEquals(true, server.getIsActive());
+        assertEquals("http://dummyaddress.com", server.getAddress());
+        Mockito.verify(serverRepository).save(server);
+    }
+
+    @Test
+    void updateServer() throws CDServerNotFoundException {
+        Server server = new Server();
+        server.setAddress("http://dummyaddress.com/");
+        server.setAdminToken("dummyToken");
+        Server storedServer = new Server();
+        storedServer.setActive(true);
+        storedServer.setAdminToken("dummyToken");
+
+        Mockito.when(serverRepository.findByAddress(Mockito.any(String.class))).thenReturn(storedServer);
+
+        serverService.updateServer(server);
+
+        Mockito.verify(serverRepository).updateToken(Mockito.eq("dummyToken"), Mockito.eq(storedServer));
+    }
+
+    @Test
+    void deleteServer() throws CDServerNotFoundException {
+        Server server = new Server();
+        server.setAddress("http://dummyaddress.com/");
+        server.setAdminToken("dummyToken");
+        Server storedServer = new Server();
+        storedServer.setActive(true);
+        storedServer.setAdminToken("dummyToken");
+
+        Mockito.when(serverRepository.findByAddress(Mockito.any(String.class))).thenReturn(storedServer);
+
+        serverService.deleteServer(server);
+
+        Mockito.verify(serverRepository).updateAsInactive(Mockito.eq(storedServer));
     }
 
 
