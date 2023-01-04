@@ -76,13 +76,13 @@ class Home extends React.Component {
     return (
       <div>
         <Header />
-        <div class="main-container">
-          <div class="button-container">
-            <button class="item"
+        <div class="main-container" id="mainpagebackground">
+          <div class="button-container" id="mainbuttoncontainer">
+            <button class="firstitem barbutton"
               onClick={() => this.setState({ view: 0 })}>
               Home
             </button>
-            <button class="item"
+            <button class="item barbutton"
               onClick={() => 
                 {
               if(sessionStorage.getItem("username")!=null) {
@@ -100,19 +100,19 @@ class Home extends React.Component {
               >
               {this.state.buttontext}
             </button>
-            <button class="item"
+            <button class="item barbutton"
               onClick={() => this.setState({ view: 2 })}>
               Create Team
             </button>
-            <button class="item"
+            <button class="item barbutton"
               onClick={() => this.setState({ view: 3 })}>
               Manage Teams
             </button>
-            <button class="item" 
+            <button class="item barbutton" 
               onClick={() => this.setState({ view: 4 })}>
               Join Team
             </button>
-            <button class="item" 
+            <button class="item barbutton" 
               onClick={() => this.setState({ view: 5 })}>
               Tournament Creation
             </button>

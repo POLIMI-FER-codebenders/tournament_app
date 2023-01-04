@@ -142,7 +142,7 @@ export function CreateTournament() {
           </div>
         </form>
 
-        <p className={success}>{creationMessage}</p>
+        <p id="toursucccreated"className={success}>{creationMessage}</p>
       </div>
       <div id="uploadclasses">
         <h3>Upload classes </h3>

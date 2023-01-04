@@ -2,8 +2,11 @@
     height:10vh;
     
 }
+/*
+font-familty:Harrington
+*/
 #phaseheader{
-    font-family: Harrington;
+    
     font-weight: bold;  
     font-size:20px;
     text-align: center;
@@ -13,7 +16,7 @@
 
 }
 #scorediv{
-    height:50vh;
+    height:45vh;
     display:flex;  
 }
 /*
@@ -36,6 +39,7 @@ background-size: cover;
     border-radius: 40px;
     overflow:hidden;
     position: relative;
+    margin-left:10px;
     
 }
 #middleteamzone{
@@ -50,7 +54,7 @@ background-size: cover;
    border-radius: 40px;
    display:flex;
    align-items: center;
-    justify-content: center;
+   justify-content: center;
     
 
 }
@@ -64,10 +68,12 @@ background-size: cover;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    margin-right:10px;
+    
 }
 .streamingheading{
  font-size:25px;
- font-family: Harrington;
+ 
  font-weight: bold;   
 }
 
@@ -85,7 +91,6 @@ background-size: cover;
 }
 .streamingscore{
 font-size:100px;
-font-family: Harrington;
 font-weight: bold;  
 }
  #eventsdiv{   

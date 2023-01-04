@@ -2,6 +2,7 @@
 .list-matches{
     width: 80%;
     max-width: 850px;
+    margin-left:10px;
 }
 .list-entry-matches{
     border-radius: 10px;
@@ -23,6 +24,7 @@
 }
 .flex-items-matches {
     margin: auto 2px;
+    text-align: center;
 }
 .col1-matches {
     min-width: 120px;
@@ -65,4 +67,22 @@
 }
 .col9-matches .btn-matches:hover {
     background: #096432;    
+}
+
+.buttonmatches{
+    display:flex;
+    flex-direction:column;
+    justify-content: space-around;
+    margin-left:5px;
+}
+#playbutton{
+    background: #29c05b;
+    border: 1px solid #29c05b;
+    color: #fff;
+    margin-top:5px;
+
+}
+#playbutton:hover{
+    background: #096432; 
+
 }

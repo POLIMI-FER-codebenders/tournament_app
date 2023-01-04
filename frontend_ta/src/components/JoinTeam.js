@@ -46,51 +46,58 @@ export const useGlobalState = () => [
 function TeamEntry(props) {
   const [open, setOpen] = useState(false);
   const [state, dispatch] = useGlobalState();
+  const [joined,setjoined]=useState(false);
+  let teambuttonclassname;
+  if(!props.team.full)
+  teambuttonclassname = "teambutton " + "greenteam";
+  else teambuttonclassname = "teambutton " + "redteam";
+  let buttonname;
+  
+  if(state.alreadyInTeam === props.team.name) 
+  buttonname='you are already inside this team'; 
+  else buttonname=  'Join Team';
   
   return (
     <div className="team-entry">
-      <button className="item button-container"
+      <button className={teambuttonclassname}
        onClick={() => setOpen(!open)}>{props.team.name}
       </button>
       
       {open && (
-        <div className="item container">
-          <p>Date of creation: 
+        <div className="teamdescription">
+          <p className="pteamdesc1">Date of creation: 
             <span className="flex-items-info">
               {props.team.dateOfCreation[2]}.{props.team.dateOfCreation[1]}.{props.team.dateOfCreation[0]}.
             </span>
           </p>
-          <p>Members ({props.team.members.length}) of maximum size ({props.team.maxNumberOfPlayers}) :
+          <p  className="pteamdesc2">Members ({props.team.members.length}) of maximum size ({props.team.maxNumberOfPlayers}) :
             {props.team.members.map((m) => 
               <div className="item-member">
                 <span>{m.username}</span> {m.role === "LEADER" && (<span> (leader)</span>)}
               </div>)} 
           </p>
-          <p>The team is {props.team.policy} to new players. <br/>
+          <p className="pteamdesc3">The team is {props.team.policy} to new players. <br/>
             {props.team.members.length === props.team.maxNumberOfPlayers && (<span>Can't join, currently full.</span>)}
-            {props.team.policy === "OPEN" && props.team.members.length < props.team.maxNumberOfPlayers && (
+            {props.team.policy === "OPEN" && props.team.members.length < props.team.maxNumberOfPlayers && !joined && (
               <button className={state.alreadyInTeam === props.team.name ? 'btn-inactive' : 'btn-active'}
                 onClick={()=> { 
-                                if (!window.confirm('Are you sure you want to join this team?\n' +
-                                    'This action will kick you from your current team and join the new one.'))
-                                  {
-                                    console.log('User did not change their team');
-                                    return;
-                                  }
+                                
                                 postData("/api/team/join", {"idTeam" : props.team.id})
                                 .then((response) => {
                                   if (response.status === 200) {
-                                    alert(`You have joined team ${props.team.name}`);
+                                    setjoined(true);
                                     dispatch({ alreadyInTeam : props.team.name });
                                   }
                                   else {
                                     alert(response.message);
                                   }
                                 })
-                              }}>
-                Join this team
+                              }}>{buttonname}
+                
               </button>
+              
             )}
+            {joined && <p>successfully joined the team</p>}
           </p>
         </div>
       )}
@@ -107,8 +114,8 @@ function InvitationEntry(props){
     <div className="invitation-entry">
       <p className="inv-team">Invitation from {props.invitation.team.name}</p> 
 
-      {!hide && ( <div>
-        <button className={'item button-container ' + (!state.alreadyInTeam ? 'btn-active' : 'btn-inactive')} 
+      {!hide && ( <div className="buttoninvitationcontainer">
+        <button className={(!state.alreadyInTeam ? 'btn-active invitationbutton' : 'btn-inactive invitationbutton')} 
           onClick={()=> postData("/api/invitation/accept", {"idInvitation" : props.invitation.id})
                               .then((response) => { 
                                 if (response.status === 200) {
@@ -121,7 +128,7 @@ function InvitationEntry(props){
                                 }})}>
           Accept
         </button>
-        <button className="item button-container btn-decline"
+        <button className="btn-decline invitationbutton"
           onClick={()=> postData("/api/invitation/reject", {"idInvitation" : props.invitation.id})
                           .then((response) => {
                             if (response.status === 200) {
@@ -134,7 +141,7 @@ function InvitationEntry(props){
           Decline
         </button>
       </div>)}
-      {hide && (<span>You have {status} this invitation</span>)}
+      {hide && (<p id="acceptedinvitation"> : {status} </p>)}
     </div>
   );
 }
@@ -151,14 +158,21 @@ class JoinTeam extends Component{
       alreadyInTeam: "",
       initTeam: true,
       errorMessage: "",
-      badResponse: ""
+      badResponse: "",
+      backupteams:"",
+      teamname:""
     };
+    this.handleChange= this.handleChange.bind(this);
+  }
+  handleChange(event) {
+    let teamname = event.target.value;
+    this.setState({teamname: event.target.value , data: this.state.backupteams.filter(entry => entry.name.startsWith(teamname))});
   }
   
   componentDidMount() {
     getData("/api/team/get-all").then((response)=> {
       if (response.status === 200) 
-        this.setState({data: response.result});
+        this.setState({data: response.result,backupteams:response.result});
       else {
         this.setState({
           errorMessage: "the server encountered an error",
@@ -185,7 +199,7 @@ class JoinTeam extends Component{
       <GlobalStateProvider>
       {this.state.initTeam && (<div><InitInTeam />{this.setState({initTeam : false})}</div>)}
       <div className="main-panel">
-        <button className="item button-container"
+        <button id="checkinvbutton" className="item button-container "
           onClick={() => { 
                           getData("/api/invitation/pending").then((response)=> {
                             if (response.status === 200) 
@@ -210,6 +224,12 @@ class JoinTeam extends Component{
         </div>}
 
         <h2>Teams</h2>
+        <div id="searchbartour">
+          <label className="labelsearchtour" htmlFor='toursearchtextarea' >
+        Search team by name
+        <textarea className="textareasearchtour" id="toursearchtextarea" value={this.state.teamname} onChange={this.handleChange} />
+      </label>
+  </div>
         {this.state.data.map((object, i) => <TeamEntry team={object} key={i} />)}
       </div>
       </GlobalStateProvider>

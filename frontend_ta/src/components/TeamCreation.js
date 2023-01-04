@@ -2,6 +2,7 @@ import { Component } from "react";
 import postData from "../utils";
 import '../styles/App.css';
 import '../styles/forms.css';
+import { getData } from "../utils";
 class TeamCreation extends Component {
   constructor(props) {
     super(props);
@@ -10,10 +11,14 @@ class TeamCreation extends Component {
       type: "OPEN",
       messageError: null,
       messageSuccess: null,
+      hasteam:false,
+      size:""
+      
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.renderErrorMessage = this.renderErrorMessage.bind(this);
+    
   }
 
   renderErrorMessage() {
@@ -29,13 +34,44 @@ class TeamCreation extends Component {
     this.setState({ type: event.target.value });
   };
 
+  componentDidMount(){
+    getData("/api/team/get-mine")
+      .then((response) => {
+        if (response.status === 200) {
+          if (response.result) {
+            this.setState({
+              hasteam: true
+              
+            })
+          } else {
+            this.setState({
+              hasteam: false
+              
+            })
+          }
+        }
+        else {
+          this.setState({
+            hasteam: false,
+            errorMessage: "the server encountered an error",
+            badResponse: response.message
+          })
+        }
+      });
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     let maxnumberofplayers = document.getElementById("sizeteam").value;
     let data = { name: this.state.name, maxNumberOfPlayers: maxnumberofplayers, policy: this.state.type }
     if (this.state.name.length > 255) this.setState({ messageError: "the name must be 255 char maximum", messageSuccess: null  });
     else if (maxnumberofplayers > 10 || maxnumberofplayers < 1) this.setState({ messageError: "team size must be from 1 to 127", messageSuccess: null  })
-    else postData("/api/team/create", data).then((response) => {
+    else
+    {
+     // document.getElementById("sizeteam").value =null;
+    this.setState({name:""});
+    this.setState({size:""});
+    postData("/api/team/create", data).then((response) => {
       if (response.status === 200) {
         this.setState({ messageSuccess: "team successfully created", messageError: null });
       }
@@ -44,6 +80,7 @@ class TeamCreation extends Component {
       }
     }
     );
+  }
   };
 
   displayDescPolicy() {
@@ -69,7 +106,8 @@ class TeamCreation extends Component {
     return (
       <div className="main-panel">
         <h2>Team creation</h2>
-
+        {this.state.hasteam && <p className='error'>you are already in a team</p>}
+        {!this.state.hasteam &&
         <form onSubmit={this.handleSubmit}>
 
           <div className="input-container">
@@ -84,7 +122,7 @@ class TeamCreation extends Component {
             <label htmlFor="sizeteam">Size</label>
             <input
               type="number" name="size" id="sizeteam" required min="1" max="10"
-              placeholder="Number of team members"
+              placeholder="Number of team members" value={this.state.size} onChange={(e) => this.setState({ size: e.target.value })}
             />
           </div>
           <div className="input-container">
@@ -100,6 +138,7 @@ class TeamCreation extends Component {
             <input type="submit" value="Create team" />
           </div>
         </form>
+  }
         {this.renderErrorMessage()}
       </div>
     );
