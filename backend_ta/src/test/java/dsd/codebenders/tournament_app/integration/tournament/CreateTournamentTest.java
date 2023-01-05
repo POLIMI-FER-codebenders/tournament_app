@@ -9,6 +9,7 @@ import dsd.codebenders.tournament_app.dao.TeamRepository;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
+import dsd.codebenders.tournament_app.services.MatchService;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
 import kong.unirest.HttpResponse;
@@ -16,10 +17,14 @@ import kong.unirest.Unirest;
 import org.json.JSONException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestPropertySource;
+
+import java.time.Year;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,6 +46,25 @@ public class CreateTournamentTest {
     @Autowired
     private TeamRepository teamRepository;
 
+    @Value("${game.tournament.league.min-teams:2}")
+    private int minLeagueTeams;
+    @Value("${game.tournament.league.max-teams:8}")
+    private int maxLeagueTeams;
+    @Value("${game.tournament.league.min-team-size:1}")
+    private int minLeagueTeamSize;
+    @Value("${game.tournament.league.max-team-size:10}")
+    private int maxLeagueTeamSize;
+
+
+    @Value("${game.tournament.knockout.min-teams:2}")
+    private int minKnockoutTeams;
+    @Value("${game.tournament.knockout.max-teams:16}")
+    private int maxKnockoutTeams;
+    @Value("${game.tournament.knockout.min-team-size:1}")
+    private int minKnockoutTeamSize;
+    @Value("${game.tournament.knockout.max-team-size:10}")
+    private int maxKnockoutTeamSize;
+
 
     private Player playerTC = new Player("playerTournamentCreator", "ptc@ptc.pl", "testTestT1");
 
@@ -49,8 +73,23 @@ public class CreateTournamentTest {
     private String[] leagueTournamentCorrectInfo = {"leagueTournament", "1", "2", "LEAGUE", "MULTIPLAYER"};
     private String[] tournamentInfoInvalidType = {"tournamentName", "1", "2", "KNOCKOUTt", "MULTIPLAYER"};
     private String[] tournamentInfoInvalidMatchType = {"tournamentName", "1", "2", "KNOCKOUT", "MULTIPLAYERr"};
+    private String[] tournamentInfoBlankName   = {"", "1", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoNameTooLong   = {"DVvupgpsKkHilZQgAzwfkJRytnniEdGejOKfPLXkDVMJWWzRJuKLnYSVMmjnhlOfzOJpiqLuptmwnBlRaQRghBACEuEtTxJZLtLIXRkfeEIsfEPrpHxZeEqwOWbDlIWsvlNUZqkKByvQuELWaaZdDQeeZSbBKfNNKKYAQpngevsFPPjXyeCmVMwTKVrEmcNCziUfelwsymCuisKdkHWsZwrgUXjZKjxfVGlvvuIZBQAQaerpNnYuCkVGzhZKITNN", "1", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoMatchTypeMissing = {"tournamentName", "1", "2", "KNOCKOUT"};
+    private String[] tournamentInfoMatchTypeMelee = {"tournamentName", "1", "2", "KNOCKOUT", "MELEE"};
+
+    private String[] tournamentInfoLeagueMinTeamNum = {"tournamentName", "1", "not used", "LEAGUE", "MULTIPLAYER"};
+    private String[] tournamentInfoLeagueMaxTeamNum = {"tournamentName", "1", "not used", "LEAGUE", "MULTIPLAYER"};
+    private String[] tournamentInfoLeagueMinTeamSize = {"tournamentName", "not used", "2", "LEAGUE", "MULTIPLAYER"};
+    private String[] tournamentInfoLeagueMaxTeamSize = {"tournamentName", "not used", "2", "LEAGUE", "MULTIPLAYER"};
+
     private String[] tournamentInfoKnockoutPowerOfTwo = {"tournamentName", "1", "3", "KNOCKOUT", "MULTIPLAYER"};
-    private String[] tournamentInfoMinTeamSize   = {"tournamentName", "0", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoKnockoutMinTeamNum = {"tournamentName", "1", "not used", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoKnockoutMaxTeamNum = {"tournamentName", "1", "not used", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoKnockoutMinTeamSize = {"tournamentName", "not used", "2", "KNOCKOUT", "MULTIPLAYER"};
+    private String[] tournamentInfoKnockoutMaxTeamSize = {"tournamentName", "not used", "2", "KNOCKOUT", "MULTIPLAYER"};
+
+
 
 
     @BeforeAll
@@ -86,7 +125,7 @@ public class CreateTournamentTest {
     }
     @Test
     @Order(2)
-    void tournamentCreationInvalidTypeTest() throws JsonProcessingException {
+    void tournamentInvalidTypeTest() throws JsonProcessingException {
 
         // Login playerTC
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -130,22 +169,8 @@ public class CreateTournamentTest {
 
     @Test
     @Order(3)
-    void tournamentCreationInvalidMatchTypeTest() throws JsonProcessingException {
-
-        // Login playerTC
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
-                .header("Accept", "*/*")
-                .header("Origin", "http://localhost")
-                .multiPartContent()
-                .field("username", playerTC.getUsername())
-                .field("password", "testTestT1")
-                .asString();
-
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
-        location = location.substring(location.length() - 7);
-
-        assertEquals("success", location);
-
+    void tournamentInvalidMatchTypeTest() throws JsonProcessingException {
+        // Logged in as playerTC
         // Create Tournament
 
         ObjectMapper tournamentMapper = new ObjectMapper();
@@ -174,22 +199,198 @@ public class CreateTournamentTest {
 
     @Test
     @Order(4)
-    void tournamentCreationInvalidKnockoutPowerOfTwoTest() throws JsonProcessingException {
+    void tournamentBlankNameTest() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
 
-        // Login playerTC
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
-                .header("Accept", "*/*")
-                .header("Origin", "http://localhost")
-                .multiPartContent()
-                .field("username", playerTC.getUsername())
-                .field("password", "testTestT1")
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoBlankName[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoBlankName[1]));
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoBlankName[2]));
+        tournament.put("type", tournamentInfoBlankName[3]);
+        tournament.put("matchType", tournamentInfoBlankName[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
                 .asString();
 
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
-        location = location.substring(location.length() - 7);
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The tournament name cannot be empty", failedTournamentCreationResponse.getBody());
+    }
 
-        assertEquals("success", location);
+    @Test
+    @Order(5)
+    void tournamentNameTooLongTest() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
 
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoNameTooLong[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoNameTooLong[1]));
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoNameTooLong[2]));
+        tournament.put("type", tournamentInfoNameTooLong[3]);
+        tournament.put("matchType", tournamentInfoNameTooLong[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The maximum length of the tournament name is 255 characters", failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(6)
+    void tournamentMatchTypeMissing() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoMatchTypeMissing[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoMatchTypeMissing[1]));
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoMatchTypeMissing[2]));
+        tournament.put("type", tournamentInfoMatchTypeMissing[3]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("Missing match type", failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(7)
+    void tournamentMatchTypeMelee() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoMatchTypeMelee[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoMatchTypeMelee[1]));
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoMatchTypeMelee[2]));
+        tournament.put("type", tournamentInfoMatchTypeMelee[3]);
+        tournament.put("matchType", tournamentInfoMatchTypeMelee[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("Melee match type is currently not supported", failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(8)
+    void leagueTournamentMinNumberOfTeams() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoLeagueMinTeamNum[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoLeagueMinTeamNum[1]));
+        tournament.put("numberOfTeams", minLeagueTeams - 1);
+        tournament.put("type", tournamentInfoLeagueMinTeamNum[3]);
+        tournament.put("matchType", tournamentInfoLeagueMinTeamNum[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The minimum number of teams for a league tournament is " + minLeagueTeams, failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(9)
+    void leagueTournamentMaxNumberOfTeams() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoLeagueMaxTeamNum[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoLeagueMaxTeamNum[1]));
+        tournament.put("numberOfTeams", maxLeagueTeams + 1);
+        tournament.put("type", tournamentInfoLeagueMaxTeamNum[3]);
+        tournament.put("matchType", tournamentInfoLeagueMaxTeamNum[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The maximum number of teams for a league tournament is " + maxLeagueTeams, failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(10)
+    void leagueTournamentMinTeamSize() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoLeagueMaxTeamSize[0]);
+        tournament.put("teamSize", minLeagueTeamSize - 1);
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoLeagueMaxTeamSize[2]));
+        tournament.put("type", tournamentInfoLeagueMaxTeamSize[3]);
+        tournament.put("matchType", tournamentInfoLeagueMaxTeamSize[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The minimum team size for a league tournament is " + minLeagueTeamSize, failedTournamentCreationResponse.getBody());
+    }
+    @Test
+    @Order(11)
+    void leagueTournamentMaxTeamSize() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoLeagueMinTeamSize[0]);
+        tournament.put("teamSize", maxLeagueTeamSize + 1);
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoLeagueMinTeamSize[2]));
+        tournament.put("type", tournamentInfoLeagueMinTeamSize[3]);
+        tournament.put("matchType", tournamentInfoLeagueMinTeamSize[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The maximum team size for a league tournament is " + maxLeagueTeamSize, failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(12)
+    void knockoutTournamentInvalidPowerOfTwo() throws JsonProcessingException {
+        // Logged in as playerTC
         // Create Tournament
 
         ObjectMapper tournamentMapper = new ObjectMapper();
@@ -211,33 +412,69 @@ public class CreateTournamentTest {
     }
 
     @Test
-    @Order(5)
-    void tournamentCreationInvalidMinTeamSizeTest() throws JsonProcessingException {
-
-        // Login playerTC
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
-                .header("Accept", "*/*")
-                .header("Origin", "http://localhost")
-                .multiPartContent()
-                .field("username", playerTC.getUsername())
-                .field("password", "testTestT1")
-                .asString();
-
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
-        location = location.substring(location.length() - 7);
-
-        assertEquals("success", location);
-
+    @Order(13)
+    void knockoutTournamentMinNumberOfTeams() throws JsonProcessingException {
+        // Logged in as playerTC
         // Create Tournament
 
         ObjectMapper tournamentMapper = new ObjectMapper();
         ObjectNode tournament = tournamentMapper.createObjectNode();
 
-        tournament.put("name", tournamentInfoMinTeamSize[0]);
-        tournament.put("teamSize", Integer.parseInt(tournamentInfoMinTeamSize[1]));
-        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoMinTeamSize[2]));
-        tournament.put("type", tournamentInfoMinTeamSize[3]);
-        tournament.put("matchType", tournamentInfoMinTeamSize[4]);
+        tournament.put("name", tournamentInfoKnockoutMinTeamNum[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoKnockoutMinTeamNum[1]));
+        tournament.put("numberOfTeams", minKnockoutTeams - 1);
+        tournament.put("type", tournamentInfoKnockoutMinTeamNum[3]);
+        tournament.put("matchType", tournamentInfoKnockoutMinTeamNum[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The minimum number of teams for a knockout tournament is " + minKnockoutTeams, failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(14)
+    void knockoutTournamentMaxNumberOfTeams() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoKnockoutMaxTeamNum[0]);
+        tournament.put("teamSize", Integer.parseInt(tournamentInfoKnockoutMaxTeamNum[1]));
+        tournament.put("numberOfTeams", Math.pow(2, maxKnockoutTeams));
+        tournament.put("type", tournamentInfoKnockoutMaxTeamNum[3]);
+        tournament.put("matchType", tournamentInfoKnockoutMaxTeamNum[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
+                .asString();
+
+
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The maximum team size for a knockout tournament is " + maxKnockoutTeams, failedTournamentCreationResponse.getBody());
+    }
+
+    @Test
+    @Order(15)
+    void knockoutTournamentMinTeamSize() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
+
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoKnockoutMinTeamSize[0]);
+        tournament.put("teamSize", minKnockoutTeamSize - 1);
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoKnockoutMinTeamSize[2]));
+        tournament.put("type", tournamentInfoKnockoutMinTeamSize[3]);
+        tournament.put("matchType", tournamentInfoKnockoutMinTeamSize[4]);
 
         HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
                 .header("Content-Type", "application/json")
@@ -250,23 +487,34 @@ public class CreateTournamentTest {
     }
 
     @Test
-    @Order(6)
-    void tournamentKnockoutCreationSuccess() throws JsonProcessingException {
+    @Order(16)
+    void knockoutTournamentMaxTeamSize() throws JsonProcessingException {
+        // Logged in as playerTC
+        // Create Tournament
 
-        // Login playerTC
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
-                .header("Accept", "*/*")
-                .header("Origin", "http://localhost")
-                .multiPartContent()
-                .field("username", playerTC.getUsername())
-                .field("password", "testTestT1")
+        ObjectMapper tournamentMapper = new ObjectMapper();
+        ObjectNode tournament = tournamentMapper.createObjectNode();
+
+        tournament.put("name", tournamentInfoKnockoutMaxTeamSize[0]);
+        tournament.put("teamSize", maxKnockoutTeamSize + 1);
+        tournament.put("numberOfTeams", Integer.parseInt(tournamentInfoKnockoutMaxTeamSize[2]));
+        tournament.put("type", tournamentInfoKnockoutMaxTeamSize[3]);
+        tournament.put("matchType", tournamentInfoKnockoutMaxTeamSize[4]);
+
+        HttpResponse<String> failedTournamentCreationResponse = Unirest.post(createURLWithPort("/api/tournament/create"))
+                .header("Content-Type", "application/json")
+                .body(tournament.toString())
                 .asString();
 
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
-        location = location.substring(location.length() - 7);
 
-        assertEquals("success", location);
+        assertEquals(400, failedTournamentCreationResponse.getStatus());
+        assertEquals("The maximum team size for a knockout tournament is " + maxKnockoutTeamSize, failedTournamentCreationResponse.getBody());
+    }
 
+    @Test
+    @Order(17)
+    void tournamentKnockoutCreationSuccess() throws JsonProcessingException {
+        // Logged in as playerTC
         // Create Tournament
 
         ObjectMapper tournamentMapper = new ObjectMapper();
@@ -303,23 +551,9 @@ public class CreateTournamentTest {
     }
 
     @Test
-    @Order(7)
+    @Order(18)
     void tournamentLeagueCreationSuccess() throws JsonProcessingException {
-
-        // Login playerTC
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
-                .header("Accept", "*/*")
-                .header("Origin", "http://localhost")
-                .multiPartContent()
-                .field("username", playerTC.getUsername())
-                .field("password", "testTestT1")
-                .asString();
-
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
-        location = location.substring(location.length() - 7);
-
-        assertEquals("success", location);
-
+        // Logged in as playerTC
         // Create Tournament
 
         ObjectMapper tournamentMapper = new ObjectMapper();

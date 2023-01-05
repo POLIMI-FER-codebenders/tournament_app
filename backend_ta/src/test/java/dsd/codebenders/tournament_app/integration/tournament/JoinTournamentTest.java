@@ -10,6 +10,7 @@ import dsd.codebenders.tournament_app.dao.TournamentRepository;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.Team;
 import dsd.codebenders.tournament_app.entities.utils.TeamPolicy;
+import dsd.codebenders.tournament_app.entities.utils.TournamentType;
 import dsd.codebenders.tournament_app.services.PlayerService;
 import dsd.codebenders.tournament_app.services.TeamService;
 import dsd.codebenders.tournament_app.services.TournamentService;
@@ -254,6 +255,42 @@ public class JoinTournamentTest {
         assertEquals(302, failedJoinTournamentResponse.getStatus());
         assertEquals("error", location);
     }
+
+    @Test
+    @Order(2)
+    void listTournamentsByTypeTest() throws JsonProcessingException {
+        HttpResponse<String> tournamentListResponse = Unirest.get(createURLWithPort("/api/tournament/list?type=knockout"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode tournamentListBody = mapper.readTree(tournamentListResponse.getBody());
+
+        Integer numberOfTournaments = tournamentListBody.size();
+
+        assertEquals(200, tournamentListResponse.getStatus());
+        assertEquals(tournamentService.getTournamentsOfType(TournamentType.KNOCKOUT).size(), numberOfTournaments);
+
+        tournamentListResponse = Unirest.get(createURLWithPort("/api/tournament/list?type=league"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        mapper = new ObjectMapper();
+        tournamentListBody = mapper.readTree(tournamentListResponse.getBody());
+
+        numberOfTournaments = tournamentListBody.size();
+
+        assertEquals(200, tournamentListResponse.getStatus());
+        assertEquals(tournamentService.getTournamentsOfType(TournamentType.LEAGUE).size(), numberOfTournaments);
+
+        tournamentListResponse = Unirest.get(createURLWithPort("/api/tournament/list?type=wrong_tournament_type"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        assertEquals(400, tournamentListResponse.getStatus());
+        assertEquals("Wrong tournament type specified", tournamentListResponse.getBody());
+
+    }
     @Test
     @Order(2)
     void memberJoinTournamentTest() throws JSONException, JsonProcessingException {
@@ -426,29 +463,11 @@ public class JoinTournamentTest {
                 .asString();
 
         assertEquals(200, successfulJoinTournamentResponse.getStatus());
-        System.out.println(successfulJoinTournamentResponse.getBody());
 
         // Check if tournament started
         assertEquals("SELECTING_CLASSES", tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getStatus().toString());
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @AfterAll

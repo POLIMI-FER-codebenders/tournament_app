@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class TournamentProgressionTest {
+public class KnockoutTournamentProgressionTest {
 
 
     @LocalServerPort
@@ -97,7 +97,7 @@ public class TournamentProgressionTest {
 
         assertEquals(200, createTeamResponse.getStatus());
 
-        // As user teamFiveLeader create tournament with team size 1
+        // As user teamFiveLeader create KNOCKOUT tournament with team size 1
         ObjectMapper tournamentMapper = new ObjectMapper();
         ObjectNode tournament = tournamentMapper.createObjectNode();
 
@@ -216,7 +216,7 @@ public class TournamentProgressionTest {
                 .header("Content-Type", "application/json")
                 .body(tournamentBody.toString())
                 .asString();
-System.out.println(successfulJoinTournamentResponse.getBody());
+
         assertEquals(200, successfulJoinTournamentResponse.getStatus());
 
 
@@ -269,8 +269,6 @@ System.out.println(successfulJoinTournamentResponse.getBody());
 
         Unirest.shutDown();
     }
-
-
 
     @Test
     @Order(2)

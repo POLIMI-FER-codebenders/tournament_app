@@ -211,7 +211,6 @@ public class ClassUploadAndSelectionTest {
         classSelection.put("roundNumber", 1);
         classSelection.put("classId", classID);
 
-        System.out.println(classSelection.toString());
 
         HttpResponse<String> classSelectionResponse = Unirest.post(createURLWithPort("/api/classes/post-choices"))
                 .header("Content-Type", "application/json")
@@ -221,8 +220,6 @@ public class ClassUploadAndSelectionTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode response = mapper.readTree(classSelectionResponse.getBody());
 
-
-        System.out.println(classSelectionResponse.getBody());
 
         Long tournament = response.get("tournament").asLong();
         Long round = response.get("round").asLong();
@@ -237,6 +234,21 @@ public class ClassUploadAndSelectionTest {
         assertEquals("TestClass.java", gameClassFilename);
         assertEquals(teamNineLeader.getUsername(), gameClassAuthor);
     }
+
+    @Test
+    @Order(5)
+    void getClassesTest() throws JsonProcessingException {
+
+        HttpResponse<String> getClassesResponse = Unirest.get(createURLWithPort("/api/classes/get-all"))
+                .asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode response = mapper.readTree(getClassesResponse.getBody());
+
+        assertEquals(200, getClassesResponse.getStatus());
+        assertEquals(2, response.size());
+    }
+
 
     @AfterAll
     public void cleanUp(){

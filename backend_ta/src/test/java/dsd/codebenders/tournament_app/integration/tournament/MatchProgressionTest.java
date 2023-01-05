@@ -191,19 +191,15 @@ public class MatchProgressionTest {
     @Test
     @Order(2)
     void checkMatchCreated() throws TimeoutException, JsonProcessingException {
+
         long start = System.currentTimeMillis();
-
-
         while(tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString() == "SELECTING_CLASSES"){
-
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
             if(timeElapsed > ((classSelectionTimeDuration + breakTimeDuration + testingBufferTime) * 1000)){
-
-                throw new TimeoutException("Kasnis brte" + timeElapsed + tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString());
+                throw new TimeoutException("Timelimit for test exceded");
             }
         }
-
 
         // Login as teamThreeLeader
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -267,11 +263,10 @@ public class MatchProgressionTest {
 
         long start = System.currentTimeMillis();
         while(matchService.findById(matchId).get().getStatus().toString() == "CREATED"){
-
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
             if(timeElapsed > ((breakTimeDuration + testingBufferTime) * 1000)){
-                throw new TimeoutException("Kasnis brte" + timeElapsed + tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString());
+                throw new TimeoutException("Timelimit for test exceded");
             }
         }
 
@@ -287,15 +282,14 @@ public class MatchProgressionTest {
 
         start = System.currentTimeMillis();
         while(matchService.findById(matchId).get().getStatus().toString() == "IN_PHASE_ONE"){
-
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
             if(timeElapsed > ((phaseOneDuration + testingBufferTime) * 1000)){
-                throw new TimeoutException("Kasnis brte" + timeElapsed + tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString());
+                throw new TimeoutException("Timelimit for test exceded");
             }
         }
 
-        matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId="+matchId))
+        matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId=" + matchId))
                 .asString();
 
         mapper = new ObjectMapper();
@@ -306,15 +300,14 @@ public class MatchProgressionTest {
 
         start = System.currentTimeMillis();
         while(matchService.findById(matchId).get().getStatus().toString() == "IN_PHASE_TWO"){
-
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
             if(timeElapsed > ((phaseTwoDuration + testingBufferTime) * 1000)){
-                throw new TimeoutException("Kasnis brte" + timeElapsed + tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString());
+                throw new TimeoutException("Timelimit for test exceded");
             }
         }
 
-        matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId="+matchId))
+        matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId=" + matchId))
                 .asString();
 
         mapper = new ObjectMapper();
@@ -325,16 +318,15 @@ public class MatchProgressionTest {
 
         start = System.currentTimeMillis();
         while(matchService.findById(matchId).get().getStatus().toString() == "IN_PHASE_THREE"){
-
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
             if(timeElapsed > ((phaseThreeDuration + testingBufferTime) * 1000)){
-                throw new TimeoutException("Kasnis brte" + timeElapsed + tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString());
+                throw new TimeoutException("Timelimit for test exceded");
             }
         }
 
 
-        matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId="+matchId))
+        matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId=" + matchId))
                 .asString();
 
         mapper = new ObjectMapper();
@@ -352,11 +344,38 @@ public class MatchProgressionTest {
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
             if(timeElapsed > ((phaseThreeDuration + testingBufferTime) * 1000)){
-                throw new TimeoutException("Kasnis brte" + timeElapsed + tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString());
+                throw new TimeoutException("Timelimit for test exceded");
             }
         }
 
         assertEquals(false, Objects.isNull(matchService.findById(matchId).get().getWinningTeam()));
+    }
+
+    @Test
+    @Order(5)
+    void getMatchInfoTest() throws JsonProcessingException {
+
+        ObjectMapper matchMapper = new ObjectMapper();
+        ObjectNode match = matchMapper.createObjectNode();
+
+        match.put("gameId", matchId);
+
+        // check match info
+        HttpResponse<String> getMatchResponse = Unirest.get(createURLWithPort("/api/match/info?gameId=" + matchId))
+                .asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode response = mapper.readTree(getMatchResponse.getBody());
+
+        String classId = response.get("classId").asText();
+        String state = response.get("state").asText();
+        JsonNode scoreboard = response.get("scoreboard");
+
+        assertEquals(200, getMatchResponse.getStatus());
+        assertEquals(false, classId.isEmpty());
+        assertEquals("FINISHED", state);
+        assertEquals(true, scoreboard.has("attackers") && scoreboard.has("defenders")
+                && scoreboard.has("attackersTotal") && scoreboard.has("defendersTotal"));
     }
 
     @AfterAll
