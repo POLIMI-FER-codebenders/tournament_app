@@ -32,24 +32,26 @@ export class MatchEntry extends React.Component {
     
     componentDidMount(){
         if(sessionStorage.getItem("username")!=null){
-        getData("/api/match/current_match").then((response) => {
-            if (response.status === 200) {
-                response.result.id=response.result.id*1 // convert from string to integer
-                this.setState({currentMatch: response.result,badResponse:null}); 
-                getData("/api/match/info?gameId=" + response.result.id ).then((response) =>{
-                     if(response.status===200){
-                        
-                        this.setState({gameinfo:response.result});
-                     }
-                     else{
-                        this.setState({currentMatch: response.result,badResponse:null});
-                     }
-              });
-            }
-             else this.setState({ badResponse: response.message });
-            }
-            );
-          }
+            getData("/api/match/current_match").then((response) => {
+                if (response.status === 200) {
+                    response.result.id=response.result.id*1 // convert from string to integer
+                    this.setState({currentMatch: response.result,badResponse:null}); 
+                    
+                }
+                 else this.setState({ badResponse: response.message });
+                }
+                );
+              }
+              
+              getData("/api/match/info?gameId=" + this.props.record.id ).then((response) =>{
+                if(response.status===200){
+                   console.log(response.result);
+                   this.setState({gameinfo:response.result});
+                }
+                else{
+                   this.setState({currentMatch: response.result,badResponse:null});
+                }
+         });
     }
     
     render() { 
