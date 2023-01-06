@@ -311,7 +311,7 @@ table, th, td,tr {
     justify-content: center;
     margin-top:10px;
   }
-  .namefilter:hover{
+  .filter:hover{
     cursor:pointer;
   }
   #classescontainer{
