@@ -139,10 +139,6 @@ public class Player {
     }
 
     @Override
-    public String toString(){
-        return "Player: " + this.ID + " " + this.username + " " + this.email;
-    }
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

@@ -54,10 +54,6 @@ class RegisterTest {
     @Order(1)
     void registerSuccessTest()  {
 
-        //playerRepository.delete(playerRepository.findByUsername("hrvoje459"));
-
-        //System.out.println(playerRepository.findAll());
-
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode user = mapper.createObjectNode();
 
@@ -72,7 +68,6 @@ class RegisterTest {
                 .body(user.toString())
                 .asString();
 
-        System.out.println("=" + registrationSuccess.getBody() + "=");
         String expectedRegistrationSuccess = "{\"result\":\"Registered\"}";
 
         assertEquals(expectedRegistrationSuccess, registrationSuccess.getBody());
@@ -103,7 +98,6 @@ class RegisterTest {
     @Order(3)
     void emailTakenTest()  {
 
-
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode user = mapper.createObjectNode();
 
@@ -117,13 +111,9 @@ class RegisterTest {
                 .body(user.toString())
                 .asString();
 
-
         String expectedRegistrationFailure = "{\"result\":\"Email already taken\"}";
 
         assertEquals(expectedRegistrationFailure, registrationFailure.getBody());
-
-        System.out.println(playerRepository.findAll());
-
     }
 
     @Test

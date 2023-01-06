@@ -61,9 +61,12 @@ public class JoinTeamTest {
     private Player player3 = new Player("player3", "player3@player.pl", "testTestT1");
     private Player player4 = new Player("player4", "player4@player.pl", "testTestT1");
     private Player player5 = new Player("player5", "player5@player.pl", "testTestT1");
+    private Player player6 = new Player("rejectedTeamLeader", "rtl@rtl.tl", "testTestT1");
+    private Player player7 = new Player("rejectingMember", "rm@rm.rm", "testTestT1");
 
     private Object[] playerOneTeam = {"PlayerOneTeam", 2, "OPEN"};
     private Object[] playerThreeTeam = {"PlayerThreeTeam", 2, "CLOSED"};
+    private Object[] rejectedTeam = {"RejectedTeamName", 2, "CLOSED"};
 
 
     @BeforeAll
@@ -73,6 +76,8 @@ public class JoinTeamTest {
         playerService.addNewPlayer(player3);
         playerService.addNewPlayer(player4);
         playerService.addNewPlayer(player5);
+        playerService.addNewPlayer(player6);
+        playerService.addNewPlayer(player7);
 
         HttpResponse<String> loginPlayerOneSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
@@ -285,8 +290,23 @@ public class JoinTeamTest {
 
     @Test
     @Order(5)
-    void getPendingInvitationsTest() throws JSONException, JsonProcessingException {
+    void getPendingInvitationsForTeam() throws JsonProcessingException {
+        // logged in as playerThree (team leader)
+        HttpResponse<String> getPendingInvitationsResponse = Unirest.get(createURLWithPort("/api/invitation/pending/team"))
+                .asString();
 
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode response = mapper.readTree(getPendingInvitationsResponse.getBody());
+
+        String invitedPlayer = response.get(0).get("invitedPlayer").get("username").asText();
+
+        assertEquals(200, getPendingInvitationsResponse.getStatus());
+        assertEquals(player4.getUsername(), invitedPlayer);
+    }
+
+    @Test
+    @Order(6)
+    void invalidGettingPendingInvitationsForTeamTest(){
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
                 .header("Origin", "http://localhost")
@@ -300,6 +320,28 @@ public class JoinTeamTest {
 
         assertEquals("success", location);
 
+        HttpResponse<String> getPendingInvitationsResponse = Unirest.get(createURLWithPort("/api/invitation/pending/team"))
+                .asString();
+
+        assertEquals(400, getPendingInvitationsResponse.getStatus());
+        assertEquals("You are not part of a team", getPendingInvitationsResponse.getBody());
+    }
+
+    @Test
+    @Order(7)
+    void getPendingInvitationsTest() throws JSONException, JsonProcessingException {
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", "player4")
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
 
         HttpResponse<String> myPendingInvitationsResonse = Unirest.get(createURLWithPort("/api/invitation/pending"))
                 .header("Content-Type", "application/json")
@@ -314,7 +356,7 @@ public class JoinTeamTest {
         assertEquals(player4.getUsername(), invitedPlayerUsername);
     }
     @Test
-    @Order(6)
+    @Order(8)
     void acceptOtherPlayersInvitationTest() throws JSONException, JsonProcessingException {
 
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -348,7 +390,7 @@ public class JoinTeamTest {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     void acceptPendingInvitationTest() throws JSONException, JsonProcessingException {
 
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -409,8 +451,32 @@ public class JoinTeamTest {
         assertEquals(invitationTeamName, joinedTeamName);
         assertEquals(invitationTeamID, joinedTeamID);
     }
+
     @Test
-    @Order(8)
+    @Order(10)
+    void invalidGettingPendingInvitationsForTeamTest2(){
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", "player4")
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        HttpResponse<String> getPendingInvitationsResponse = Unirest.get(createURLWithPort("/api/invitation/pending/team"))
+                .asString();
+
+        assertEquals(400, getPendingInvitationsResponse.getStatus());
+        assertEquals("You're not the leader of the team", getPendingInvitationsResponse.getBody());
+    }
+
+    @Test
+    @Order(11)
     void joinFullTeamTest() throws JSONException, JsonProcessingException {
 
         //Login as player3
@@ -505,6 +571,94 @@ public class JoinTeamTest {
 
         assertEquals(400, acceptInvitationResponse.getStatus());
         assertEquals("The team is full, you can no longer join.", acceptInvitationResponse.getBody());
+    }
+
+    @Test
+    @Order(12)
+    void invitationRejectionTest() throws JsonProcessingException {
+        //Login as player6
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", "rejectedTeamLeader")
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        // Create closed team
+        ObjectMapper rejectedTeamMapper = new ObjectMapper();
+        ObjectNode rejectedTeamBody = rejectedTeamMapper.createObjectNode();
+
+        rejectedTeamBody.put("name", (String) rejectedTeam[0]);
+        rejectedTeamBody.put("maxNumberOfPlayers", (Integer) rejectedTeam[1]);
+        rejectedTeamBody.put("policy", (String) rejectedTeam[2]);
+
+        HttpResponse<String> createTeamOneResponse = Unirest.post(createURLWithPort("/api/team/create"))
+                .header("Content-Type", "application/json")
+                .body(rejectedTeamBody.toString())
+                .asString();
+
+        assertEquals(200, createTeamOneResponse.getStatus());
+
+        // invite player7 to team
+        ObjectMapper inviteBodyMapper = new ObjectMapper();
+        ObjectNode inviteBody = inviteBodyMapper.createObjectNode();
+
+        inviteBody.put("idTeam", teamRepository.findByName((String) rejectedTeam[0]).getID());
+        inviteBody.put("idInvitedPlayer", playerRepository.findByUsername(player7.getUsername()).getID());
+
+
+        HttpResponse<String> invitePlayerResonse = Unirest.post(createURLWithPort("/api/invitation/create"))
+                .header("Content-Type", "application/json")
+                .body(inviteBody.toString())
+                .asString();
+
+        assertEquals(200, invitePlayerResonse.getStatus());
+
+
+        // Login as player7 and reject invitation
+        loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", player7.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        HttpResponse<String> myPendingInvitationsResonse = Unirest.get(createURLWithPort("/api/invitation/pending"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        assertEquals(200, myPendingInvitationsResonse.getStatus());
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode invitationJson = mapper.readTree(myPendingInvitationsResonse.getBody());
+
+        String invitationID = invitationJson.get(0).get("id").asText();
+
+        ObjectMapper acceptInviteBodyMapper = new ObjectMapper();
+        ObjectNode acceptInviteBody = acceptInviteBodyMapper.createObjectNode();
+
+        acceptInviteBody.put("idInvitation", invitationID);
+
+        HttpResponse<String> rejectInvitationResponse = Unirest.post(createURLWithPort("/api/invitation/reject"))
+                .header("Content-Type", "application/json")
+                .body(acceptInviteBody.toString())
+                .asString();
+
+        assertEquals(200, rejectInvitationResponse.getStatus());
+
+
     }
 
 

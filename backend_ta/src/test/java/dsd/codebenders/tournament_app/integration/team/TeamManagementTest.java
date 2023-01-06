@@ -50,10 +50,10 @@ public class TeamManagementTest {
 
 
 
-    private String[] player6Firstteam = {"TeamSixFirst", "2", "OPEN"};
+    private String[] player6FirstTeam = {"TeamSixFirst", "2", "OPEN"};
     private String[] player6SecondTeam = {"TeamSixSecond", "2", "OPEN"};
     private String[] player6ThirdTeam = {"TeamSixThird", "2", "OPEN"};
-    private String[] player8team = {"TeamEight", "2", "OPEN"};
+    private String[] player8FourthTeam = {"TeamEightFourth", "2", "OPEN"};
 
 
     // {name, teamSize, numberOfTeams, type, matchType}
@@ -85,9 +85,9 @@ public class TeamManagementTest {
         ObjectMapper teamMapper = new ObjectMapper();
         ObjectNode team = teamMapper.createObjectNode();
 
-        team.put("name", player8team[0]);
-        team.put("maxNumberOfPlayers", Integer.parseInt(player8team[1]));
-        team.put("policy", player8team[2]);
+        team.put("name", player8FourthTeam[0]);
+        team.put("maxNumberOfPlayers", Integer.parseInt(player8FourthTeam[1]));
+        team.put("policy", player8FourthTeam[2]);
 
         HttpResponse<String> createTeamResponse = Unirest.post(createURLWithPort("/api/team/create"))
                 .header("Content-Type", "application/json")
@@ -138,9 +138,9 @@ public class TeamManagementTest {
         ObjectMapper teamMapper = new ObjectMapper();
         ObjectNode team = teamMapper.createObjectNode();
 
-        team.put("name", player6Firstteam[0]);
-        team.put("maxNumberOfPlayers", Integer.parseInt(player6Firstteam[1]));
-        team.put("policy", player6Firstteam[2]);
+        team.put("name", player6FirstTeam[0]);
+        team.put("maxNumberOfPlayers", Integer.parseInt(player6FirstTeam[1]));
+        team.put("policy", player6FirstTeam[2]);
 
         HttpResponse<String> createTeamResponse = Unirest.post(createURLWithPort("/api/team/create"))
                 .header("Content-Type", "application/json")
@@ -198,12 +198,12 @@ public class TeamManagementTest {
 
         assertEquals(200, createTeamResponse.getStatus());
 
-        // As player6 try to join another team (player8team)
+        // As player6 try to join another team (player8Fourthteam)
 
         ObjectMapper teamJoinBodyMapper = new ObjectMapper();
         ObjectNode teamJoinBody = teamJoinBodyMapper.createObjectNode();
 
-        teamJoinBody.put("idTeam", teamRepository.findByName((String) player8team[0]).getID());
+        teamJoinBody.put("idTeam", teamRepository.findByName((String) player8FourthTeam[0]).getID());
 
         HttpResponse<String> joinAnotherTeamResponse = Unirest.post(createURLWithPort("/api/team/join"))
                 .header("Content-Type", "application/json")
@@ -223,7 +223,7 @@ public class TeamManagementTest {
         String teamName = response.get("name").asText();
 
         assertEquals(200, getTeamResponse.getStatus());
-        assertEquals(player8team[0], teamName);
+        assertEquals(player8FourthTeam[0], teamName);
     }
 
     @Test
