@@ -304,7 +304,7 @@ public class JoinTournamentTest {
 
     }
     @Test
-    @Order(2)
+    @Order(3)
     void memberJoinTournamentTest() throws JSONException, JsonProcessingException {
         // Login as teamOneMember and try to join tournament
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -333,8 +333,39 @@ public class JoinTournamentTest {
         assertEquals(400, failedJoinTournamentResponse.getStatus());
         assertEquals("You are not the leader of the team", failedJoinTournamentResponse.getBody());
     }
+
     @Test
-    @Order(3)
+    @Order(4)
+    void memberLeaveTournamentTest(){
+        // Login as teamOneMember and try to leave tournament
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamOneMember.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        ObjectMapper tournamentBodyMapper = new ObjectMapper();
+        ObjectNode tournamentBody = tournamentBodyMapper.createObjectNode();
+
+        tournamentBody.put("idTournament", tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getID());
+
+        HttpResponse<String> leaveTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/leave"))
+                .header("Content-Type", "application/json")
+                .body(tournamentBody.toString())
+                .asString();
+
+        assertEquals(400, leaveTournamentResponse.getStatus());
+        assertEquals("You are not the leader of the team", leaveTournamentResponse.getBody());
+    }
+    @Test
+    @Order(5)
     void joinTournamentInvalidTeamSizeTest() throws JSONException, JsonProcessingException {
         // Login as teamOneLeader and try to join tournament with teamSize of 1
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -364,8 +395,34 @@ public class JoinTournamentTest {
         assertEquals("Only teams of 1 can participate in this tournament", failedJoinTournamentResponse.getBody());
 
     }
+
     @Test
-    @Order(4)
+    @Order(6)
+    void leaveTournamentNotInTournamentTest(){
+        // Login as teamOneLeader and try to leave first tournament with teamSize of 2
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamOneLeader.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+
+        HttpResponse<String> leaveTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/leave"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        assertEquals(400, leaveTournamentResponse.getStatus());
+        assertEquals("The team is not registered in a tournament", leaveTournamentResponse.getBody());
+    }
+    @Test
+    @Order(7)
     void successfulJoinTournamentTest() throws JSONException, JsonProcessingException {
         // Login as teamOneLeader and try to join first tournament with teamSize of 2
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
@@ -393,6 +450,78 @@ public class JoinTournamentTest {
 
         assertEquals(200, successfulJoinTournamentResponse.getStatus());
 
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode response = mapper.readTree(successfulJoinTournamentResponse.getBody());
+
+        String name = response.get("name").asText();
+        String teamSize = response.get("teamSize").asText();
+        String numberOfTeams = response.get("numberOfTeams").asText();
+        String type = response.get("type").asText();
+        String matchType = response.get("matchType").asText();
+
+
+        assertEquals(true, teamRepository.findByName(teamOneInfo[0]).isInTournament());
+        assertEquals(firstTournamentInfo[0], name);
+        assertEquals(firstTournamentInfo[1], teamSize);
+        assertEquals(firstTournamentInfo[2], numberOfTeams);
+        assertEquals(firstTournamentInfo[3], type);
+        assertEquals(firstTournamentInfo[4], matchType);
+    }
+
+    @Test
+    @Order(8)
+    void successfulLeavingTournamentTest(){
+        // Login as teamOneLeader and try to leave first tournament with teamSize of 2
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamOneLeader.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+        assertEquals(true, playerService.findByUsername(teamOneLeader.getUsername()).getTeam().isInTournament());
+
+        HttpResponse<String> successfulLeaveTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/leave"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        assertEquals(200, successfulLeaveTournamentResponse.getStatus());
+        assertEquals(false, playerService.findByUsername(teamOneLeader.getUsername()).getTeam().isInTournament());
+    }
+
+    @Test
+    @Order(9)
+    void addTeamOneBackToTournament() throws JSONException, JsonProcessingException {
+        // Login as teamOneLeader and try to join first tournament with teamSize of 2
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamOneLeader.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        ObjectMapper tournamentBodyMapper = new ObjectMapper();
+        ObjectNode tournamentBody = tournamentBodyMapper.createObjectNode();
+
+        tournamentBody.put("idTournament", tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getID());
+
+        HttpResponse<String> successfulJoinTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/join"))
+                .header("Content-Type", "application/json")
+                .body(tournamentBody.toString())
+                .asString();
+
+        assertEquals(200, successfulJoinTournamentResponse.getStatus());
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode response = mapper.readTree(successfulJoinTournamentResponse.getBody());
@@ -410,12 +539,11 @@ public class JoinTournamentTest {
         assertEquals(firstTournamentInfo[2], numberOfTeams);
         assertEquals(firstTournamentInfo[3], type);
         assertEquals(firstTournamentInfo[4], matchType);
-
-
     }
+
     @Test
-    @Order(5)
-    void joinTournamentAlreadyInTournamentTest() throws JSONException, JsonProcessingException {
+    @Order(10)
+    void joinTournamentInOtherTournamentTest() throws JSONException, JsonProcessingException {
         // Login as teamOneLeader
         HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
@@ -446,8 +574,44 @@ public class JoinTournamentTest {
         assertEquals(400, failedJoinTournamentResponse.getStatus());
         assertEquals("The team is already participating in another tournament", failedJoinTournamentResponse.getBody());
     }
+
     @Test
-    @Order(6)
+    @Order(11)
+    void joinTournamentAlreadyInTournamentTest() throws JSONException, JsonProcessingException {
+        // Login as teamOneLeader
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamOneLeader.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        // Join second tournament with teamSize of 2
+
+        ObjectMapper tournamentBodyMapper = new ObjectMapper();
+        ObjectNode tournamentBody = tournamentBodyMapper.createObjectNode();
+
+        tournamentBody.put("idTournament", tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getID());
+
+        HttpResponse<String> failedJoinTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/join"))
+                .header("Content-Type", "application/json")
+                .body(tournamentBody.toString())
+                .asString();
+
+
+        assertEquals(400, failedJoinTournamentResponse.getStatus());
+        assertEquals("The team is already registered in the tournament", failedJoinTournamentResponse.getBody());
+    }
+
+
+    @Test
+    @Order(12)
     void secondTeamJoinTournamentTournamentStartTest(){
         assumeTrue(defaultServersToken != null && !defaultServersToken.isEmpty());
         // Login as teamTwoLeader
@@ -479,6 +643,32 @@ public class JoinTournamentTest {
         // Check if tournament started
         assertEquals("SELECTING_CLASSES", tournamentService.getActiveTournamentByName(firstTournamentInfo[0]).get().getStatus().toString());
 
+    }
+
+    @Test
+    @Order(13)
+    void leaveStartedTournamentTest(){
+        // Login as teamOneLeader and try to leave first tournament with teamSize of 2
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamOneLeader.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+
+        HttpResponse<String> leaveTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/leave"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        assertEquals(400, leaveTournamentResponse.getStatus());
+        assertEquals("The tournament has already started", leaveTournamentResponse.getBody());
     }
 
 
