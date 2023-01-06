@@ -118,7 +118,7 @@ OrderByType(){
 
 
   render() {
-    console.log(this.props.tournaments);
+    
     if (this.state.badResponse !== null) return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <div class="list">
