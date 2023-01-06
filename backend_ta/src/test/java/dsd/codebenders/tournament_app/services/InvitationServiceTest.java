@@ -48,6 +48,7 @@ class InvitationServiceTest {
         player1 = new Player("player1", "player1@gmail.com", "pass");
         player1.setIsAdmin(false);
         player1.setTeam(team);
+        player1.setRole(TeamRole.LEADER);
         player2 = new Player("player2", "player2@gmail.com", "pass");
         player2.setIsAdmin(false);
         playerRepository.save(player1);
