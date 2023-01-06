@@ -290,6 +290,18 @@ public class JoinTournamentTest {
         assertEquals(400, tournamentListResponse.getStatus());
         assertEquals("Wrong tournament type specified", tournamentListResponse.getBody());
 
+        tournamentListResponse = Unirest.get(createURLWithPort("/api/tournament/list"))
+                .header("Content-Type", "application/json")
+                .asString();
+
+        mapper = new ObjectMapper();
+        tournamentListBody = mapper.readTree(tournamentListResponse.getBody());
+
+        numberOfTournaments = tournamentListBody.size();
+
+        assertEquals(200, tournamentListResponse.getStatus());
+        assertEquals(tournamentService.getTournaments().size(), numberOfTournaments);
+
     }
     @Test
     @Order(2)
