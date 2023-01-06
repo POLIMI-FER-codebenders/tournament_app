@@ -66,7 +66,6 @@ public class InvitationService {
         }
         Team team = invitation.getTeam();
         if (team.isFull()) {
-            invitationRepository.delete(invitation);
             throw new BadRequestException("The team is full, you can no longer join.");
         }
         if (team.isInTournament()) {
