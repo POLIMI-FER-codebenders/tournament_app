@@ -130,7 +130,7 @@ public class MatchProgressionTest {
         ObjectMapper tournamentBodyMapper = new ObjectMapper();
         ObjectNode tournamentBody = tournamentBodyMapper.createObjectNode();
 
-        tournamentBody.put("idTournament", tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getID());
+        tournamentBody.put("idTournament", tournamentId);
 
         HttpResponse<String> successfulJoinTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/join"))
                 .header("Content-Type", "application/json")
@@ -170,27 +170,39 @@ public class MatchProgressionTest {
 
         assertEquals(200, createTeamResponse.getStatus());
 
-        // As teamFourLeader join tournament
-        tournamentBodyMapper = new ObjectMapper();
-        tournamentBody = tournamentBodyMapper.createObjectNode();
-
-        tournamentBody.put("idTournament", tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getID());
-
-        successfulJoinTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/join"))
-                .header("Content-Type", "application/json")
-                .body(tournamentBody.toString())
-                .asString();
-
-        assertEquals(200, successfulJoinTournamentResponse.getStatus());
-
-
         Unirest.shutDown();
     }
 
 
     @Test
     @Order(2)
-    void checkMatchCreated() throws TimeoutException, JsonProcessingException {
+    void checkMatchCreatedAndProgressing() throws TimeoutException, JsonProcessingException {
+        // Login as teamFourLeader
+        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+                .header("Accept", "*/*")
+                .header("Origin", "http://localhost")
+                .multiPartContent()
+                .field("username", teamFourLeader.getUsername())
+                .field("password", "testTestT1")
+                .asString();
+
+        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = location.substring(location.length() - 7);
+
+        assertEquals("success", location);
+
+        // As teamFourLeader join tournament
+        ObjectMapper tournamentBodyMapper = new ObjectMapper();
+        ObjectNode tournamentBody = tournamentBodyMapper.createObjectNode();
+
+        tournamentBody.put("idTournament", tournamentId);
+
+        HttpResponse<String> successfulJoinTournamentResponse = Unirest.post(createURLWithPort("/api/tournament/join"))
+                .header("Content-Type", "application/json")
+                .body(tournamentBody.toString())
+                .asString();
+
+        assertEquals(200, successfulJoinTournamentResponse.getStatus());
 
         long start = System.currentTimeMillis();
         while(tournamentService.getActiveTournamentByName(fourthTournamentInfo[0]).get().getStatus().toString() == "SELECTING_CLASSES"){
@@ -202,7 +214,7 @@ public class MatchProgressionTest {
         }
 
         // Login as teamThreeLeader
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+        loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
                 .header("Origin", "http://localhost")
                 .multiPartContent()
@@ -210,7 +222,7 @@ public class MatchProgressionTest {
                 .field("password", "testTestT1")
                 .asString();
 
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = loginSuccess.getHeaders().get("Location").get(0).toString();
         location = location.substring(location.length() - 7);
 
         assertEquals("success", location);
@@ -238,13 +250,10 @@ public class MatchProgressionTest {
         assertEquals(phaseOneDuration, phaseOneDurationResponse);
         assertEquals(phaseTwoDuration, phaseTwoDurationResponse);
         assertEquals(phaseThreeDuration, phaseThreeDurationResponse);
-    }
 
-    @Test
-    @Order(3)
-    void checkMatchStatusProgression() throws TimeoutException, JsonProcessingException {
+
         // Login as teamThreeLeader
-        HttpResponse<String> loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
+        loginSuccess = Unirest.post(createURLWithPort("/authentication/login"))
                 .header("Accept", "*/*")
                 .header("Origin", "http://localhost")
                 .multiPartContent()
@@ -252,7 +261,7 @@ public class MatchProgressionTest {
                 .field("password", "testTestT1")
                 .asString();
 
-        String location = loginSuccess.getHeaders().get("Location").get(0).toString();
+        location = loginSuccess.getHeaders().get("Location").get(0).toString();
         location = location.substring(location.length() - 7);
 
         assertEquals("success", location);
@@ -261,7 +270,7 @@ public class MatchProgressionTest {
         matchId = matchService.getOngoingMatchByPlayer(teamFourLeader).getID();
 
 
-        long start = System.currentTimeMillis();
+        start = System.currentTimeMillis();
         while(matchService.findById(matchId).get().getStatus().toString() == "CREATED"){
             long finish = System.currentTimeMillis();
             long timeElapsed = finish - start;
@@ -273,7 +282,7 @@ public class MatchProgressionTest {
         HttpResponse<String> matchScoreStatusResponse = Unirest.get(createURLWithPort("/streaming/score?matchId="+matchId))
                 .asString();
 
-        ObjectMapper mapper = new ObjectMapper();
+        mapper = new ObjectMapper();
         JsonNode matchResponseBody = mapper.readTree(matchScoreStatusResponse.getBody());
 
         // sometimes it gets to "IN_PHASE_TWO" too soon and test fails so we skipp this
@@ -334,6 +343,12 @@ public class MatchProgressionTest {
 
         assertEquals("ENDED", matchResponseBody.get("status").asText());
     }
+
+    /*@Test
+    @Order(3)
+    void checkMatchStatusProgression() throws TimeoutException, JsonProcessingException {
+
+    }*/
 
     @Test
     @Order(4)
