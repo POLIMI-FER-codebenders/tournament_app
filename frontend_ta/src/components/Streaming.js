@@ -9,7 +9,7 @@ import cdlogo from '../images/cdlogo.png';
 import background from '../images/background1.jpg';
 import SockJsClient from 'react-stomp';
 import { EventEntry } from "./EventEntry.js";
-const SOCKET_URL = '/watch';
+const SOCKET_URL = process.env.REACT_APP_BACKEND_ADDRESS + '/watch';
 export default function Streaming(props) {
     const [attackersPoints, setAttackersPoints] = useState(0);
     const [defendersPoints, setDefendersPoints] = useState(0);
@@ -66,7 +66,7 @@ export default function Streaming(props) {
 
     let OnMessageReceived = (msg) => {
         
-        console.log(msg);
+        
         if(msg.type==="SCORE_UPDATE"){
             setAttackersPoints(msg.attackersScore);
             setDefendersPoints(msg.defendersScore);
@@ -75,12 +75,14 @@ export default function Streaming(props) {
         if(msg.type==="GAME_GRACE_ONE") location.state.info.status="IN_PHASE_TWO";
         if(msg.type==="GAME_GRACE_TWO") location.state.info.status="IN_PHASE_THREE";
         if(msg.type==="GAME_FINISHED") location.state.info.status="ENDED"
-        
+        if(msg.type!=="SCORE_UPDATE"){
         let eventscopy = events;
         if (eventscopy.length == 7) eventscopy.shift(); 
         eventscopy.push(msg);
         setEvents(eventscopy);
+        }
     }
+    let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
     return (
         <>
             <SockJsClient
@@ -89,14 +91,14 @@ export default function Streaming(props) {
                 onConnect={onConnected}
                 onDisconnect={console.log("Disconnected!")}
                 onMessage={msg =>{
-                     OnMessageReceived(msg) 
+                     OnMessageReceived(msg);
                      SetTrigger(!trigger);
                 } 
                 }
                 debug={false}
             />
             <div id="streamingheader">
-            <a href="http://localhost:3000" id="backlinkstreaming">Back To Tournament Application</a>
+            <a href={frontendAddress} id="backlinkstreaming">Back To Tournament Application</a>
                 <div id="phaseheader">{RetrievePhase()}</div>
                 </div>
             <div id="scorediv">

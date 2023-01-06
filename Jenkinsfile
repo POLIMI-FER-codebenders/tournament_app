@@ -10,7 +10,7 @@ pipeline {
         stage('Discord notify start'){
             when {
                 anyOf{
-                    branch 'master'
+                    branch 'main'
                     branch 'development'
                     branch pattern: "PR-\\d+", comparator: "REGEXP"
                 }
@@ -42,7 +42,7 @@ pipeline {
         stage('Run frontend tests') {
             when {
                 anyOf{
-                    branch 'master'
+                    branch 'main'
                     branch 'development'
                     branch pattern: "PR-\\d+", comparator: "REGEXP"
                 }
@@ -76,7 +76,7 @@ pipeline {
             }
             when {
                 anyOf{
-                    branch 'master'
+                    branch 'main'
                     branch 'development'
                     branch pattern: "PR-\\d+", comparator: "REGEXP"
                 }
@@ -137,7 +137,7 @@ pipeline {
                 sh "docker build --file ./docker/backend/Dockerfile --tag codebenders/tournament_app_backend:${env.GIT_COMMIT} ."
                 sh "docker tag codebenders/tournament_app_backend:${env.GIT_COMMIT} codebenders/tournament_app_backend:dev"
                 
-                sh "docker build --file ./docker/frontend/Dockerfile --tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} ."
+                sh "docker build --build-arg REACT_APP_BACKEND_ADDRESS=http://localhost:8080 --build-arg REACT_APP_FRONTEND_ADDRESS=http://localhost:80 --file ./docker/frontend/Dockerfile --tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} ."
                 sh "docker tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} codebenders/tournament_app_frontend:dev"
 
 
@@ -175,7 +175,7 @@ pipeline {
         stage('Docker build release'){
             when {
                 anyOf{
-                    branch 'master'
+                    branch 'main'
                 }
             }
             agent any
@@ -186,7 +186,7 @@ pipeline {
                 sh "docker build --file ./docker/backend/Dockerfile --tag codebenders/tournament_app_backend:${env.GIT_COMMIT} ."
                 sh "docker tag codebenders/tournament_app_backend:${env.GIT_COMMIT} codebenders/tournament_app_backend:latest"
                 
-                sh "docker build --file ./docker/frontend/Dockerfile --tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} ."
+                sh "docker build --build-arg REACT_APP_BACKEND_ADDRESS=http://localhost:8080 --build-arg REACT_APP_FRONTEND_ADDRESS=http://localhost:80 --file ./docker/frontend/Dockerfile --tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} ."
                 sh "docker tag codebenders/tournament_app_frontend:${env.GIT_COMMIT} codebenders/tournament_app_frontend:latest"
 
 

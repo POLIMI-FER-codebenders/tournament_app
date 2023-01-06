@@ -18,17 +18,22 @@ class ManageTeams extends Component {
       display_invite: false,
       isTeamLoaded: false,
       isPlayersLoaded: false,
+      
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
     this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
+    this.renderSuccessfullMessage=this.renderSuccessfullMessage.bind(this);
+  
   }
 
   componentDidMount() {
     this.initTeam();
     this.initPlayers();
   }
+
+  
 
   initTeam() {
     getData("/api/team/get-mine")
@@ -65,6 +70,7 @@ class ManageTeams extends Component {
             this.setState({
               isPlayersLoaded: true,
               players: response.result,
+              backupplayers:response.result,
               user: response.result.find(p => p.username === sessionStorage.getItem("username"))
             })
           } else {
@@ -88,20 +94,25 @@ class ManageTeams extends Component {
   handleClickInvite() {
     const previous_value = this.state.display_invite
     this.setState({ display_invite: !previous_value })
+    this.setState({errorMessage:null});
   }
 
   handleClickLeave() {
+    const previous_value = this.state.display_invite;
+    if(previous_value)this.setState({ display_invite: !previous_value });
     postData("/api/team/leave/")
       .then((response) => {
         if (response.status === 200) {
-          alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          let message=`${this.state.user.username}, you left the team ${this.state.team.name} successfully`
+         // alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          this.setState({successMessage:message});
           this.initTeam();
           this.initPlayers();
         }
         else {
           this.setState({
-            errorMessage: "the server encountered an error",
-            badResponse: response.message
+            errorMessage: "you cannot leave the team while it is in a tournament",
+            
           })
         }
       });
@@ -112,7 +123,9 @@ class ManageTeams extends Component {
     postData("/api/team/kick-member/", data)
       .then((response) => {
         if (response.status === 200) {
-          alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
+          let message= `The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`;
+          this.setState({successMessage:message}); 
+          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
           this.initTeam();
           this.initPlayers();
         }
@@ -131,7 +144,9 @@ class ManageTeams extends Component {
     postData("/api/team/members/promote-leader/", data)
       .then((response) => {
         if (response.status === 200) {
-          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          let message=`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promoted to leader for the team ${this.state.team.name}`
+           // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          this.setState({successMessage:message});
           this.initTeam();
           this.initPlayers();
         }
@@ -151,6 +166,13 @@ class ManageTeams extends Component {
       <p className='error'>{this.state.errorMessage}</p>
     );
   }
+  renderSuccessfullMessage(){
+    if (this.state.successMessage === null) return;
+    return (
+      <p className='success'>{this.state.successMessage}</p>
+    );
+  }
+  
 
 
   render() {
@@ -161,9 +183,11 @@ class ManageTeams extends Component {
         <h2>Team Management</h2>
         <div className="flex-container-main">
           {this.displayTeamInfo()}
-          {this.invitations()}
+            {this.invitations()}
         </div>
+        {this.renderSuccessfullMessage()}
         {this.renderErrorMessage()}
+        
       </div>
     );
   }
