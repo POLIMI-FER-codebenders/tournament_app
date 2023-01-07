@@ -151,7 +151,6 @@ public class TournamentService {
                 tournament.setStatus(TournamentStatus.IN_PROGRESS);
             }
             case ENDED -> {
-                //TODO
                 Team winningTeam;
                 switch (tournament.getType()) {
                     case KNOCKOUT -> {
