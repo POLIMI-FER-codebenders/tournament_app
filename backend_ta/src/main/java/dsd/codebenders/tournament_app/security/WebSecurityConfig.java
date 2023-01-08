@@ -60,6 +60,13 @@ public class WebSecurityConfig {
                                         .antMatchers("/api/tournament/list").permitAll()
                                         .antMatchers("/api/match/info").permitAll()
                                         .antMatchers("/watch/**", "/streaming/score").permitAll()
+                                        .antMatchers("/v3/**").permitAll()
+                                        .antMatchers("/swagger-ui/**").permitAll()
+                                        .antMatchers("/swagger-ui.html").permitAll()
+                                        .antMatchers("/configuration/ui").permitAll()
+                                        .antMatchers("/swagger-resources/**").permitAll()
+                                        .antMatchers("/configuration/security").permitAll()
+                                        .antMatchers( "/webjars/**").permitAll()
                                         .anyRequest().authenticated();
                             }
                         }
