@@ -20,7 +20,7 @@ this.props.refuse();
 render(){
     
     return(<div id="confirmationid">
-        Are you sure do you want to proceed? 
+        {this.props.text}
         <div id="confbuttonstm">
         <button id="yesbuttonctm" onClick={this.Accept}>Yes</button>
         <button id="nobuttonctm" onClick={

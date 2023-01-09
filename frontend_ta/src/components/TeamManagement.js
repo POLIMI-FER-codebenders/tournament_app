@@ -100,6 +100,7 @@ class ManageTeams extends Component {
 
   handleClickInvite() {
     const previous_value = this.state.display_invite
+    this.confdialogue=null;
     this.setState({ display_invite: !previous_value })
     this.setState({errorMessage:null});
   }
@@ -282,6 +283,7 @@ class ManageTeams extends Component {
       this.resetConfDialogue();
       }}
       refuse={this.resetConfDialogue}  
+      text="are you sure to leave the team?"
       
       />;
      this.confdialogue=confdialogue; 
@@ -293,6 +295,7 @@ class ManageTeams extends Component {
       this.resetConfDialogue();
       }}
       refuse={this.resetConfDialogue}  
+      text="are you sure to kick the player from the team?"
       />;
      this.confdialogue=confdialogue; 
     this.setState({trigger:!this.state.trigger })
@@ -302,7 +305,8 @@ class ManageTeams extends Component {
     let confdialogue= <ConfDialogue accept={()=>{self.handleClickPromote(event);
       this.resetConfDialogue();
       }}
-      refuse={this.resetConfDialogue}  
+      refuse={this.resetConfDialogue} 
+      text="are you sure to promote the player to leader?" 
       />;
      this.confdialogue=confdialogue; 
     this.setState({trigger:!this.state.trigger })
