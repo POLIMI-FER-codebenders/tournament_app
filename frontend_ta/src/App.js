@@ -10,7 +10,7 @@ import { CreateTournament } from './components/TournamentCreation';
 import TeamCreation from './components/TeamCreation';
 import JoinTeam from './components/JoinTeam';
 import { CDFrame } from './components/CDFrame';
-
+import cdlogo from './images/cdlogo.png';
 import ErrorPage from "./Error.js";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -23,13 +23,7 @@ import {
 import Streaming from './components/Streaming';
 
 
-function Header() {
-  return (
-    <header className="App-header">
-      <p>Hello {sessionStorage.getItem("username")}! Welcome to tournament application of Code Defenders web game!</p>
-    </header>
-  );
-}
+
 
 function MainPanel(props) {
   switch (props.view) {
@@ -54,6 +48,7 @@ function MainPanel(props) {
   }
 }
 class Home extends React.Component {
+   
 
   constructor(props) {
     super(props);
@@ -66,6 +61,38 @@ class Home extends React.Component {
       error:false
     };
     this.backHome = this.backHome.bind(this);
+    this.Header=this.Header.bind(this);
+  }
+  Header() {
+    let buttontext;
+    if(sessionStorage.getItem("username")!=null)buttontext="Logout"
+    else buttontext="SignIn"
+    return (
+      <div className="App-header">
+        <img id="cdlogoheader" src={cdlogo}></img>
+        Hello {sessionStorage.getItem("username")}! Welcome to tournament application of Code Defenders web game!
+        <div id="signindiv" >
+        <button class="signinlink"
+              onClick={() => 
+                {
+              if(sessionStorage.getItem("username")!=null) {
+                 sessionStorage.removeItem("username");
+                fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/authentication/logout").then(response => {
+                 if(response.status!=200){
+                   console.log("error");
+                 }
+                                          
+                });
+                this.setState({ view: 1,buttontext:"SignIn" });
+              }
+               else this.setState({ view: 1 })}
+                }
+              >
+              {this.state.buttontext}
+            </button> 
+            </div>
+       </div>
+    );
   }
   backHome(index,loggedin) {
     if(loggedin)this.setState({ view: index,buttontext:"Logout" });
@@ -75,9 +102,10 @@ class Home extends React.Component {
   render() {
     return (
       <div>
-        <Header />
+        {this.Header()}
         <div class="main-container" id="mainpagebackground">
-          <div class="button-container" id="mainbuttoncontainer">
+          <div id="sidebar">
+          <div  id="mainbuttoncontainer">
             <button class="firstitem barbutton"
               onClick={() => this.setState({ view: 0 })}>
               Home
@@ -116,6 +144,7 @@ class Home extends React.Component {
               onClick={() => this.setState({ view: 5 })}>
               Tournament Creation
             </button>
+          </div>
           </div>
           <MainPanel view={this.state.view} backHome={this.backHome} />
           

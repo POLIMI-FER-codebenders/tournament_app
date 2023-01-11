@@ -87,12 +87,14 @@
     cursor: pointer;
     padding: 5px 10px;
     text-align: center;
+    border-radius: 10px;
 }
 
 .joinable {
     cursor: pointer;
     padding: 5px 36px;
     text-align: center;
+    border-radius: 10px;
     
 }
 
@@ -131,6 +133,7 @@ background:#07098d
     cursor: pointer;
     padding: 5px 10px;
     text-align: center;
+    border-radius: 10px;
 }
 
 
