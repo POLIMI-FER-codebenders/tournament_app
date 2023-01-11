@@ -98,7 +98,9 @@ export default function Streaming(props) {
                 debug={false}
             />
             <div id="streamingheader">
+                <div id="backsheader">
             <a href={frontendAddress} id="backlinkstreaming">Back To Tournament Application</a>
+            </div>
                 <div id="phaseheader">{RetrievePhase()}</div>
                 </div>
             <div id="scorediv">
