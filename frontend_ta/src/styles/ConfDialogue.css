@@ -1,0 +1,40 @@
+#confirmationid{
+
+width:300px;
+height:100px;
+background-color:rgb(192, 192, 235);
+border-style:solid 1px;
+border-radius:10px;
+margin-top:10px;
+}
+
+#confbuttonstm{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    align-content:center;
+    height:70%;
+
+}
+#yesbuttonctm{
+    margin-right:35px;
+    border-radius:10px;
+    background-color:rgb(18, 197, 18);
+    width:60px;
+    height:30px;
+}
+#yesbuttonctm:hover{
+ cursor:pointer;
+ background-color:rgb(11, 85, 11);
+}
+#nobuttonctm:hover{
+    cursor:pointer;
+    background-color:rgb(116, 10, 10);
+   }
+#nobuttonctm{
+    margin-left:35px;
+    border-radius:10px;
+    background-color:rgb(223, 32, 32);
+    width:60px;
+    height:30px;
+}
