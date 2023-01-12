@@ -4,6 +4,7 @@ import postData from '../utils';
 import { getData } from "../utils";
 import { GoToErrorPage } from '../utils';
 import "../styles/teamManagement.css";
+import { ConfDialogue } from "./ConfDialogue";
 
 class ManageTeams extends Component {
 
@@ -18,17 +19,28 @@ class ManageTeams extends Component {
       display_invite: false,
       isTeamLoaded: false,
       isPlayersLoaded: false,
+      trigger:true
+      
     };
     this.handleClickInvite = this.handleClickInvite.bind(this);
     this.handleClickPromote = this.handleClickPromote.bind(this);
     this.handleClickLeave = this.handleClickLeave.bind(this);
     this.handleClickKick = this.handleClickKick.bind(this);
+    this.renderSuccessfullMessage=this.renderSuccessfullMessage.bind(this);
+    this.handleLeaveConfirm=this.handleLeaveConfirm.bind(this);
+    this.resetConfDialogue=this.resetConfDialogue.bind(this);
+    this.handleKickConfirm=this.handleKickConfirm.bind(this);
+    this.handlePromoteConfirm=this.handlePromoteConfirm.bind(this);
+    this.confdialogue=null;
+  
   }
 
   componentDidMount() {
     this.initTeam();
     this.initPlayers();
   }
+
+  
 
   initTeam() {
     getData("/api/team/get-mine")
@@ -65,6 +77,7 @@ class ManageTeams extends Component {
             this.setState({
               isPlayersLoaded: true,
               players: response.result,
+              backupplayers:response.result,
               user: response.result.find(p => p.username === sessionStorage.getItem("username"))
             })
           } else {
@@ -87,21 +100,27 @@ class ManageTeams extends Component {
 
   handleClickInvite() {
     const previous_value = this.state.display_invite
+    this.confdialogue=null;
     this.setState({ display_invite: !previous_value })
+    this.setState({errorMessage:null});
   }
 
   handleClickLeave() {
+    const previous_value = this.state.display_invite;
+    if(previous_value)this.setState({ display_invite: !previous_value });
     postData("/api/team/leave/")
       .then((response) => {
         if (response.status === 200) {
-          alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          let message=`${this.state.user.username}, you left the team ${this.state.team.name} successfully`
+         // alert(`${this.state.user.username}, you left the team ${this.state.team.name}`);
+          this.setState({successMessage:message});
           this.initTeam();
           this.initPlayers();
         }
         else {
           this.setState({
-            errorMessage: "the server encountered an error",
-            badResponse: response.message
+            errorMessage: "you cannot leave the team while it is in a tournament",
+            
           })
         }
       });
@@ -112,7 +131,9 @@ class ManageTeams extends Component {
     postData("/api/team/kick-member/", data)
       .then((response) => {
         if (response.status === 200) {
-          alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
+          let message= `The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`;
+          this.setState({successMessage:message}); 
+          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been kicked from the team ${this.state.team.name}`);
           this.initTeam();
           this.initPlayers();
         }
@@ -131,7 +152,9 @@ class ManageTeams extends Component {
     postData("/api/team/members/promote-leader/", data)
       .then((response) => {
         if (response.status === 200) {
-          // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          let message=`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promoted to leader for the team ${this.state.team.name}`
+           // alert(`The player ${this.state.players.find(p => p.id === parseInt(event.target.id)).username} has been promote to leader for the team ${this.state.team.name}`);
+          this.setState({successMessage:message});
           this.initTeam();
           this.initPlayers();
         }
@@ -151,24 +174,40 @@ class ManageTeams extends Component {
       <p className='error'>{this.state.errorMessage}</p>
     );
   }
+  renderSuccessfullMessage(){
+    if (this.state.successMessage === null) return;
+    return (
+      <p className='success'>{this.state.successMessage}</p>
+    );
+  }
+  
 
 
   render() {
+    
     if (this.state.errorMessage === "the server encountered an error") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     if (this.state.errorMessage === "Empty response") return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
+    
     return (
+      
       <div className="main-panel">
         <h2>Team Management</h2>
+        
         <div className="flex-container-main">
           {this.displayTeamInfo()}
-          {this.invitations()}
+          
+            {this.invitations()}
         </div>
+        
+        {this.renderSuccessfullMessage()}
         {this.renderErrorMessage()}
+        
       </div>
     );
   }
-
+ 
   displayTeamInfo() {
+    
     if (this.state.isTeamLoaded) {
       return (
         <div className="flex-items-main">
@@ -199,6 +238,7 @@ class ManageTeams extends Component {
             {this.actionInvite()}
           </div>
           {this.displayTeamMember()}
+          {this.confdialogue}
         </div>
       )
     }
@@ -231,20 +271,60 @@ class ManageTeams extends Component {
       )
     }
   }
-
+  
+  resetConfDialogue(){
+    this.confdialogue=null;
+    this.setState({trigger:!this.state.trigger});
+  }
+  handleLeaveConfirm(){
+    
+    let self=this;
+    let confdialogue= <ConfDialogue accept={()=>{self.handleClickLeave();
+      this.resetConfDialogue();
+      }}
+      refuse={this.resetConfDialogue}  
+      text="are you sure to leave the team?"
+      
+      />;
+     this.confdialogue=confdialogue; 
+    this.setState({trigger:!this.state.trigger })
+  }
+  handleKickConfirm(event){
+    let self=this;
+    let confdialogue= <ConfDialogue accept={()=>{self.handleClickKick(event);
+      this.resetConfDialogue();
+      }}
+      refuse={this.resetConfDialogue}  
+      text="are you sure to kick the player from the team?"
+      />;
+     this.confdialogue=confdialogue; 
+    this.setState({trigger:!this.state.trigger })
+  }
+  handlePromoteConfirm(event){
+    let self=this;
+    let confdialogue= <ConfDialogue accept={()=>{self.handleClickPromote(event);
+      this.resetConfDialogue();
+      }}
+      refuse={this.resetConfDialogue} 
+      text="are you sure to promote the player to leader?" 
+      />;
+     this.confdialogue=confdialogue; 
+    this.setState({trigger:!this.state.trigger })
+  
+  }
   actionPlayer(idPlayer) {
     if (this.state.isPlayersLoaded) {
       if (idPlayer === this.state.user.id && this.state.user.role !== "LEADER") {
-        return (<div class="btn btn-red" name="leave" id={idPlayer} onClick={this.handleClickLeave} >Leave</div>);
+        return (<div class="btn btn-red" name="leave" id={idPlayer} onClick={this.handleLeaveConfirm} >Leave</div>);
       } else if (idPlayer !== this.state.user.id && this.state.user.role === "LEADER") {
         return (
           <div className="btn-container">
-            <div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleClickKick}>Kick from the team</div>
-            <div class="btn btn-blue" name="promote" id={idPlayer} onClick={this.handleClickPromote}>Promote to leader</div>
+            <div class="btn btn-red" name="kick" id={idPlayer} onClick={this.handleKickConfirm}>Kick from the team</div>
+            <div class="btn btn-blue" name="promote" id={idPlayer} onClick={this.handlePromoteConfirm}>Promote to leader</div>
           </div>
         );
       } else if (this.state.team.teamMembers.length === 1) {
-        return (<div class="btn btn-red" name="delete" id={idPlayer} onClick={this.handleClickLeave} >Delete</div>);
+        return (<div class="btn btn-red" name="delete" id={idPlayer} onClick={this.handleLeaveConfirm} >Delete</div>);
       } else return;
     }
   }

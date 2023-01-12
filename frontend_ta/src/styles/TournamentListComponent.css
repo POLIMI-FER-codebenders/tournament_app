@@ -2,7 +2,11 @@
     width: fit-content;
 }
 
-
+.list-tour-header{
+    width: 80%;
+    max-width: 850px;
+    margin-left:20px;
+}
 .flex-container {
     display: flex;
     justify-content: space-between;
@@ -27,12 +31,20 @@
 }
 
 .list-tour-entry {
-    padding: 10px;
+    padding:10px;
     margin-top: 5px;
     margin-bottom: 5px;
     border-radius: 10px;
-    border: 2px solid rgb(225, 230, 227);
+    border: 2px solid rgb(230, 225, 229);
 }
+
+/*
+.list-tour-entry:hover{
+    background:rgb(248, 248, 248)
+}
+*/
+
+
 
 .list-entry-details {
     cursor: pointer;
@@ -43,10 +55,11 @@
 
 .flex-items {
     margin: auto 2px;
+    text-align:center;
 }
 
 .col1 {
-    min-width: 200px;
+    min-width: 100px;
 
 }
 
@@ -74,18 +87,22 @@
     cursor: pointer;
     padding: 5px 10px;
     text-align: center;
+    border-radius: 10px;
 }
 
 .joinable {
     cursor: pointer;
-    padding: 5px 10px;
+    padding: 5px 36px;
     text-align: center;
+    border-radius: 10px;
+    
 }
 
 .joined {
     cursor: pointer;
     padding: 5px 10px;
     text-align: center;
+    border-radius:10px;
 
 }
 
@@ -95,7 +112,9 @@
     color: #fff;
 
 }
-
+#teamtojointour{
+    border-radius:10px;
+}
 .col6 .joinable {
     border: 1px solid #07be44;
     background: #07be44;
@@ -105,7 +124,20 @@
 .col6 .joinable:hover {
     background: #04772a;
 }
-
+.col6 .scoreboardbutton{
+    border: 1px solid #3133ca;
+    background: #3133ca;
+    color: #fff;
+}
+.col6 .scoreboardbutton:hover{
+background:#07098d
+}
+.scoreboardbutton{
+    cursor: pointer;
+    padding: 5px 10px;
+    text-align: center;
+    border-radius: 10px;
+}
 
 
 .col6 .btn {
@@ -212,5 +244,116 @@
 #winnertournament{
     margin-bottom: 15px;
     margin-left:10px;
+    font-weight:bold;
+}
+#winnerspan{
+    font-weight:normal;
+}
+.confirmdiv{
+    display:flex;
 
 }
+.confirmbutton{
+    margin-left:10px;
+    color:#07be44;
+    border-radius:10px;
+    background-color: #fff;
+}
+.confirmbutton:hover{
+    background-color: rgba(42, 245, 42, 0.363);
+    cursor: pointer;
+}
+
+.tournamentbuttons{
+    display:flex;
+    flex-direction:column;
+    justify-content: space-around;
+    height:75px;
+    margin-left:5px;
+}
+/*
+th{
+    background-color: #ffffff;
+}
+tr{
+    background-color:#fdfffe;
+}
+td{
+    background-color:#ffffff; 
+}
+table, th, td,tr {
+    border: 3px ridge;
+
+  }
+  
+  th{
+    color:#000000
+  }
+  */
+  #scoreboard {
+    
+    border:ridge black 1px;
+    border-radius:6px;
+}
+
+.scoreboardtd, .scoreboardth {
+    border-left:ridge black 1px;
+    border-top:ridge black 1px;
+    background-color: #fff;
+}
+
+.scoreboardth {
+    background-color: rgb(27, 27, 212);
+    border-top: none;
+    color:#6bfc9b
+}
+
+.scoreboardtd:first-child, .scoreboardth:first-child {
+     border-left: none;
+}
+  #tablecontainer{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    margin-top:10px;
+  }
+  .filter:hover{
+    cursor:pointer;
+  }
+  #classescontainer{
+    display:flex;
+    width:100%;
+    flex-direction:row;
+    align-items:center;
+    margin-bottom:20px;
+  }
+  #classesselectedp{
+   margin-right:50px;
+   
+  }
+
+  #classesselection {
+    
+    border:ridge black 1px;
+    border-radius:6px;
+}
+
+.classestd, .classesth {
+    border-left:ridge black 1px;
+    border-top:ridge black 1px;
+    background-color: #fff;
+}
+
+.classesth{
+    background-color: rgb(255, 255, 255);
+    border-top: none;
+    color:black;
+    font-weight:normal ;
+    
+}
+
+
+
+
+ 
+  

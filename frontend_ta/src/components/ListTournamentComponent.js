@@ -10,9 +10,16 @@ class ListTournamentComponent extends React.Component {
       currentview: null,
       playerteam: null,
       playertournaments: null,
-      badResponse:null
+      badResponse:null,
+      asc:true,
+      dateasc:true,
+      typeasc:true
     };
     this.refreshView = this.refreshView.bind(this);
+    this.OrderByName=this.OrderByName.bind(this);
+    this.OrderByDate=this.OrderByDate.bind(this);
+    this.OrderByType=this.OrderByType.bind(this);
+    this.OrderBySize=this.OrderBySize.bind(this);
 
   }
   refreshView(viewindex) {
@@ -44,20 +51,87 @@ class ListTournamentComponent extends React.Component {
 
     }
 }
+OrderByName(){
+let asc=this.state.asc;
+  this.props.tournaments.sort(function (a, b) {
+    if (a.name < b.name) {
+      if(asc)  return -1;
+      else return 1;
+    }
+    if (a.name > b.name) {
+      if((asc)) return 1;
+      else return -1;
+    }
+    return 0;
+  })
+  this.setState({asc:!this.state.asc});
+}
+OrderByDate(){
+let asc=this.state.dateasc;
+this.props.tournaments.sort(function (a, b) {
+  if (a.startDate < b.startDate) {
+    if(asc)  return -1;
+    else return 1;
+  }
+  if (a.startDate > b.startDate) {
+    if((asc)) return 1;
+    else return -1;
+  }
+  return 0;
+})
+this.setState({dateasc:!this.state.dateasc});
+
+}
+OrderByType(){
+  let asc=this.state.typeasc;
+  this.props.tournaments.sort(function (a, b) {
+    if (a.type==="KNOCKOUT") {
+      if(asc)  return -1;
+      else return 1;
+    }
+    if (a.type==="LEAGUE") {
+      if((asc)) return 1;
+      else return -1;
+    }
+   
+    return 0;
+  })
+  this.setState({typeasc:!this.state.typeasc});
+  }
+  OrderBySize(){
+    let asc=this.state.sizeasc;
+    this.props.tournaments.sort(function (a, b) {
+      if (a.teamSize<b.teamSize) {
+        if(asc)  return -1;
+        else return 1;
+      }
+      if (a.teamSize>b.teamSize) {
+        if((asc)) return 1;
+        else return -1;
+      }
+     
+      return 0;
+    })
+    this.setState({sizeasc:!this.state.sizeasc});
+    }
+
+
 
   render() {
+    
     if (this.state.badResponse !== null) return (<GoToErrorPage path="/error" message={this.state.badResponse} />);
     return (
       <div class="list">
+        <div class="list-tour-header">
         <div class="list-headers flex-container">
-        <div class="list-headers flex-container">
-          <div class="col1 flex-items">Name</div>
-          <div class="col2 flex-items">Starting Date</div>
-          <div class="col3 flex-items">Type</div>
+       
+          <div class="col1 flex-items filter" onClick={this.OrderByName}>Name</div>
+          <div class="col2 flex-items filter" onClick={this.OrderByDate}>Starting Date</div>
+          <div class="col3 flex-items filter" onClick={this.OrderByType}>Type</div>
           <div class="col4 flex-items">Status</div>
-          <div class="col5 flex-items">Team Size</div>
+          <div class="col5 flex-items filter" onClick={this.OrderBySize}>Team Size</div>
           <div class="col6 flex-items"></div>
-          </div>
+        </div>
         </div>
         {this.props.tournaments.map((object, i) => <TournamentEntry record={object} key={i}
          viewindex={i} refreshView={this.refreshView} currentview={this.state.currentview}

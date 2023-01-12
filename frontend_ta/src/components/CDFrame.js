@@ -52,8 +52,9 @@ export function CDFrame(props) {
     if (timeforphase < 0) timeforphase = 0;
   }
   function UpdateTimer(deadline) {
-
-    timeforphase = timeforphase - 1000;
+    now = Date.now();
+    
+    timeforphase = endphase-now;
     if (timeforphase <= 0) {
       clearInterval(intervalstopper);
       if (currentphase < 3) {
@@ -80,7 +81,7 @@ export function CDFrame(props) {
     let startdatestring = new Date(data.startingDate);
     let gamestart = data.startingDate;
     let difference = new Date(nowstring.getTime() - startdatestring.getTime());
-
+    
     let start = new Date(1000);
     if (now < gamestart) currentphase = 0;
     else if (now - gamestart < data.phaseOneDuration) currentphase = 1;
@@ -158,11 +159,11 @@ export function CDFrame(props) {
 
 
   function DisplayContent() {
-    let timertext;
-    if (cphase == 0) timertext = "game in break phase " + days.toString() + " H: " + hours.toString() + " M: " + minutes.toString() + " S: " + seconds.toString();
-    else if (cphase == 1) timertext = "Phase 1  D: " + days.toString() + " H: " + hours.toString() + " M: " + minutes.toString() + " S: " + seconds.toString();
-    else if (cphase == 2) timertext = "Phase 2  D: " + days.toString() + " H: " + hours.toString() + " M: " + minutes.toString() + " S: " + seconds.toString();
-    else if (cphase == 3) timertext = "Phase 3  D: " + days.toString() + " H: " + hours.toString() + " M: " + minutes.toString() + " S: " + seconds.toString();
+    let timertext =  days.toString() + " H: " + hours.toString() + " M: " + minutes.toString() + " S: " + seconds.toString(); 
+    if (cphase == 0) timertext = "game in break phase " + timertext;
+    else if (cphase == 1) timertext = "Phase 1  D: " + timertext;
+    else if (cphase == 2) timertext = "Phase 2  D: " + timertext;
+    else if (cphase == 3) timertext = "Phase 3  D: " + timertext;
     else if (cphase == 4) timertext = "Ended"
     if (datarender == null) return (<div>
       <p> you are not inside any game</p>
@@ -170,13 +171,15 @@ export function CDFrame(props) {
     else {
       let cdurl = datarender.server + "/login?token=" + datarender.token    + "&nextUrl=" +datarender.server+ "/multiplayergame?gameId=" + datarender.cdId;
       let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
+   
       return (
         <div id="maindiv">
           <div id="framemenu">
-            <a href={frontendAddress} id="backlink">Back To Tournament Application</a>
+            <div id="menuitemcontainer">
+            <a href={frontendAddress} className="backbuttons"id="backlink">Back To Tournament Application</a>
             <img id="clock" src={clock}></img>
             <p id="time" >{timertext}</p>
-
+          </div>
           </div>
           <div id="iframediv">
             <iframe id="iframe" src={cdurl} title="cdtournamentsgames" allowFullScreen  ></iframe>

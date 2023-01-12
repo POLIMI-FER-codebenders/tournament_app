@@ -3,6 +3,7 @@ package dsd.codebenders.tournament_app.controllers;
 import dsd.codebenders.tournament_app.entities.GameClass;
 import dsd.codebenders.tournament_app.entities.Player;
 import dsd.codebenders.tournament_app.entities.RoundClassChoice;
+import dsd.codebenders.tournament_app.entities.Tournament;
 import dsd.codebenders.tournament_app.requests.ClassChoiceRequest;
 import dsd.codebenders.tournament_app.services.ClassService;
 import dsd.codebenders.tournament_app.services.PlayerService;
@@ -39,10 +40,18 @@ public class ClassUploadController {
         return classService.getAllClasses();
     }
 
+    @GetMapping("/get-choices")
+    public List<RoundClassChoice> getRoundClassChoices(@RequestParam("tournamentId") Long tournamentId) {
+        Player loggedPlayer = playerService.getSelf();
+        return tournamentService.getRoundClassChoices(loggedPlayer, tournamentId);
+    }
+
     @PostMapping("/post-choices")
     public RoundClassChoice postChoice(@RequestBody ClassChoiceRequest classChoiceRequest){
         Player loggedPlayer = playerService.getSelf();
         return tournamentService.postRoundChoice(classChoiceRequest, loggedPlayer);
     }
+
+
 
 }

@@ -40,8 +40,8 @@ public class InvitationService {
     public Invitation createInvitation(Player sender, Long IDInvitedPlayer, Long IDTeam) {
         Player invitedPlayer = playerRepository.findById(IDInvitedPlayer).orElseThrow(() -> new ResourceNotFoundException("Invalid invited player"));
         Team team = teamRepository.findById(IDTeam).orElseThrow(() -> new ResourceNotFoundException("Invalid team"));
-        if (!team.getCreator().equals(sender)) {
-            throw new BadRequestException("You are not the creator of this team!");
+        if (sender.getRole() != TeamRole.LEADER || !team.getTeamMembers().contains(sender)) {
+            throw new BadRequestException("You are not the leader of this team!");
         } else if(invitationRepository.existsByInvitedPlayerAndTeamAndStatus(invitedPlayer, team, InvitationStatus.PENDING)) {
             throw new BadRequestException("You have already invited this player to join this team!");
         } else if(team.equals(invitedPlayer.getTeam())) {
@@ -66,7 +66,6 @@ public class InvitationService {
         }
         Team team = invitation.getTeam();
         if (team.isFull()) {
-            invitationRepository.delete(invitation);
             throw new BadRequestException("The team is full, you can no longer join.");
         }
         if (team.isInTournament()) {

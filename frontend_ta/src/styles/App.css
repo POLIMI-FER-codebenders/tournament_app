@@ -1,3 +1,6 @@
+:root {
+  --size-divisor: 1;
+}
 .App-logo {
   height: 20vmin;
   pointer-events: none;
@@ -9,15 +12,19 @@
   }
 }
 
+
 .App-header {
   background-color: #282c34;
-  min-height: 12vh;
+  height: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 20px;
   color: white;
+}
+#cdlogoheader{
+height:50px;
+
 }
 
 .App-header p {
@@ -49,7 +56,24 @@
   flex-direction: column; 
   margin: 2rem;
 }
+#sidebar{  
+height:100vh;
+min-width: 15vw;
+}
+body{
+  height:100%;
+}
 
+
+#mainbuttoncontainer{
+  
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column; 
+  padding-right:10px;
+  padding-left:10px;
+  margin-top:50px;
+}
 .main-panel{
   display: flex;
   flex-direction: column;
@@ -63,12 +87,21 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+
+}
+#mainpagebackground{
+  
 }
 
 .item{
   flex-grow: 1;
   padding: 1rem;
   margin-top: 2rem;
+}
+.firstitem{
+  flex-grow: 1;
+  padding: 1rem;
+  margin-top:10px;
 }
 
 .container {
@@ -80,3 +113,53 @@
 h2{
   text-align: center;
 }
+#searchbartour{
+  display:flex;
+  flex-direction:column;
+  margin-bottom:10px;
+  width: 100%;
+  align-content: center;
+  align-items: flex-end;
+  margin-right:110px;
+}
+
+.labelsearchtour, .textareasearchtour{
+  display:flex;
+  flex-direction:column;
+}
+.labelsearchtour{
+  font-style:italic;
+}
+#toursearchtextarea{
+  height:20px;
+}
+.barbutton{
+  border-radius:15px;
+  background: linear-gradient(#103698, #0C1A3E);
+  color:silver;
+  font-size:15px;
+}
+.barbutton:hover{
+  background:none;
+  background-color: rgb(46, 120, 230);
+  cursor:pointer;
+}
+.signinlink{
+  background: none!important;
+  border: none; 
+  font-family: arial, sans-serif;
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+  cursor: pointer;
+  position:relative;
+  bottom:22px;
+  right:80px;
+  font-size: 17px;
+ 
+}
+#signindiv{
+  display:flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+

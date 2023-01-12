@@ -58,6 +58,7 @@ public class WebSecurityConfig {
                                 requests
                                         .antMatchers("/authentication/register", "/authentication/failure").permitAll()
                                         .antMatchers("/api/tournament/list").permitAll()
+                                        .antMatchers("/api/match/info").permitAll()
                                         .antMatchers("/watch/**", "/streaming/score").permitAll()
                                         .anyRequest().authenticated();
                             }

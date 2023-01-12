@@ -151,7 +151,6 @@ public class TournamentService {
                 tournament.setStatus(TournamentStatus.IN_PROGRESS);
             }
             case ENDED -> {
-                //TODO
                 Team winningTeam;
                 switch (tournament.getType()) {
                     case KNOCKOUT -> {
@@ -335,5 +334,23 @@ public class TournamentService {
         // add one point to the league points for the winner team
         score.setLeaguePoints(score.getLeaguePoints() + 1);
         tournamentScoreRepository.saveAndFlush(score);
+    }
+
+    public List<RoundClassChoice> getRoundClassChoices(Player loggedPlayer, Long tournamentId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new BadRequestException("Tournament doesn't exist"));
+        if(!tournament.getCreator().equals(loggedPlayer)){
+            throw new BadRequestException("Only the creator of the tournament can retrieve class choices.");
+        }
+        int numberOfRounds = tournament.getNumberOfRounds();
+        List<RoundClassChoice> roundClassChoiceList = new ArrayList<>();
+        for(int round=1; round <= numberOfRounds; round++) {
+            RoundClassChoice roundClassChoice = roundClassChoiceRepository.findByTournamentAndRound(tournament, round);
+            if(roundClassChoice == null) {
+                roundClassChoiceList.add(new RoundClassChoice(tournament, round, null));
+            } else {
+                roundClassChoiceList.add(roundClassChoice);
+            }
+        }
+        return roundClassChoiceList;
     }
 }

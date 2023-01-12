@@ -92,6 +92,30 @@ public abstract class Tournament {
         return creator;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNumberOfTeams(Integer numberOfTeams) {
+        this.numberOfTeams = numberOfTeams;
+    }
+
+    public void setTeamSize(Integer teamSize) {
+        this.teamSize = teamSize;
+    }
+
+    public void setType(TournamentType type) {
+        this.type = type;
+    }
+
+    public void setMatchType(MatchType matchType) {
+        this.matchType = matchType;
+    }
+
+    public void setCurrentRound(Integer currentRound) {
+        this.currentRound = currentRound;
+    }
+
     public void setCreator(Player creator) {
         this.creator = creator;
     }
