@@ -70,7 +70,7 @@ class Home extends React.Component {
     return (
       <div className="App-header">
         <img id="cdlogoheader" src={cdlogo}></img>
-        Hello {sessionStorage.getItem("username")}! Welcome to tournament application of Code Defenders web game!
+        Hello{sessionStorage.getItem("username")&&" "+sessionStorage.getItem("username")}! Welcome to tournament application of Code Defenders web game!
         <div id="signindiv" >
         <button class="signinlink"
               onClick={() => 
