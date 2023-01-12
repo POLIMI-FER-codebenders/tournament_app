@@ -110,24 +110,7 @@ class Home extends React.Component {
               onClick={() => this.setState({ view: 0 })}>
               Home
             </button>
-            <button class="item barbutton"
-              onClick={() => 
-                {
-              if(sessionStorage.getItem("username")!=null) {
-                 sessionStorage.removeItem("username");
-                fetch(process.env.REACT_APP_BACKEND_ADDRESS + "/authentication/logout").then(response => {
-                 if(response.status!=200){
-                   console.log("error");
-                 }
-                                          
-                });
-                this.setState({ view: 1,buttontext:"SignIn" });
-              }
-               else this.setState({ view: 1 })}
-                }
-              >
-              {this.state.buttontext}
-            </button>
+            
             <button class="item barbutton"
               onClick={() => this.setState({ view: 2 })}>
               Create Team

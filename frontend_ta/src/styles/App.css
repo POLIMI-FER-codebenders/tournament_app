@@ -1,3 +1,6 @@
+:root {
+  --size-divisor: 1;
+}
 .App-logo {
   height: 20vmin;
   pointer-events: none;
@@ -8,6 +11,7 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+
 
 .App-header {
   background-color: #282c34;
@@ -57,22 +61,22 @@ height:50px;
   margin: 2rem;
 }
 #sidebar{  
-
+height:100vh;
+min-width: 15vw;
 }
 body{
   height:100%;
 }
+
+
 #mainbuttoncontainer{
   
   display: flex;
   justify-content: flex-start;
   flex-direction: column; 
-  
   padding-right:10px;
- 
-  
   padding-left:10px;
-  margin-top:10px;
+  margin-top:50px;
 }
 .main-panel{
   display: flex;

@@ -39,13 +39,13 @@ export default function Streaming(props) {
                     setDefendersPoints(response.result.defendersScore * 1);
                     location.state.info.status=response.result.status;
                     
-                    /*                 
+                        /*            
                     let testevententry = {
                         attackersScore: null, defendersScore: null, timestamp: 1671560242,
                         type: "DEFENDER_TEST_CREATED", user: "y99"
                     }
                     let testevent=[];
-                    for(let i = 0; i < 9; i++){
+                    for(let i = 0; i < 8; i++){
                         testevent.push(testevententry);
                     }
                     setEvents(testevent);
@@ -77,7 +77,7 @@ export default function Streaming(props) {
         if(msg.type==="GAME_FINISHED") location.state.info.status="ENDED"
         if(msg.type!=="SCORE_UPDATE"){
         let eventscopy = events;
-        if (eventscopy.length == 7) eventscopy.shift(); 
+        if (eventscopy.length == 8) eventscopy.shift(); 
         eventscopy.push(msg);
         setEvents(eventscopy);
         }

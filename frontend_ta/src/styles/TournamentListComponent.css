@@ -102,6 +102,7 @@
     cursor: pointer;
     padding: 5px 10px;
     text-align: center;
+    border-radius:10px;
 
 }
 
@@ -111,7 +112,9 @@
     color: #fff;
 
 }
-
+#teamtojointour{
+    border-radius:10px;
+}
 .col6 .joinable {
     border: 1px solid #07be44;
     background: #07be44;
