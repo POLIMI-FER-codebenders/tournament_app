@@ -175,10 +175,11 @@ export function CDFrame(props) {
       return (
         <div id="maindiv">
           <div id="framemenu">
-            <a href={frontendAddress} id="backlink">Back To Tournament Application</a>
+            <div id="menuitemcontainer">
+            <a href={frontendAddress} className="backbuttons"id="backlink">Back To Tournament Application</a>
             <img id="clock" src={clock}></img>
             <p id="time" >{timertext}</p>
-
+          </div>
           </div>
           <div id="iframediv">
             <iframe id="iframe" src={cdurl} title="cdtournamentsgames" allowFullScreen  ></iframe>

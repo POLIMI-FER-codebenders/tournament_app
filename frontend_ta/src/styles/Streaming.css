@@ -1,20 +1,20 @@
-#streamingheader{
-    height:10vh; 
-}
+
 /*
 font-familty:Harrington
 */
 #phaseheader{  
     font-weight: bold;  
-    font-size:20px;
+    font-size:18px;
     text-align: center;
     justify-content: center;
     display: flex;
     align-items: center;
+    margin-top:5px;
+    width:100%
 }
 #scorediv{
     padding-top:10px;
-    height:45vh;
+    height:39vh;
     display:flex;    
 }
 /*
@@ -28,7 +28,7 @@ background-color: #f1efef;
 
 #firstteam{ 
     background-color: #ffffff;
-    width: 45vw;
+    width: 44vw;
     height:100%;
     border-color: rgb(204, 14, 14);
     border-style: solid;
@@ -58,7 +58,7 @@ background-color: #ffffff;
 }
 #secondteam{
     background-color: #ffffff;
-    width: 45vw;
+    width: 44vw;
     height:100%;
     border-color: rgb(50, 12, 187);
     border-radius:40px;
@@ -102,7 +102,7 @@ font-weight: bold;
     min-width: fit-content;
     flex-direction:column; 
     background-color: #e0dfdf;
-    height:38vh;
+    height:43vh;
     margin:10px;
     margin-top:15px;
     border-radius:10px;
@@ -120,10 +120,20 @@ font-weight: bold;
 #backlinkstreaming:hover {
     color: #ffffffde;
 }
+#sheadcontainer{
+    margin:1px;
+    height:100%;
+    flex-direction: row;
+        align-items: center;
+        display: flex; 
+}
 #backsheader{
+    border: 1px solid #03a9f4;
+    height: 6vh;
     background-color: #03a9f4;
-    height:4vh;
-    margin-bottom:10px;
+    flex-direction: column;
+    display: flex;
+    min-height:35px;
 }
 /*
 #firstteam:before{

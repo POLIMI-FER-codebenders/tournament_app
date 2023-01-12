@@ -15,16 +15,12 @@
 
 .App-header {
   background-color: #282c34;
-  height: 13vh;
+  height: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  font-size: calc(10px + 2vmin);
+  font-size: 20px;
   color: white;
- 
-
-
 }
 #cdlogoheader{
 height:50px;
@@ -156,9 +152,9 @@ h2{
   text-decoration: underline;
   cursor: pointer;
   position:relative;
-  bottom:24px;
+  bottom:22px;
   right:80px;
-  font-size: calc(5px + 2vmin);
+  font-size: 17px;
  
 }
 #signindiv{
