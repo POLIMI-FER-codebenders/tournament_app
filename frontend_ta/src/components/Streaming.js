@@ -77,9 +77,11 @@ export default function Streaming(props) {
         if(msg.type==="GAME_FINISHED") location.state.info.status="ENDED"
         if(msg.type!=="SCORE_UPDATE"){
         let eventscopy = events;
-        if (eventscopy.length == 8) eventscopy.shift(); 
         eventscopy.push(msg);
         setEvents(eventscopy);
+        setTimeout(()=>{var e=document.getElementById("eventsdiv");
+        e.scrollTop=e.scrollHeight;
+        },100);
         }
     }
     let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
