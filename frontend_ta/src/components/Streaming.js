@@ -9,6 +9,7 @@ import cdlogo from '../images/cdlogo.png';
 import background from '../images/background1.jpg';
 import SockJsClient from 'react-stomp';
 import { EventEntry } from "./EventEntry.js";
+import '../styles/iframe.css';
 const SOCKET_URL = process.env.REACT_APP_BACKEND_ADDRESS + '/watch';
 export default function Streaming(props) {
     const [attackersPoints, setAttackersPoints] = useState(0);
@@ -39,13 +40,13 @@ export default function Streaming(props) {
                     setDefendersPoints(response.result.defendersScore * 1);
                     location.state.info.status=response.result.status;
                     
-                    /*                 
+                        /*            
                     let testevententry = {
                         attackersScore: null, defendersScore: null, timestamp: 1671560242,
                         type: "DEFENDER_TEST_CREATED", user: "y99"
                     }
                     let testevent=[];
-                    for(let i = 0; i < 9; i++){
+                    for(let i = 0; i < 8; i++){
                         testevent.push(testevententry);
                     }
                     setEvents(testevent);
@@ -77,9 +78,11 @@ export default function Streaming(props) {
         if(msg.type==="GAME_FINISHED") location.state.info.status="ENDED"
         if(msg.type!=="SCORE_UPDATE"){
         let eventscopy = events;
-        if (eventscopy.length == 7) eventscopy.shift(); 
         eventscopy.push(msg);
         setEvents(eventscopy);
+        setTimeout(()=>{var e=document.getElementById("eventsdiv");
+        e.scrollTop=e.scrollHeight;
+        },100);
         }
     }
     let frontendAddress = process.env.REACT_APP_FRONTEND_ADDRESS;
@@ -97,10 +100,14 @@ export default function Streaming(props) {
                 }
                 debug={false}
             />
-            <div id="streamingheader">
-            <a href={frontendAddress} id="backlinkstreaming">Back To Tournament Application</a>
+            
+                <div id="backsheader">
+                    <div id="sheadcontainer">
+            <a href={frontendAddress} id="backlinkstreaming" className="backbuttons">Back To Tournament Application</a>
+            </div>
+            </div>
                 <div id="phaseheader">{RetrievePhase()}</div>
-                </div>
+                
             <div id="scorediv">
                 <div id="firstteam" >
                     <div className="streamingheading">{location.state.info.attackersTeam.name}</div>
